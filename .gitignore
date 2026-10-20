@@ -1,0 +1,53 @@
+# secrets
+.env
+*.env
+!*.env.example
+*.pem
+*.key
+secrets/
+
+# python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# node
+node_modules/
+dist/
+.vite/
+
+# data and models (described by manifest.json, stored on Drive / HF Hub)
+**/data/raw/
+**/data/processed/
+**/data/frozen_eval/
+**/models/**/*.joblib
+**/models/**/*.pt
+**/models/**/*.pth
+**/models/**/*.bin
+**/models/**/*.safetensors
+**/models/**/*.onnx
+**/models/**/*.gguf
+**/models/weights/
+**/chroma/
+**/chroma_data/
+*.sqlite
+*.sqlite3
+*.db
+
+# evaluation outputs (summaries go to docs/reports)
+**/results/*
+!**/results/.gitkeep
+
+# notebooks and editors
+.ipynb_checkpoints/
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

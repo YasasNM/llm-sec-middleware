@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "mediguard/contracts/c4_blocklist_response/1.0.0",
+  "title": "C4 to C1: GET /v1/blocklist?org_id=",
+  "type": "object",
+  "required": [
+    "org_id",
+    "user_ids",
+    "generated_at"
+  ],
+  "properties": {
+    "org_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9_.:-]+$"
+    },
+    "user_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 64,
+        "pattern": "^[A-Za-z0-9_.:-]+$"
+      },
+      "uniqueItems": true
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,6})?Z$",
+      "description": "UTC, ISO 8601, ends with Z"
+    }
+  }
+}

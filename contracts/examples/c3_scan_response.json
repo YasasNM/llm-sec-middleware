@@ -1,0 +1,48 @@
+{
+  "request_id": "req_20261020_000123",
+  "c3_verdict": "VIOLATION",
+  "clause_id": "CAIG-3.1",
+  "cited_clauses": [
+    {
+      "clause_id": "CAIG-3.1",
+      "doc_id": "doc-0007",
+      "doc_name": "Clinical AI Usage Guidelines 2026",
+      "title": "Controlled medicines",
+      "quote": "The assistant must not recommend specific doses of controlled medicines.",
+      "citation_status": "verified",
+      "severity": "high",
+      "retrieval_rank": 1
+    }
+  ],
+  "leaked_pii_detected": false,
+  "leaked_pii_count": 0,
+  "decision_source": "generator",
+  "assurance": "high",
+  "confidence": 0.94,
+  "rationale": "The response breaks this clause: controlled medicines.",
+  "user_message_code": "OUTPUT_WITHHELD",
+  "clean_response": null,
+  "policy_index_version": "idx-1759600000000-a91f",
+  "model_version": "c3-gen-flan-t5-small-v1",
+  "retriever_version": "c3-ret-minilm-ft-v1",
+  "latency_ms": 700,
+  "latency_breakdown_ms": {
+    "retrieve": 18,
+    "encode": 240,
+    "verdict_step": 20,
+    "decode": 380,
+    "verify": 1,
+    "leak": 40
+  },
+  "leak_check": {
+    "status": "clean",
+    "entities": []
+  },
+  "generation": {
+    "mode": "two_stage",
+    "p_violation": 0.94,
+    "tau": 0.4,
+    "decoded": true,
+    "output_tokens": 31
+  }
+}

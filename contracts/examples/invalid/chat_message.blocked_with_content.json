@@ -1,0 +1,9 @@
+{
+  "id": "msg_88",
+  "role": "assistant",
+  "content": "secret",
+  "timestamp": "2026-08-23T07:10:04Z",
+  "type": "blocked",
+  "requestId": "req_20261020_000123",
+  "user_message_code": "OUTPUT_WITHHELD"
+}

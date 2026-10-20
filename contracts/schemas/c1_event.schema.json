@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "mediguard/contracts/c1_event/1.0.0",
+  "title": "C1 event to C4",
+  "description": "Sent by C1 for every request it handles (POST /v1/events/c1), including 0% masked and blocked users.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "event_id",
+    "org_id",
+    "user_id",
+    "request_id",
+    "session_id",
+    "event_timestamp",
+    "masking_percentage"
+  ],
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9_.:-]+$",
+      "description": "Unique per event, never reused. C4 drops duplicates. Recommended: evt-cN-<uuid4>"
+    },
+    "org_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9_.:-]+$",
+      "description": "Hospital id, copied from the request"
+    },
+    "user_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9_.:-]+$",
+      "description": "User id, copied from the request"
+    },
+    "request_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9_.:-]+$",
+      "description": "Request id created by the gateway, copied from the request"
+    },
+    "session_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9_.:-]+$",
+      "description": "Session id created by the gateway, copied from the request"
+    },
+    "event_timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,6})?Z$",
+      "description": "Time C1 handled the request"
+    },
+    "masking_percentage": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Characters of the original prompt replaced by placeholders, divided by the prompt length, times 100, rounded to 1 decimal. 0 means nothing was masked"
+    }
+  }
+}

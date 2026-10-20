@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "mediguard/contracts/c1_check_request/1.0.0",
+  "title": "Gateway to C1: POST /v1/check",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "request_id",
+    "org_id",
+    "user_id",
+    "session_id",
+    "text"
+  ],
+  "properties": {
+    "request_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9_.:-]+$"
+    },
+    "org_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9_.:-]+$"
+    },
+    "user_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9_.:-]+$"
+    },
+    "session_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9_.:-]+$"
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 8000
+    },
+    "apply_reid_suggestions": {
+      "type": "boolean",
+      "default": true,
+      "description": "Clinician choice for re-identification suggestions only. Explicit identifiers are always masked"
+    }
+  }
+}

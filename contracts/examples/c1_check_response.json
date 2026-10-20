@@ -1,0 +1,21 @@
+{
+  "request_id": "req_20261020_000123",
+  "decision": "ALLOW",
+  "masked_text": "Patient [PATIENT_NAME_1] NIC [NIC_1], review P0012",
+  "placeholder_manifest": [
+    "[PATIENT_NAME_1]",
+    "[NIC_1]"
+  ],
+  "masking_percentage": 47.1,
+  "entity_counts": {
+    "PATIENT_NAME": 1,
+    "NIC": 1
+  },
+  "reid": {
+    "level": "Low",
+    "score": 0,
+    "applied": true
+  },
+  "user_message_code": null,
+  "latency_ms": 42
+}

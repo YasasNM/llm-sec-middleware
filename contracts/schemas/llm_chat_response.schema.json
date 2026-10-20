@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "mediguard/contracts/llm_chat_response/1.0.0",
+  "title": "Protected LLM to gateway",
+  "type": "object",
+  "required": [
+    "request_id",
+    "answer",
+    "mode",
+    "model",
+    "tool_calls",
+    "latency_ms"
+  ],
+  "properties": {
+    "request_id": {
+      "type": "string"
+    },
+    "answer": {
+      "type": "string"
+    },
+    "mode": {
+      "enum": [
+        "tools",
+        "context"
+      ]
+    },
+    "model": {
+      "type": "string"
+    },
+    "tool_calls": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "arguments"
+        ]
+      }
+    },
+    "latency_ms": {
+      "type": "integer"
+    }
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "mediguard/contracts/c2_classify_request/1.0.0",
+  "title": "Gateway to C2: POST /v1/classify",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "request_id",
+    "org_id",
+    "user_id",
+    "session_id",
+    "prompt"
+  ],
+  "properties": {
+    "request_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9_.:-]+$"
+    },
+    "org_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9_.:-]+$"
+    },
+    "user_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9_.:-]+$"
+    },
+    "session_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9_.:-]+$"
+    },
+    "prompt": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 8000,
+      "description": "C1 masked text"
+    },
+    "c1_metadata": {
+      "type": "object",
+      "description": "Logging only, never used for the verdict",
+      "properties": {
+        "masking_percentage": {
+          "type": "number"
+        },
+        "entity_counts": {
+          "type": "object"
+        },
+        "reid_level": {
+          "enum": [
+            "Low",
+            "Medium",
+            "High"
+          ]
+        },
+        "placeholder_manifest": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

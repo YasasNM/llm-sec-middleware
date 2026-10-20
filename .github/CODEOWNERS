@@ -1,0 +1,34 @@
+# Last matching pattern wins. Replace the REPLACE_ handles with real GitHub usernames.
+# Component owners
+/components/c1-privacy-assistant/        @linuka-handle
+/components/c2-intent-classifier/        @nisith-handle
+/components/c3-policy-scanner/           @yasas-handle
+/components/c4-risk-profiler/            @sandul-handle
+/llm/protected-llm/                      @linuka-handle
+
+# Product shell: gateway owner (to be named, Open Item 1)
+/apps/gateway/                           @linuka-handle
+/apps/web/                               @linuka-handle
+/packages/                               @linuka-handle
+/infra/                                  @linuka-handle
+/tools/                                  @linuka-handle
+/scripts/                                @linuka-handle
+/.github/                                @linuka-handle
+/Makefile                                @linuka-handle
+/pyproject.toml                          @linuka-handle
+/.pre-commit-config.yaml                 @linuka-handle
+
+# Web feature folders belong to the component owners (they override the line above)
+/apps/web/src/features/privacy/          @linuka-handle
+/apps/web/src/features/policies/         @yasas-handle
+/apps/web/src/features/risk/             @sandul-handle
+
+# Shared by all four (any one of them can approve; contract changes also follow CONTRIBUTING.md)
+/contracts/                              @linuka-handle @nisith-handle @yasas-handle @sandul-handle
+/evaluation/system/                      @linuka-handle @nisith-handle @yasas-handle @sandul-handle
+/resources/                              @linuka-handle @nisith-handle @yasas-handle @sandul-handle
+/docs/                                   @linuka-handle @nisith-handle @yasas-handle @sandul-handle
+/PROJECT_BLUEPRINT.md                    @linuka-handle @nisith-handle @yasas-handle @sandul-handle
+/README.md                               @linuka-handle @nisith-handle @yasas-handle @sandul-handle
+/CONTRIBUTING.md                         @linuka-handle @nisith-handle @yasas-handle @sandul-handle
+/CHANGELOG.md                            @linuka-handle @nisith-handle @yasas-handle @sandul-handle

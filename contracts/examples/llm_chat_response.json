@@ -1,0 +1,16 @@
+{
+  "request_id": "req_20261020_000123",
+  "answer": "P0012: 24-year-old male ...",
+  "mode": "tools",
+  "model": "qwen2.5:7b",
+  "tool_calls": [
+    {
+      "name": "get_patient_summary",
+      "arguments": {
+        "patient_id": "P0012"
+      },
+      "error": null
+    }
+  ],
+  "latency_ms": 18400
+}

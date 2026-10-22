@@ -1,0 +1,18 @@
+{
+  "_note": "Synthetic name pools (Sri Lankan naming patterns). Pools are split by name into train/val/test inside build_corpus.py so no name appears in two splits.",
+  "sinhala": {
+    "male": ["Nimal","Kamal","Sunil","Saman","Ruwan","Chaminda","Nuwan","Lakmal","Pradeep","Asanka","Dinesh","Kasun","Thilina","Chathura","Janaka","Priyantha","Upul","Gamini","Ranjith","Anura","Mahinda","Sarath","Wasantha","Jagath","Dhanushka","Isuru","Buddhika","Dilshan","Sampath","Rohan","Tharindu","Harsha","Nalin","Lasith","Roshan","Amila","Chamara","Sudath","Vijitha","Bandula","Piyal","Kumara","Sisira","Lalith","Athula","Ajith","Prasanna","Danushka","Malith","Supun"],
+    "female": ["Kumari","Nilmini","Sanduni","Dilani","Chathurika","Nadeeka","Samanthi","Menaka","Rasika","Anoma","Chandrika","Shiranthi","Thilini","Hasini","Nirmala","Sumudu","Kanchana","Madhavi","Lakshmi","Sepali","Inoka","Gayani","Iresha","Udeshika","Dinusha","Sewwandi","Pavithra","Nethmi","Hiruni","Shanika","Prabha","Rukmali","Wasanthi","Priyanka","Sandya","Dulani","Yamuna","Anusha","Malkanthi","Kamani","Swarna","Lalitha","Ranmali","Imesha","Oshadi","Tharushi","Chamodi","Ishara","Nimali","Sujeewa"],
+    "surname": ["Perera","Fernando","Silva","de Silva","Jayasinghe","Wijesinghe","Bandara","Gunawardena","Rajapaksha","Herath","Dissanayake","Senanayake","Ratnayake","Karunaratne","Samarasinghe","Wickramasinghe","Abeysekara","Weerasinghe","Amarasinghe","Liyanage","Gamage","Jayawardena","Kumarasinghe","Pathirana","Seneviratne","Edirisinghe","Ekanayake","Wijeratne","Gunasekara","Hettiarachchi","Premadasa","Ranasinghe","Dahanayake","Ariyaratne","Kodikara","Munasinghe","Tennakoon","Alwis","Mendis","de Mel","Peiris","Cooray","Jayatilleke","Weerakoon","Siriwardena","Withanage","Thilakaratne","Aluthge","Kariyawasam","Gunathilaka","Welikala","Rodrigo","Nanayakkara","Wanigasekara"]
+  },
+  "tamil": {
+    "male": ["Kumar","Rajan","Suresh","Ravi","Siva","Kannan","Mohan","Ganesh","Anbu","Vijay","Ramesh","Thevan","Arun","Selvam","Murali","Prabhu","Sathish","Karthik","Jegan","Baskar","Dinesh","Mathan","Nirmal","Piratheep"],
+    "female": ["Kavitha","Anitha","Priya","Sathya","Malathi","Vasanthi","Lakshmi","Revathi","Nirmala","Thilaga","Shanthi","Yogeswari","Kamala","Sumathi","Mala","Jeyanthi","Rajini","Sharmila","Gowri","Thanuja","Vani","Mathivathani","Parimala","Sangeetha"],
+    "surname": ["Selvarajah","Sivakumar","Krishnan","Thirunavukarasu","Ramanathan","Kandasamy","Subramaniam","Balasingham","Pathmanathan","Vijayakumar","Rajaratnam","Sivapalan","Nadarajah","Arumugam","Ponnambalam","Thavarajah","Mahendran","Sritharan","Navaratnam","Yogarajah","Kanagaratnam","Gnanasegaram","Thangarajah","Vigneswaran"]
+  },
+  "muslim": {
+    "male": ["Mohamed","Ahamed","Faizal","Imran","Riyaz","Nazeer","Rizwan","Fazil","Hashim","Ismail","Rifkhan","Mubarak","Azmi","Shafraz","Zameel","Irshad","Fawzan","Rameez","Sajith","Naleem","Haris","Anver","Mujeeb","Thowfeek"],
+    "female": ["Fathima","Nusrath","Rizana","Shafna","Aysha","Zainab","Rukshana","Farzana","Sithy","Hafsa","Nazeema","Safiya","Mumtaz","Shahida","Ruwaida","Nafeesa","Shanaz","Ifra","Mubeena","Nasreen","Razeena","Sajeena","Hajara","Ameena"],
+    "surname": ["Marikar","Cassim","Hameed","Lebbe","Rahuman","Ismail","Jaleel","Nazeer","Farook","Mohideen","Sulaiman","Haniffa","Rasheed","Careem","Zaheer","Mansoor","Salim","Thaha","Latiff","Razik","Ibrahim","Abdeen","Saleem","Anwar"]
+  }
+}

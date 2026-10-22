@@ -1,0 +1,961 @@
+id,scenario,note_text,layout_matches_real_form (Y/N),clinically_plausible (Y/N),what_to_fix
+hcpii-note-train-00278,abdominal_pain_vomiting,"Date: 2026-06-22
+1) Name: Nilmini Dissanayake
+2) Age: 66 years
+3) Presenting complaint: Abdominal pain with vomiting for 3 days
+4) Past medical history:
+   DM: No
+   BP: No
+5) Allergies: NKDA
+6) Smoking: Never smoked
+   Alcohol / drug abuse: No alcohol, no drug abuse
+Family history: Paternal grandfather: Stroke; Father: HTN
+Living area: Eheliyagoda, Ratnapura
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-train-00198,anaemia,"Date: 07/03/2026
+1) Name: Lakshmi Weerakoon
+2) Age: 22 years
+3) Presenting complaint: Tiredness, palpitations and giddiness for 1 week
+4) Past medical history:
+   DM: No
+   BP: No
+5) Allergies: NKDA
+6) Smoking: Never smoked
+   Alcohol / drug abuse: No alcohol, no drug abuse
+Family history: Nil
+Living area: Tangalle
+O/E:
+   Pallor: +
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-test-00116,chest_pain_exertional,"Date: 4 Mar 2026
+1) Name: Malkanthi Kariyawasam
+2) Age: 53 years
+3) Presenting complaint: Central chest tightness with sweating for 13 days
+4) Past medical history:
+   DM: Yes, 18 years, on metformin 500 mg bd
+   BP: No
+5) Allergies: Nil
+6) Smoking: Never smoked
+   Alcohol / drug abuse: No alcohol, no drug abuse
+Family history: Father: HTN
+Living area: Batticaloa
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-val-00161,chronic_cough,"Date: 26 May 2026
+1) Name: Sajeena Careem
+2) Age: 39 years
+3) Presenting complaint: Productive cough and loss of appetite for 6 weeks
+4) Past medical history:
+   DM: No
+   BP: Yes, 11 years, on amlodipine 5 mg daily
+5) Allergies: No known allergies
+6) Smoking: Never smoked
+   Alcohol / drug abuse: No alcohol, no drug abuse
+Family history: Nil
+Living area: Kurunegala
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-train-00054,diabetes_symptoms,"Date: 22/02/2026
+1) Name: Dilani Ratnayake
+2) Age: 68 years
+3) Presenting complaint: Increased urination at night and tiredness for 7 weeks
+4) Past medical history:
+   DM: Yes, 15 years, on glibenclamide 5 mg daily
+   BP: Yes, 19 years, on atenolol 50 mg daily
+5) Allergies: Aspirin
+6) Smoking: Never smoked
+   Alcohol / drug abuse: No alcohol, no drug abuse
+Family history: Paternal grandfather: DM; Mother: DM; Brother: Stroke
+Living area: Veyangoda
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-train-00073,diabetic_foot,"Date: 30.05.2026
+1) Name: Nalin Janaka Wickramasinghe
+2) Age: 46 years
+3) Presenting complaint: Foot wound with discharge and swelling for 4 weeks
+4) Past medical history:
+   DM: Yes, 24 years, on gliclazide 80 mg mane
+   BP: No
+5) Allergies: No known allergies
+6) Smoking: Never smoked
+   Alcohol / drug abuse: Occasional alcohol (arrack or beer), no drug abuse
+Family history: Sister: HTN
+Living area: Elpitiya
+O/E:
+   Pallor: mild +
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-val-00193,fever_myalgia,"Date: 11 Jun 2026
+1) Name: Ranjith Kumarasinghe
+2) Age: 59 years
+3) Presenting complaint: High fever with pain behind the eyes for 5 days
+4) Past medical history:
+   DM: No
+   BP: No
+5) Allergies: Nil
+6) Smoking: Non smoker
+   Alcohol / drug abuse: Alcohol most days (arrack), no drug abuse
+Family history: Nil
+Living area: Kadawatha, Gampaha
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-val-00185,gastritis,"Date: 2026-03-10
+1) Name: A.R. Gamage
+2) Age: 56 years
+3) Presenting complaint: Burning epigastric pain for 3 weeks
+4) Past medical history:
+   DM: No
+   BP: Yes, 8 years, on amlodipine 5 mg daily
+5) Allergies: Penicillin (rash)
+6) Smoking: Current smoker, 6 cigarettes/day, 5 years
+   Alcohol / drug abuse: Occasional alcohol (arrack or beer), no drug abuse
+Family history: Brother: Asthma; Sister: DM
+Living area: Puttalam
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-test-00046,gastroenteritis,"Date: 2 Jun 2026
+1) Name: Pradeep Kodikara
+2) Age: 6 years
+3) Presenting complaint: Vomiting and diarrhoea after a meal outside for 3 days
+4) Past medical history:
+   DM: No
+   BP: No
+5) Allergies: No known allergies
+6) Smoking: N/A
+   Alcohol / drug abuse: N/A
+Family history: Brother: DM; Brother: HTN
+Living area: Polonnaruwa
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-train-00363,heart_failure,"Date: 1 Jul 2026
+1) Name: Mathivathani Subramaniam
+2) Age: 56 years
+3) Presenting complaint: Shortness of breath on exertion and ankle swelling for 4 weeks
+4) Past medical history:
+   DM: Yes, 26 years, on insulin (mixed) twice daily
+   BP: No
+5) Allergies: No known allergies
+6) Smoking: Never smoked
+   Alcohol / drug abuse: No alcohol, no drug abuse
+Family history: Father: DM; Mother: IHD; Sister: IHD
+Living area: Anuradhapura
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: pitting edema up to the knees",,,
+hcpii-note-train-00779,hypertension_headache,"Date: 11 Mar 2026
+1) Name: Selvam Navaratnam
+2) Age: 49 years
+3) Presenting complaint: Persistent headache and dizziness for 13 days
+4) Past medical history:
+   DM: No
+   BP: Yes, 23 years, on atenolol 50 mg daily
+5) Allergies: No known allergies
+6) Smoking: Current smoker, 9 cigarettes/day, 31 years
+   Alcohol / drug abuse: No alcohol, no drug abuse
+Family history: No significant family history
+Living area: Hatton
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-train-00038,joint_pain,"Date: 27.01.2026
+1) Name: Dhanushka Peiris
+2) Age: 48 years
+3) Presenting complaint: Knee pain and difficulty walking for 7 months
+4) Past medical history:
+   DM: Yes, 9 years, on metformin and gliclazide
+   BP: Yes, 3 years, on amlodipine and losartan
+5) Allergies: Dust and pollen
+6) Smoking: Current smoker, 13 cigarettes/day, 9 years
+   Alcohol / drug abuse: No alcohol, no drug abuse
+Family history: No significant family history
+Living area: Kandy
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-train-00583,low_back_pain,"Date: 18/09/2026
+1) Name: Rukmali Nanayakkara
+2) Age: 69 years
+3) Presenting complaint: Back pain radiating to the left leg for 1 week
+4) Past medical history:
+   DM: No
+   BP: Yes, 24 years, on amlodipine and losartan
+5) Allergies: NKDA
+6) Smoking: Never smoked
+   Alcohol / drug abuse: No alcohol, no drug abuse
+Family history: No significant family history
+Living area: Kantale
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-test-00109,nephrotic_renal,"Date: 24 Sep 2026
+1) Name: Malkanthi Kariyawasam
+2) Age: 26 years
+3) Presenting complaint: Puffy face in the morning and swollen legs for 4 weeks
+4) Past medical history:
+   DM: No
+   BP: No
+5) Allergies: NKDA
+6) Smoking: Never smoked
+   Alcohol / drug abuse: No alcohol, no drug abuse
+Family history: Father: HTN; Maternal grandmother: DM
+Living area: Pilimathalawa
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: bilateral pitting edema, face puffy",,,
+hcpii-note-train-00101,pneumonia_elderly,"Date: 17/10/2026
+1) Name: Sunil Ratnayake
+2) Age: 68 years
+3) Presenting complaint: Productive cough with chest pain on breathing for 8 days
+4) Past medical history:
+   DM: Yes, 4 years, on metformin 500 mg bd
+   BP: No
+5) Allergies: Nil
+6) Smoking: Never smoked
+   Alcohol / drug abuse: Occasional alcohol (arrack or beer), no drug abuse
+Family history: Nil
+Living area: Giritale
+O/E:
+   Pallor: -
+   Cyanosed: + (peripheral)
+   Edema: -",,,
+hcpii-note-train-00091,skin_rash_allergy,"Date: 24 Feb 2026
+1) Name: Ravi Subramaniam
+2) Age: 48 years
+3) Presenting complaint: Rash and itching on the arms and trunk for 1 day
+4) Past medical history:
+   DM: Yes, 13 years, on gliclazide 80 mg mane
+   BP: No
+5) Allergies: Eggs
+6) Smoking: Non smoker
+   Alcohol / drug abuse: No alcohol, no drug abuse
+Family history: Uncle: HTN
+Living area: Mannar
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-train-00478,urti,"Date: 2026-06-22
+1) Name: Tharindu Aluthge
+2) Age: 37 years
+3) Presenting complaint: Sore throat and cough for 3 days
+4) Past medical history:
+   DM: No
+   BP: No
+5) Allergies: Nil
+6) Smoking: Non smoker
+   Alcohol / drug abuse: Alcohol most days (arrack), no drug abuse
+Family history: Nil
+Living area: Kiribathgoda
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-test-00163,uti,"Date: 2026-07-10
+1) Name: F.H. Marikar
+2) Age: 19 years
+3) Presenting complaint: Passing urine frequently with fever for 6 days
+4) Past medical history:
+   DM: No
+   BP: No
+5) Allergies: Nil
+6) Smoking: Never smoked
+   Alcohol / drug abuse: No alcohol, no drug abuse
+Family history: Nil
+Living area: Katugastota, Kandy
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-train-00079,wheeze_asthma_copd,"Date: 02/07/2026
+1) Name: Yamuna de Mel
+2) Age: 40 years
+3) Presenting complaint: Cough with wheeze, worse at night, for 9 days
+4) Past medical history:
+   DM: No
+   BP: No
+5) Allergies: Nil
+6) Smoking: Never smoked
+   Alcohol / drug abuse: No alcohol, no drug abuse
+Family history: Brother: IHD
+Living area: Baddegama, Galle
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-val-00050,abdominal_pain_vomiting,"Date: 06.04.2026
+1) Name: S.K. Karunaratne
+2) Age: 72 years
+3) Presenting complaint: Abdominal pain with vomiting for 4 days
+4) Past medical history:
+   DM: Yes, 8 years, on metformin 850 mg bd
+   BP: No
+5) Allergies: NKDA
+6) Smoking: Never smoked
+   Alcohol / drug abuse: No alcohol, no drug abuse
+Family history: Nil
+Living area: Weligama
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-train-00152,anaemia,"Date: 21 Sep 2026
+1) Name: Iresha Munasinghe
+2) Age: 25 years
+3) Presenting complaint: Tiredness, palpitations and giddiness for 10 weeks
+4) Past medical history:
+   DM: No
+   BP: No
+5) Allergies: Nil
+6) Smoking: Never smoked
+   Alcohol / drug abuse: No alcohol, no drug abuse
+Family history: Nil
+Living area: Kundasale
+O/E:
+   Pallor: ++
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-train-00648,chest_pain_exertional,"Date: 23 Jan 2026
+1) Name: Anoma Weerakoon
+2) Age: 75 years
+3) Presenting complaint: Chest discomfort on climbing stairs for 2 days
+4) Past medical history:
+   DM: Yes, 8 years, on glibenclamide 5 mg daily
+   BP: Yes, 7 years, on amlodipine 5 mg daily
+5) Allergies: Nil
+6) Smoking: Never smoked
+   Alcohol / drug abuse: No alcohol, no drug abuse
+Family history: Maternal grandmother: DM
+Living area: Pannala
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-train-00396,chronic_cough,"Date: 08.09.2026
+1) Name: Sisira Buddhika Withanage
+2) Age: 54 years
+3) Presenting complaint: Persistent cough with occasional blood-stained sputum for 10 weeks
+4) Past medical history:
+   DM: Yes, 13 years, on metformin 850 mg bd
+   BP: No
+5) Allergies: Dust and pollen
+6) Smoking: Never smoked
+   Alcohol / drug abuse: No alcohol, no drug abuse
+Family history: Father: DM
+Living area: Tangalle
+O/E:
+   Pallor: +
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-train-00060,diabetes_symptoms,"Date: 2026-02-18
+1) Name: Hajara Haniffa
+2) Age: 62 years
+3) Presenting complaint: Increased urination at night and tiredness for 2 weeks
+4) Past medical history:
+   DM: Yes, 29 years, on metformin and gliclazide
+   BP: No
+5) Allergies: NKDA
+6) Smoking: Never smoked
+   Alcohol / drug abuse: No alcohol, no drug abuse
+Family history: Father: DM; Sister: DM
+Living area: Colombo 05
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-test-00154,diabetic_foot,"Date: 06.07.2026
+1) Name: Sharmila Kandasamy
+2) Age: 53 years
+3) Presenting complaint: Non-healing ulcer on the foot for 6 weeks
+4) Past medical history:
+   DM: Yes, 28 years, on metformin 850 mg bd
+   BP: Yes, 20 years, on amlodipine 5 mg daily
+5) Allergies: NKDA
+6) Smoking: Never smoked
+   Alcohol / drug abuse: No alcohol, no drug abuse
+Family history: Brother: Asthma; Sister: HTN; Paternal grandfather: DM
+Living area: Avissawella
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: edema around the ulcer",,,
+hcpii-note-val-00033,fever_myalgia,"Date: 26 Aug 2026
+1) Name: Parimala Yogarajah
+2) Age: 25 years
+3) Presenting complaint: High fever with pain behind the eyes for 3 days
+4) Past medical history:
+   DM: No
+   BP: No
+5) Allergies: No known allergies
+6) Smoking: Never smoked
+   Alcohol / drug abuse: No alcohol, no drug abuse
+Family history: Maternal grandmother: DM; Father: HTN; Sister: DM
+Living area: Kurunegala
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-test-00072,gastritis,"Date: 16.02.2026
+1) Name: Thilini Liyanage
+2) Age: 68 years
+3) Presenting complaint: Upper abdominal pain relieved by antacids for 4 weeks
+4) Past medical history:
+   DM: No
+   BP: Yes, 17 years, on losartan 50 mg daily
+5) Allergies: No known allergies
+6) Smoking: Never smoked
+   Alcohol / drug abuse: No alcohol, no drug abuse
+Family history: Nil
+Living area: Chilaw
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-train-00087,gastroenteritis,"Date: 18/10/2026
+1) Name: Sudath Dissanayake
+2) Age: 22 years
+3) Presenting complaint: Vomiting and diarrhoea after a meal outside for 3 days
+4) Past medical history:
+   DM: No
+   BP: No
+5) Allergies: Nil
+6) Smoking: Non smoker
+   Alcohol / drug abuse: Occasional alcohol (arrack or beer), no drug abuse
+Family history: Uncle: Stroke; Uncle: DM
+Living area: Ja-Ela, Gampaha
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-train-00619,heart_failure,"Date: 31/01/2026
+1) Name: Nalin de Silva
+2) Age: 80 years
+3) Presenting complaint: Shortness of breath on exertion and ankle swelling for 7 weeks
+4) Past medical history:
+   DM: Yes, 17 years, on insulin (mixed) twice daily
+   BP: Yes, 22 years, on enalapril 5 mg daily
+5) Allergies: Nil
+6) Smoking: Current smoker, 20 cigarettes/day, 24 years
+   Alcohol / drug abuse: Alcohol most days (arrack), no drug abuse
+Family history: Uncle: CKD
+Living area: Bandarawela
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-train-00782,hypertension_headache,"Date: 3 Mar 2026
+1) Name: Sathish Navaratnam
+2) Age: 41 years
+3) Presenting complaint: Persistent headache and dizziness for 2 days
+4) Past medical history:
+   DM: No
+   BP: No
+5) Allergies: Penicillin (rash)
+6) Smoking: Current smoker, 16 cigarettes/day, 10 years
+   Alcohol / drug abuse: Occasional alcohol (arrack or beer), no drug abuse
+Family history: No significant family history
+Living area: Rambukkana, Kegalle
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-train-00255,joint_pain,"Date: 22 May 2026
+1) Name: Vasanthi Navaratnam
+2) Age: 65 years
+3) Presenting complaint: Joint pains and morning stiffness for 3 months
+4) Past medical history:
+   DM: Yes, 18 years, on metformin and gliclazide
+   BP: Yes, 1 year, on amlodipine and losartan
+5) Allergies: Nil
+6) Smoking: Never smoked
+   Alcohol / drug abuse: No alcohol, no drug abuse
+Family history: Father: DM
+Living area: Chavakachcheri
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-test-00009,low_back_pain,"Date: 2026-09-10
+1) Name: Piyal Bandara
+2) Age: 65 years
+3) Presenting complaint: Back pain radiating to the left leg for 7 weeks
+4) Past medical history:
+   DM: No
+   BP: Yes, 15 years, on enalapril 5 mg daily
+5) Allergies: NKDA
+6) Smoking: Non smoker
+   Alcohol / drug abuse: Occasional alcohol (arrack or beer), no drug abuse
+Family history: Father: HTN
+Living area: Kuliyapitiya, Kurunegala
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-test-00113,nephrotic_renal,"Date: 15 Jun 2026
+1) Name: Sepali Fernando
+2) Age: 14 years
+3) Presenting complaint: Reduced urine output with swelling of the feet for 4 weeks
+4) Past medical history:
+   DM: No
+   BP: No
+5) Allergies: No known allergies
+6) Smoking: N/A
+   Alcohol / drug abuse: N/A
+Family history: Mother: IHD; Father: HTN; Sister: HTN
+Living area: Tissamaharama
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: periorbital and pedal edema",,,
+hcpii-note-train-00116,pneumonia_elderly,"Date: 2026-04-02
+1) Name: Sampath Tharindu Dissanayake
+2) Age: 88 years
+3) Presenting complaint: Productive cough with chest pain on breathing for 8 days
+4) Past medical history:
+   DM: Yes, 5 years, on gliclazide 80 mg mane
+   BP: Yes, 16 years, on losartan 50 mg daily
+5) Allergies: NKDA
+6) Smoking: Current smoker, 4 cigarettes/day, 33 years
+   Alcohol / drug abuse: Alcohol most days (arrack), no drug abuse
+Family history: Uncle: IHD
+Living area: Vavuniya
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-train-00531,skin_rash_allergy,"Date: 12.10.2026
+1) Name: H.S. Wickramasinghe
+2) Age: 18 years
+3) Presenting complaint: Rash and itching on the arms and trunk for 9 days
+4) Past medical history:
+   DM: No
+   BP: No
+5) Allergies: NKDA
+6) Smoking: Never smoked
+   Alcohol / drug abuse: No alcohol, no drug abuse
+Family history: Sister: DM; Brother: HTN; Paternal grandfather: IHD
+Living area: Kotte
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-val-00027,urti,"Date: 01.02.2026
+1) Name: Ruwan Asanka Cooray
+2) Age: 5 years
+3) Presenting complaint: Sore throat and cough for 4 days
+4) Past medical history:
+   DM: No
+   BP: No
+5) Allergies: NKDA
+6) Smoking: N/A
+   Alcohol / drug abuse: N/A
+Family history: Mother: DM; Paternal grandfather: HTN
+Living area: Wattala
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-train-00485,uti,"Date: 2026-06-24
+1) Name: Ishara Seneviratne
+2) Age: 15 years
+3) Presenting complaint: Pain on passing urine with lower abdominal pain for 5 days
+4) Past medical history:
+   DM: No
+   BP: No
+5) Allergies: Nil
+6) Smoking: N/A
+   Alcohol / drug abuse: N/A
+Family history: Paternal grandfather: DM; Brother: DM
+Living area: Aluthgama
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-train-00595,wheeze_asthma_copd,"Date: 19/01/2026
+1) Name: Kasun de Mel
+2) Age: 51 years
+3) Presenting complaint: Difficulty in breathing after exposure to dust for 8 days
+4) Past medical history:
+   DM: Yes, 26 years, on metformin and gliclazide
+   BP: No
+5) Allergies: No known allergies
+6) Smoking: Ex-smoker, stopped 15 years ago
+   Alcohol / drug abuse: No alcohol, no drug abuse
+Family history: Mother: IHD
+Living area: Peradeniya, Kandy
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-val-00031,abdominal_pain_vomiting,"Date: 09.08.2026
+1) Name: Ranjith Lalith Senanayake
+2) Age: 42 years
+3) Presenting complaint: Colicky abdominal pain and loss of appetite for 2 days
+4) Past medical history:
+   DM: No
+   BP: No
+5) Allergies: Dust and pollen
+6) Smoking: Never smoked
+   Alcohol / drug abuse: Occasional alcohol (arrack or beer), no drug abuse
+Family history: Father: DM; Maternal grandmother: HTN
+Living area: Kaduwela
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-train-00725,anaemia,"Date: 2026-05-01
+1) Name: K.S. Welikala
+2) Age: 74 years
+3) Presenting complaint: Easy fatigue and dizziness for 4 weeks
+4) Past medical history:
+   DM: Yes, 13 years, on metformin 850 mg bd
+   BP: Yes, 12 years, on atenolol 50 mg daily
+5) Allergies: Aspirin
+6) Smoking: Never smoked
+   Alcohol / drug abuse: No alcohol, no drug abuse
+Family history: Mother: IHD
+Living area: Wattala
+O/E:
+   Pallor: +
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-train-00137,chest_pain_exertional,"Date: 2026-09-27
+1) Name: Prasanna Pathirana
+2) Age: 62 years
+3) Presenting complaint: Chest pain on exertion for 11 days
+4) Past medical history:
+   DM: No
+   BP: Yes, 25 years, on nifedipine retard 20 mg bd
+5) Allergies: Nil
+6) Smoking: Current smoker, 13 cigarettes/day, 16 years
+   Alcohol / drug abuse: No alcohol, no drug abuse
+Family history: Nil
+Living area: Hambantota
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: bilateral ankle edema +",,,
+hcpii-note-train-00518,chronic_cough,"Date: 25/02/2026
+1) Name: Kumara de Mel
+2) Age: 59 years
+3) Presenting complaint: Persistent cough with occasional blood-stained sputum for 8 weeks
+4) Past medical history:
+   DM: Yes, 18 years, on metformin and gliclazide
+   BP: No
+5) Allergies: Nil
+6) Smoking: Never smoked
+   Alcohol / drug abuse: Occasional alcohol (arrack or beer), no drug abuse
+Family history: Brother: HTN
+Living area: Nuwara Eliya
+O/E:
+   Pallor: +
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-train-00452,diabetes_symptoms,"Date: 24/09/2026
+1) Name: Sewwandi Edirisinghe
+2) Age: 42 years
+3) Presenting complaint: Polyuria, polydipsia and weight loss for 4 weeks
+4) Past medical history:
+   DM: No
+   BP: Yes, 16 years, on nifedipine retard 20 mg bd
+5) Allergies: Nil
+6) Smoking: Never smoked
+   Alcohol / drug abuse: No alcohol, no drug abuse
+Family history: Uncle: CKD; Maternal grandmother: HTN
+Living area: Peradeniya, Kandy
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-train-00476,diabetic_foot,"Date: 28 Mar 2026
+1) Name: Janaka Nuwan Seneviratne
+2) Age: 74 years
+3) Presenting complaint: Non-healing ulcer on the foot for 4 weeks
+4) Past medical history:
+   DM: Yes, 26 years, on metformin 500 mg bd
+   BP: Yes, 12 years, on atenolol 50 mg daily
+5) Allergies: Nil
+6) Smoking: Ex-smoker, stopped 4 years ago
+   Alcohol / drug abuse: Alcohol most days (arrack), no drug abuse
+Family history: No significant family history
+Living area: Elpitiya
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: edema around the ulcer",,,
+hcpii-note-test-00167,fever_myalgia,"Date: 2026-09-11
+1) Name: Sepali Kodikara
+2) Age: 53 years
+3) Presenting complaint: High fever with pain behind the eyes for 5 days
+4) Past medical history:
+   DM: No
+   BP: Yes, 23 years, on amlodipine and losartan
+5) Allergies: NKDA
+6) Smoking: Never smoked
+   Alcohol / drug abuse: No alcohol, no drug abuse
+Family history: Uncle: Asthma; Mother: DM; Uncle: HTN
+Living area: Balangoda, Ratnapura
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-train-00192,gastritis,"Date: 2026-07-19
+1) Name: Tharindu Peiris
+2) Age: 57 years
+3) Presenting complaint: Heartburn and bloating after meals for 3 weeks
+4) Past medical history:
+   DM: No
+   BP: No
+5) Allergies: Sulfa drugs
+6) Smoking: Never smoked
+   Alcohol / drug abuse: Alcohol most days (arrack), no drug abuse
+Family history: Nil
+Living area: Aluthgama
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-train-00215,gastroenteritis,"Date: 11.04.2026
+1) Name: Fawzan Anwar
+2) Age: 45 years
+3) Presenting complaint: Vomiting and diarrhoea after a meal outside for 1 day
+4) Past medical history:
+   DM: No
+   BP: No
+5) Allergies: NKDA
+6) Smoking: Current smoker, 11 cigarettes/day, 29 years
+   Alcohol / drug abuse: No alcohol, no drug abuse
+Family history: Father: DM
+Living area: Dehiwala, Colombo
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-train-00646,heart_failure,"Date: 30 Jun 2026
+1) Name: Chathura Ariyaratne
+2) Age: 84 years
+3) Presenting complaint: Shortness of breath on exertion and ankle swelling for 7 weeks
+4) Past medical history:
+   DM: Yes, 16 years, on metformin 500 mg bd
+   BP: No
+5) Allergies: No known allergies
+6) Smoking: Current smoker, 13 cigarettes/day, 48 years
+   Alcohol / drug abuse: No alcohol, no drug abuse
+Family history: Mother: DM
+Living area: Giritale
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: pitting edema up to the knees",,,
+hcpii-note-val-00215,hypertension_headache,"Date: 2026-06-17
+1) Name: Priyanka Abeysekara
+2) Age: 62 years
+3) Presenting complaint: Headache at the back of the head with giddiness for 17 days
+4) Past medical history:
+   DM: No
+   BP: Yes, 11 years, on atenolol 50 mg daily
+5) Allergies: Penicillin (rash)
+6) Smoking: Never smoked
+   Alcohol / drug abuse: No alcohol, no drug abuse
+Family history: Mother: Asthma; Father: Stroke; Mother: DM
+Living area: Kegalle
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-train-00423,joint_pain,"Date: 26/06/2026
+1) Name: Janaka Ranasinghe
+2) Age: 51 years
+3) Presenting complaint: Knee pain and difficulty walking for 10 months
+4) Past medical history:
+   DM: Yes, 9 years, on insulin (mixed) twice daily
+   BP: No
+5) Allergies: NKDA
+6) Smoking: Non smoker
+   Alcohol / drug abuse: No alcohol, no drug abuse
+Family history: Nil
+Living area: Puttalam
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-train-00182,low_back_pain,"Date: 05.04.2026
+1) Name: Shanthi Thirunavukarasu
+2) Age: 73 years
+3) Presenting complaint: Low back pain for 9 weeks
+4) Past medical history:
+   DM: Yes, 5 years, on metformin 850 mg bd
+   BP: Yes, 16 years, on enalapril 5 mg daily
+5) Allergies: No known allergies
+6) Smoking: Never smoked
+   Alcohol / drug abuse: No alcohol, no drug abuse
+Family history: Maternal grandmother: Stroke; Maternal grandmother: IHD; Maternal grandmother: DM
+Living area: Wattala
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-val-00163,nephrotic_renal,"Date: 28 Jan 2026
+1) Name: Anura Hettiarachchi
+2) Age: 53 years
+3) Presenting complaint: Puffy face in the morning and swollen legs for 5 weeks
+4) Past medical history:
+   DM: Yes, 12 years, on glibenclamide 5 mg daily
+   BP: Yes, 16 years, on amlodipine 5 mg daily
+5) Allergies: NSAIDs (diclofenac)
+6) Smoking: Current smoker, 20 cigarettes/day, 31 years
+   Alcohol / drug abuse: No alcohol, no drug abuse
+Family history: Mother: DM; Maternal grandmother: Stroke
+Living area: Ampara
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: generalised edema, worse in the legs",,,
+hcpii-note-val-00048,pneumonia_elderly,"Date: 23.06.2026
+1) Name: Ajith Kumarasinghe
+2) Age: 62 years
+3) Presenting complaint: Productive cough with chest pain on breathing for 5 days
+4) Past medical history:
+   DM: No
+   BP: Yes, 9 years, on amlodipine and losartan
+5) Allergies: No known allergies
+6) Smoking: Non smoker
+   Alcohol / drug abuse: No alcohol, no drug abuse
+Family history: Maternal grandmother: Stroke
+Living area: Wariyapola
+O/E:
+   Pallor: -
+   Cyanosed: + (central)
+   Edema: -",,,
+hcpii-note-train-00571,skin_rash_allergy,"Date: 5 May 2026
+1) Name: Kasun Gunawardena
+2) Age: 59 years
+3) Presenting complaint: Rash and itching on the arms and trunk for 2 days
+4) Past medical history:
+   DM: No
+   BP: No
+5) Allergies: Aspirin
+6) Smoking: Non smoker
+   Alcohol / drug abuse: No alcohol, no drug abuse
+Family history: Brother: IHD; Father: HTN; Paternal grandfather: IHD
+Living area: Medirigiriya
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-val-00017,urti,"Date: 08/04/2026
+1) Name: Anura Lalith Jayawardena
+2) Age: 10 years
+3) Presenting complaint: Sore throat and cough for 2 days
+4) Past medical history:
+   DM: No
+   BP: No
+5) Allergies: NKDA
+6) Smoking: N/A
+   Alcohol / drug abuse: N/A
+Family history: Mother: Stroke; Mother: Asthma; Uncle: DM
+Living area: Baddegama
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-val-00147,uti,"Date: 23 Apr 2026
+1) Name: Sumathi Krishnan
+2) Age: 72 years
+3) Presenting complaint: Passing urine frequently with fever for 7 days
+4) Past medical history:
+   DM: No
+   BP: Yes, 10 years, on amlodipine and losartan
+5) Allergies: Nil
+6) Smoking: Never smoked
+   Alcohol / drug abuse: No alcohol, no drug abuse
+Family history: Mother: DM
+Living area: Pilimathalawa
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-train-00077,wheeze_asthma_copd,"Date: 8 Jan 2026
+1) Name: Sudath Buddhika Munasinghe
+2) Age: 14 years
+3) Presenting complaint: Wheezing and breathlessness for 5 days
+4) Past medical history:
+   DM: No
+   BP: No
+5) Allergies: Nil
+6) Smoking: N/A
+   Alcohol / drug abuse: N/A
+Family history: No significant family history
+Living area: Moratuwa, Colombo
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-val-00153,abdominal_pain_vomiting,"Date: 02.09.2026
+1) Name: Ranjith Jayawardena
+2) Age: 45 years
+3) Presenting complaint: Right-sided abdominal pain and nausea for 5 days
+4) Past medical history:
+   DM: No
+   BP: No
+5) Allergies: No known allergies
+6) Smoking: Ex-smoker, stopped 13 years ago
+   Alcohol / drug abuse: No alcohol, no drug abuse
+Family history: Brother: CKD; Mother: Stroke
+Living area: Gampaha
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-train-00266,anaemia,"Date: 24.03.2026
+1) Name: Sumudu Gunathilaka
+2) Age: 41 years
+3) Presenting complaint: Easy fatigue and dizziness for 3 weeks
+4) Past medical history:
+   DM: No
+   BP: No
+5) Allergies: No known allergies
+6) Smoking: Never smoked
+   Alcohol / drug abuse: No alcohol, no drug abuse
+Family history: Father: IHD; Uncle: HTN; Paternal grandfather: Stroke
+Living area: Veyangoda
+O/E:
+   Pallor: +
+   Cyanosed: -
+   Edema: -",,,
+hcpii-note-train-00563,chest_pain_exertional,"Date: 18 Jan 2026
+1) Name: Vasanthi Balasingham
+2) Age: 49 years
+3) Presenting complaint: Chest discomfort on climbing stairs for 13 days
+4) Past medical history:
+   DM: No
+   BP: Yes, 19 years, on atenolol 50 mg daily
+5) Allergies: No known allergies
+6) Smoking: Never smoked
+   Alcohol / drug abuse: No alcohol, no drug abuse
+Family history: Father: DM
+Living area: Mulleriyawa
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: -",,,

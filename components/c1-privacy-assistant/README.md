@@ -18,3 +18,12 @@ pytest tests/unit tests/contract
 ## Data and models
 
 Only `manifest.json` files and small synthetic samples are committed. Weights and full datasets live on Drive or HF Hub (K29).
+
+## Dataset (synthetic corpus)
+
+```bash
+python training/scripts/build_corpus.py --sample --manifest   # builds data/processed, samples, manifest
+python training/scripts/validate_corpus.py                    # all checks
+```
+
+Dataset card: [data/README.md](data/README.md). Everything is synthetic, in the clinician's record layout.

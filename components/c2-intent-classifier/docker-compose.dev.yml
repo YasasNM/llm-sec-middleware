@@ -1,0 +1,37 @@
+services:
+  c2:
+    build:
+      context: ../..
+      dockerfile: components/c2-intent-classifier/Dockerfile
+    ports:
+      - "8002:8002"
+    environment:
+      MG_SERVICE_NAME: c2
+      MG_SERVICE_KEY: change-me-c2
+      MG_ACCEPTED_KEYS: gateway:change-me-gateway
+      MG_C4_URL: http://c4_stub:8004
+      MG_OUTBOX_PATH: /data/c2.db
+      C2_ALLOW_UNAUTHENTICATED: "true"
+      C2_DEV_UI: "true"
+      C2_CLASSIFIER_CHECKPOINT_PATH: /models/classifier
+    volumes:
+      - c2_db:/data
+      - c2_chroma:/data/chroma
+      - ../../../Local_dev/llm-c2-tester/c2_classifier_final:/models/classifier:ro
+    depends_on:
+      - c4_stub
+
+  c4_stub:
+    image: python:3.11-slim
+    working_dir: /stub
+    volumes:
+      - ./stubs:/stub
+    command: >
+      bash -c "pip install --no-cache-dir fastapi uvicorn pydantic &&
+      python -m uvicorn c4_stub:app --host 0.0.0.0 --port 8004"
+    ports:
+      - "8004:8004"
+
+volumes:
+  c2_db:
+  c2_chroma:

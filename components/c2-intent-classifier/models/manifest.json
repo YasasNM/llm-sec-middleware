@@ -1,0 +1,34 @@
+{
+  "model_version": "c2-electra-small-v0",
+  "architecture": "google/electra-small-discriminator",
+  "task": "binary sequence classification (0=benign, 1=attack)",
+  "library": {
+    "transformers": "4.57.6",
+    "torch": "2.8.0"
+  },
+  "files": [
+    {
+      "path": "classifier/config.json",
+      "sha256": "5e5f019f0aac531213a282de002cf3604fdfc951b2bf3774f4605b9e3e9c7766",
+      "in_git": true
+    },
+    {
+      "path": "classifier/tokenizer.json",
+      "sha256": "d241a60d5e8f04cc1b2b3e9ef7a4921b27bf526d9f6050ab90f9267a1f9e5c66",
+      "in_git": true
+    },
+    {
+      "path": "classifier/tokenizer_config.json",
+      "sha256": "e1c2a61a99bda00f6c55303a210b30e2f92dcf8b555e215812e2eb583e177ffd",
+      "in_git": true
+    },
+    {
+      "path": "classifier/model.safetensors",
+      "sha256": "d1efa5f12821ff775d549521e641221ae64899d3597373fccff77f8d889c36dd",
+      "in_git": false,
+      "bytes": 54221200,
+      "location": "Google Drive MyDrive/LLM-C2/c2_classifier_final/ or Local_dev/llm-c2-tester/c2_classifier_final/"
+    }
+  ],
+  "notes": "Weights are gitignored (K29). Run scripts/link_checkpoint.py to copy or symlink model.safetensors into models/classifier/."
+}

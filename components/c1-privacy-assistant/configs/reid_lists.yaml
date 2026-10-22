@@ -1,0 +1,162 @@
+# Re-identification lists and rules for C1 (M5). Curated by the C1 owner; extend after clinician review.
+# Rule-based and inspired by k-anonymity (Sweeney 2002). It is NOT a k-anonymity implementation.
+# Lists are finite: anything not listed here is not flagged (a stated limitation).
+
+# Points per rarity. Raw score = sum of the highest weight of each kind of detail.
+rarity_weights:
+  high: 3
+  medium: 2
+  low: 1
+
+# Level rules (BLUEPRINT 12.2). "count" = how many different kinds of detail were found.
+levels:
+  high:
+    min_count: 3
+    min_raw: 7
+  medium:
+    min_count: 2
+    min_raw: 4
+
+# Ages: under young_below or over old_above are extreme (high rarity). Other ages are low.
+age:
+  young_below: 5
+  old_above: 85
+  # Generalised wording, checked in order: the first band whose "below" is above the age wins
+  bands:
+    - below: 1
+      suggestion: infant
+    - below: 5
+      suggestion: young child
+    - below: 18
+      suggestion: child
+    - below: 65
+      suggestion: adult
+    - below: 86
+      suggestion: older adult
+    - below: 200
+      suggestion: elderly
+
+# Conditions. Matching ignores case except for all-capital entries (HIV, TB), so "aids" in
+# "hearing aids" is not a condition. An optional "'s" is allowed after the first word, and a
+# one-word entry may be followed by "disease" or "syndrome". Eponyms that are also ordinary words
+# or surnames (Down, Wilson, Graves, Turner) must be written with "disease" or "syndrome".
+conditions:
+  high:
+    suggestion: a chronic condition
+    names: [HIV, AIDS, leprosy, Huntington disease, motor neurone disease, cystic fibrosis,
+            haemophilia, hemophilia, sickle cell, Wilson disease, Guillain-Barre, myasthenia gravis,
+            multiple sclerosis, lupus, SLE, scleroderma, Marfan syndrome, Turner syndrome,
+            Kawasaki disease, Creutzfeldt-Jakob, Duchenne, syphilis]
+  medium:
+    suggestion: a chronic condition
+    names: [tuberculosis, TB, thalassaemia, thalassemia, Down syndrome, Parkinson,
+            Addison disease, Crohn, Cushing syndrome, Graves disease, Hodgkin, leukaemia, leukemia,
+            schizophrenia, bipolar disorder, hepatitis B, hepatitis C, rabies, dialysis]
+
+# Ward, bed, room or unit numbers (medium rarity)
+ward:
+  suggestion: the ward
+
+# Places. Big cities are low rarity, every other listed town is medium.
+# Towns are copied from data/lexicons/places.json (town: district).
+location:
+  big_cities: [Colombo, Kandy, Galle, Jaffna, Negombo, Kurunegala, Anuradhapura, Ratnapura,
+               Batticaloa, Trincomalee, Matara, Badulla, Gampaha, Kalutara]
+  towns:
+    Colombo: Colombo
+    Mulleriyawa: Colombo
+    Maharagama: Colombo
+    Nugegoda: Colombo
+    Dehiwala: Colombo
+    Moratuwa: Colombo
+    Kotte: Colombo
+    Kaduwela: Colombo
+    Homagama: Colombo
+    Piliyandala: Colombo
+    Avissawella: Colombo
+    Colombo 05: Colombo
+    Kollupitiya: Colombo
+    Wellampitiya: Colombo
+    Negombo: Gampaha
+    Ja-Ela: Gampaha
+    Wattala: Gampaha
+    Kiribathgoda: Gampaha
+    Kadawatha: Gampaha
+    Minuwangoda: Gampaha
+    Veyangoda: Gampaha
+    Nittambuwa: Gampaha
+    Gampaha: Gampaha
+    Panadura: Kalutara
+    Horana: Kalutara
+    Beruwala: Kalutara
+    Aluthgama: Kalutara
+    Kalutara: Kalutara
+    Peradeniya: Kandy
+    Katugastota: Kandy
+    Gampola: Kandy
+    Pilimathalawa: Kandy
+    Kandy: Kandy
+    Kundasale: Kandy
+    Dambulla: Matale
+    Galewela: Matale
+    Matale: Matale
+    Nuwara Eliya: Nuwara Eliya
+    Hatton: Nuwara Eliya
+    Hikkaduwa: Galle
+    Ambalangoda: Galle
+    Elpitiya: Galle
+    Baddegama: Galle
+    Galle: Galle
+    Weligama: Matara
+    Akuressa: Matara
+    Dikwella: Matara
+    Matara: Matara
+    Tangalle: Hambantota
+    Tissamaharama: Hambantota
+    Ambalantota: Hambantota
+    Hambantota: Hambantota
+    Kuliyapitiya: Kurunegala
+    Wariyapola: Kurunegala
+    Pannala: Kurunegala
+    Narammala: Kurunegala
+    Kurunegala: Kurunegala
+    Chilaw: Puttalam
+    Wennappuwa: Puttalam
+    Puttalam: Puttalam
+    Kekirawa: Anuradhapura
+    Medawachchiya: Anuradhapura
+    Anuradhapura: Anuradhapura
+    Hingurakgoda: Polonnaruwa
+    Medirigiriya: Polonnaruwa
+    Giritale: Polonnaruwa
+    Polonnaruwa: Polonnaruwa
+    Bandarawela: Badulla
+    Mahiyanganaya: Badulla
+    Hali-Ela: Badulla
+    Badulla: Badulla
+    Wellawaya: Monaragala
+    Bibile: Monaragala
+    Monaragala: Monaragala
+    Balangoda: Ratnapura
+    Embilipitiya: Ratnapura
+    Eheliyagoda: Ratnapura
+    Ratnapura: Ratnapura
+    Mawanella: Kegalle
+    Warakapola: Kegalle
+    Rambukkana: Kegalle
+    Kegalle: Kegalle
+    Chavakachcheri: Jaffna
+    Point Pedro: Jaffna
+    Nallur: Jaffna
+    Jaffna: Jaffna
+    Vavuniya: Vavuniya
+    Mannar: Mannar
+    Kilinochchi: Kilinochchi
+    Kattankudy: Batticaloa
+    Eravur: Batticaloa
+    Batticaloa: Batticaloa
+    Kalmunai: Ampara
+    Akkaraipattu: Ampara
+    Ampara: Ampara
+    Kantale: Trincomalee
+    Trincomalee: Trincomalee

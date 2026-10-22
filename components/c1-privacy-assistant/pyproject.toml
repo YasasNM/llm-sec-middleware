@@ -7,7 +7,7 @@ name = "c1-privacy-assistant"
 version = "0.1.0"
 description = "C1 Real-Time Healthcare Privacy Assistant (MediGuard AI)"
 requires-python = ">=3.11"
-dependencies = ["scikit-learn>=1.5"]
+dependencies = ["scikit-learn>=1.5", "pyyaml>=6"]
 
 [project.optional-dependencies]
 dev = ["pytest>=8", "ruff>=0.6", "jsonschema>=4"]

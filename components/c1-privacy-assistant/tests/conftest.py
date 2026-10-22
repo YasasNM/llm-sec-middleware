@@ -1,7 +1,9 @@
-"""Shared test setup: lets the tests import the c1 package from src/ without installing it."""
+"""Shared test setup: lets tests import the c1 package (src/) and helpers.py without installing."""
 
 import sys
 from pathlib import Path
 
-SRC_FOLDER = Path(__file__).resolve().parents[1] / "src"
+TESTS_FOLDER = Path(__file__).resolve().parent
+SRC_FOLDER = TESTS_FOLDER.parent / "src"
 sys.path.insert(0, str(SRC_FOLDER))
+sys.path.insert(0, str(TESTS_FOLDER))  # so tests can import helpers.py

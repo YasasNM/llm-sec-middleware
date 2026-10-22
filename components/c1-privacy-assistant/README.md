@@ -8,12 +8,14 @@ Owner: Linuka · Port: 8001
 
 ## Run and test on your own
 
-Fill this in when the service exists:
-
 ```bash
-docker compose -f docker-compose.dev.yml up
-pytest tests/unit tests/contract
+pip install -e ".[dev]"                      # once, inside .venv
+ruff check . && pytest                       # same checks CI runs
+MG_ACCEPTED_KEYS="gateway:dev-key" uvicorn c1.main:create_app --factory --port 8001
 ```
+
+Then open http://localhost:8001/docs, or call it with curl and the header `X-Service-Key: dev-key`.
+Routes so far: `GET /health`, `POST /v1/analyze`, `POST /v1/reid`. Settings: `.env.example`.
 
 ## Data and models
 

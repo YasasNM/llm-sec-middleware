@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "c1-privacy-assistant"
+version = "0.1.0"
+description = "C1 Real-Time Healthcare Privacy Assistant (MediGuard AI)"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.6", "jsonschema>=4"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+# Reuse the repository's ruff settings and only add what C1 needs
+[tool.ruff]
+extend = "../../pyproject.toml"
+
+[tool.ruff.lint.isort]
+known-first-party = ["c1"]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+testpaths = ["tests"]

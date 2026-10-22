@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>C2 Classifier Tester</title>
+<style>
+  :root { --bg:#0f1115; --card:#181b22; --text:#e8eaf0; --muted:#8b92a5; --accent:#6c8cff; --line:#2a2f3a; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font-family: system-ui, sans-serif; }
+  main { max-width: 760px; margin: 0 auto; padding: 32px 20px; }
+  h1 { font-size: 1.4rem; margin: 0 0 4px; }
+  .sub { color: var(--muted); font-size: .9rem; margin-bottom: 20px; }
+  .card { background: var(--card); border:1px solid var(--line); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+  textarea { width:100%; min-height:140px; background:#0f1115; color:var(--text); border:1px solid var(--line); border-radius:8px; padding:12px; font: inherit; resize: vertical; }
+  button { background: var(--accent); color:#fff; border:0; border-radius:8px; padding:10px 18px; font: inherit; cursor:pointer; }
+  button:disabled { opacity:.5; cursor: wait; }
+  button.ghost { background:transparent; border:1px solid var(--line); color: var(--muted); padding:6px 10px; font-size:.8rem; margin: 0 6px 6px 0; }
+  .row { display:flex; gap:10px; align-items:center; margin-top:12px; }
+  .label { font-size:1.6rem; font-weight:700; }
+  .conf { color: var(--muted); margin-left: 8px; }
+  .bar-wrap { margin-top:12px; }
+  .bar-row { display:flex; align-items:center; gap:10px; margin:6px 0; font-size:.9rem; }
+  .bar-name { width:140px; color: var(--muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .bar { flex:1; height:10px; background:#0f1115; border-radius:6px; overflow:hidden; }
+  .bar > div { height:100%; background: var(--accent); }
+  .err { color:#ff7b7b; }
+  table { width:100%; border-collapse: collapse; font-size:.85rem; }
+  td, th { text-align:left; padding:6px 4px; border-bottom:1px solid var(--line); }
+</style>
+</head>
+<body>
+<main>
+  <h1>C2 Classifier Tester</h1>
+  <div class="sub" id="info">Loading model info…</div>
+
+  <div class="card">
+    <textarea id="text" placeholder="Paste a prompt / message to classify…"></textarea>
+    <div class="row">
+      <button id="go">Classify</button>
+      <span id="status" class="sub"></span>
+    </div>
+  </div>
+
+  <div class="card" id="result" style="display:none">
+    <div><span class="label" id="rlabel"></span><span class="conf" id="rconf"></span></div>
+    <div class="bar-wrap" id="bars"></div>
+  </div>
+
+  <div class="card">
+    <div class="sub" style="margin-bottom:8px">History</div>
+    <table><thead><tr><th>Text</th><th>Label</th><th>Conf.</th></tr></thead><tbody id="hist"></tbody></table>
+  </div>
+</main>
+
+<script>
+const samples = [];
+const $ = id => document.getElementById(id);
+
+samples.forEach(s => {
+  const b = document.createElement("button");
+  b.className = "ghost"; b.textContent = s.slice(0, 48) + (s.length > 48 ? "…" : "");
+  b.onclick = () => { $("text").value = s; };
+  $("samples").appendChild(b);
+});
+
+fetch("/info").then(r => r.json()).then(i => {
+  $("info").textContent = `Device: ${i.device} • Classifier: ${i.classifier} • Model: ${i.model_version}`;
+}).catch(() => { $("info").innerHTML = '<span class="err">Backend not reachable</span>'; });
+
+async function classify() {
+  const text = $("text").value.trim();
+  if (!text) return;
+  $("go").disabled = true; $("status").textContent = "Running…";
+  try {
+    const res = await fetch("/v1/classify", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({
+        request_id: "req_dev_000001",
+        org_id: "org_001",
+        user_id: "user_dev",
+        session_id: "sess_dev",
+        prompt: text
+      })
+    });
+    if (!res.ok) throw new Error((await res.json()).detail || res.statusText);
+    const d = await res.json();
+    $("result").style.display = "block";
+    $("rlabel").textContent = d.c2_verdict;
+    $("rconf").textContent = `${(d.c2_score * 100).toFixed(1)}%  ·  ${d.method}${d.degraded ? "  ·  degraded" : ""}`;
+    const scores = { score: d.c2_score };
+    $("bars").innerHTML = Object.entries(scores).map(([k, v]) =>
+      `<div class="bar-row"><div class="bar-name">${k}</div><div class="bar"><div style="width:${v*100}%"></div></div><div>${(v*100).toFixed(1)}%</div></div>`
+    ).join("");
+    const tr = document.createElement("tr");
+    const short = text.length > 70 ? text.slice(0, 70) + "…" : text;
+    tr.innerHTML = `<td></td><td>${d.c2_verdict}</td><td>${(d.c2_score*100).toFixed(1)}%</td>`;
+    tr.firstChild.textContent = short;
+    $("hist").prepend(tr);
+    $("status").textContent = "";
+  } catch (e) {
+    $("status").innerHTML = `<span class="err">${e.message}</span>`;
+  } finally { $("go").disabled = false; }
+}
+$("go").onclick = classify;
+$("text").addEventListener("keydown", e => { if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) classify(); });
+</script>
+</body>
+</html>

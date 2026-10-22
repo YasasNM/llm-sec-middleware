@@ -1,0 +1,6 @@
+# Placeholder thresholds until ROC calibration at G5 (C2 BLUEPRINT §12.3, §29 Q2).
+near_exact_threshold: 0.97
+ensemble_threshold: 0.75
+similarity_weight: 0.5
+classifier_weight: 0.5
+top_k: 5

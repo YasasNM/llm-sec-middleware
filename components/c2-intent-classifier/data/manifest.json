@@ -1,0 +1,6 @@
+{
+  "corpus": "HC-AttackCorpus",
+  "location": "Google Drive MyDrive/LLM-C2/",
+  "in_git": ["samples/prompts.jsonl"],
+  "files": []
+}

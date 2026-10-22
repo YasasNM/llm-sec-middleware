@@ -1,0 +1,55 @@
+{
+  "model": "C1 name model: TF-IDF (char 2-4 + context words) + LogisticRegression",
+  "files": {
+    "c1_model.joblib": {
+      "sha256": "b43ad317dad145d9c8e0157923fdbd3d52c0d9a85a6e084b8f91d54c9c221b44"
+    }
+  },
+  "trained_on": {
+    "dataset": "HC-PII-Corpus (synthetic, Sri Lankan formats)",
+    "split": "train",
+    "data_files": {
+      "clinical_notes.jsonl": "c47900395107d38f3c6d86d39cbb1576ebed5915e6a3cee32189bce64a4dbf4f",
+      "sensitivity_dataset.jsonl": "8038d27e643bd8de7b4ec258c39ff5cd1ca9c2b21ea09f60f5d69dcb563e16c7"
+    }
+  },
+  "threshold": 0.65,
+  "metrics_val": {
+    "ml": {
+      "precision": 0.877,
+      "recall": 0.902,
+      "f1": 0.889
+    },
+    "ml_by_threshold": {
+      "0.5": {
+        "precision": 0.903,
+        "recall": 0.944,
+        "f1": 0.923
+      },
+      "0.65": {
+        "precision": 0.877,
+        "recall": 0.902,
+        "f1": 0.889
+      },
+      "0.8": {
+        "precision": 0.805,
+        "recall": 0.804,
+        "f1": 0.805
+      }
+    },
+    "heuristic": {
+      "precision": 1.0,
+      "recall": 0.508,
+      "f1": 0.674
+    },
+    "val_records": 761
+  },
+  "library_versions": {
+    "python": "3.14.0",
+    "scikit-learn": "1.9.1",
+    "scipy": "1.18.1",
+    "joblib": "1.6.0"
+  },
+  "created": "2026-10-23",
+  "command": "python training/scripts/train_names.py"
+}

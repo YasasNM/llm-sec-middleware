@@ -12,7 +12,8 @@ OTHER_KEY = "test-c2-key"
 GATEWAY_HEADERS = {"X-Service-Key": GATEWAY_KEY}
 
 
-# Settings for tests: known keys, the real configs, and a model path that may not exist
+# Settings for tests: known keys, the real configs, and a model path that may not exist.
+# The outbox and decision log go into the test's own temp folder, and retries do not wait.
 def settings_for_tests(model_folder: Path, demo: bool = False) -> Settings:
     return Settings(
         service_name="c1",
@@ -22,6 +23,10 @@ def settings_for_tests(model_folder: Path, demo: bool = False) -> Settings:
         name_threshold=0.65,
         config_folder=C1_ROOT / "configs",
         demo_enabled=demo,
+        c4_url="http://c4.test",
+        service_key="test-c1-key",
+        outbox_path=model_folder / "c1.db",
+        event_retry_delays=(0, 0, 0),
     )
 
 

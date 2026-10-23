@@ -35,6 +35,10 @@ PHONE_RE = re.compile(
     r"(?<![\d+])(?:\+94|0)[\s\-]?\d{2}[\s\-]?\d{3}[\s\-]?\d{4}(?!\d)"
 )  # digit boundaries: a 12-digit NIC is not a phone
 NIC_RE = re.compile(r"\b(?:\d{9}[VvXx]|\d{12})\b")
+# v1.1: every split must contain every one of these types in its prompts
+COVERAGE_TYPES = ["PATIENT_NAME", "NIC", "PHONE", "MRN", "EMAIL", "DOB", "ADDRESS", "AGE", "LOCATION", "DATE"]
+# v1.1: staff names stay visible in C1, so the word after these titles is never a patient name
+STAFF_TITLE_RE = re.compile(r"\b(?:Dr\.?|Prof\.|Consultant|Nurse|Sister|Nursing Officer) ")
 
 
 def load_jsonl(path: Path):
@@ -63,8 +67,32 @@ def check_nic(nic: str, dob: date, sex: str):
     return None
 
 
-def validate(notes, prompts):
+def check_coverage(prompts, min_spans: int):
+    """Every split must hold at least `min_spans` prompt spans of every PHI type."""
     errs = []
+    counts = {s: Counter() for s in ("train", "val", "test")}
+    for r in prompts:
+        counts[r["split"]].update(e["type"] for e in r["entities"])
+    for split, found in counts.items():
+        for t in COVERAGE_TYPES:
+            if found[t] < min_spans:
+                errs.append(f"coverage: {split} has {found[t]} {t} spans (need {min_spans})")
+    return errs
+
+
+def check_staff_unlabelled(prompts):
+    """A name right after Dr, Prof, Nurse, Sister or Consultant must never be labelled."""
+    errs = []
+    for r in prompts:
+        starts = {e["start"] for e in r["entities"] if e["type"] == "PATIENT_NAME"}
+        for m in STAFF_TITLE_RE.finditer(r["text"]):
+            if m.end() in starts:
+                errs.append(f"{r['id']}: staff name labelled as PATIENT_NAME")
+    return errs
+
+
+def validate(notes, prompts, min_spans: int = 5):
+    errs = check_coverage(prompts, min_spans) + check_staff_unlabelled(prompts)
     split_tokens = defaultdict(set)
     for r in notes + prompts:
         text, spans = r["text"], sorted(r["entities"], key=lambda s: s["start"])
@@ -177,6 +205,9 @@ def stats(notes, prompts):
     print("Prompt risk:", dict(Counter(r["risk"] for r in prompts)))
     ent = Counter(s["type"] for r in notes + prompts for s in r["entities"])
     print("Entity spans (notes + prompts):", dict(ent))
+    for split in ("train", "val", "test"):
+        c = Counter(s["type"] for r in prompts if r["split"] == split for s in r["entities"])
+        print(f"Prompt spans in {split}:", {t: c[t] for t in COVERAGE_TYPES})
     print("Notes by scenario:", dict(Counter(r["scenario"] for r in notes)))
     n = len(notes)
     dm = sum(1 for r in notes if r["fields"]["dm"] != "No")
@@ -194,10 +225,11 @@ def stats(notes, prompts):
 def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("--dir", type=Path, default=ROOT / "data" / "processed")
+    ap.add_argument("--min-spans", type=int, default=25, help="per type, per split (coverage)")
     a = ap.parse_args(argv)
     notes = load_jsonl(a.dir / "clinical_notes.jsonl")
     prompts = load_jsonl(a.dir / "sensitivity_dataset.jsonl")
-    errs = validate(notes, prompts)
+    errs = validate(notes, prompts, a.min_spans)
     stats(notes, prompts)
     if errs:
         print(f"\nFAILED: {len(errs)} problems")

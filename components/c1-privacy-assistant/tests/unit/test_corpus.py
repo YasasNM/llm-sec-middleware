@@ -122,3 +122,46 @@ def test_children_have_no_adult_fields(corpus):
                 and r["fields"]["dm"] == "No"
                 and r["fields"]["bp"] == "No"
             )
+
+
+# v1.1: every split must hold every PHI type, so each one can be evaluated everywhere
+def test_every_split_has_every_phi_type(corpus):
+    assert vc.check_coverage(corpus[1], min_spans=5) == []
+
+
+# v1.1: doctor and staff names appear but stay unlabelled (C1 keeps them visible)
+def test_staff_names_appear_and_are_never_labelled(corpus):
+    prompts = corpus[1]
+    assert any(vc.STAFF_TITLE_RE.search(r["text"]) for r in prompts)
+    assert vc.check_staff_unlabelled(prompts) == []
+
+
+# v1.1: the MRN span is the number only; the "MRN" label stays visible, as C1 masks it
+def test_mrn_span_is_the_number_only(corpus):
+    mrns = [s["value"] for r in corpus[1] for s in r["entities"] if s["type"] == "MRN"]
+    assert mrns and all(value.isdigit() for value in mrns)
+
+
+# v1.1: some prompts name two different patients
+def test_some_prompts_have_two_patients(corpus):
+    def two_names(r):
+        names = {s["value"] for s in r["entities"] if s["type"] == "PATIENT_NAME"}
+        return len(names) >= 2
+
+    assert any(two_names(r) for r in corpus[1])
+
+
+# v1.1: names also appear all lowercase or all capitals
+def test_names_appear_in_lower_and_upper_case(corpus):
+    names = [s["value"] for r in corpus[1] for s in r["entities"] if s["type"] == "PATIENT_NAME"]
+    assert any(n.islower() for n in names) and any(n.isupper() for n in names)
+
+
+# v1.1: the templates of each split cover every PHI kind and every hard-negative kind
+def test_template_split_covers_every_kind():
+    parts = bc.partition_templates(bc.TEMPLATES)
+    for kind in ("phi", "neg"):
+        every = {k for t in bc.TEMPLATES if t["kind"] == kind for k in bc.template_kinds(t)}
+        for split in bc.SPLITS:
+            kinds = {k for t in parts[split][kind] for k in bc.template_kinds(t)}
+            assert kinds == every, (kind, split)

@@ -15,10 +15,12 @@ Two tracks, both fully synthetic (no real patient data anywhere):
 Controls from the C1 blueprint (section 13):
   * split by name: every name string belongs to exactly one of train/val/test
   * split by template: test prompts use templates never seen in training
-  * hard negatives: eponymous diseases, P/D ids (IR12), lab values, doses, ward numbers
+  * coverage: templates are shared out so EVERY split contains every PHI type (v1.1)
+  * hard negatives: eponymous diseases, P/D ids (IR12), lab values, doses, ward numbers,
+    reference numbers, and doctor and staff names (visible on purpose, never labelled)
 
 Usage (from components/c1-privacy-assistant):
-    python training/scripts/build_corpus.py --notes 1200 --prompts 3600 --seed 42
+    python training/scripts/build_corpus.py --notes 2000 --prompts 8000 --seed 42
     python training/scripts/build_corpus.py --sample            # small committed samples
 Standard library only.
 """
@@ -35,12 +37,12 @@ import sys
 from datetime import date, timedelta
 from pathlib import Path
 
-GENERATOR_VERSION = "1.0.0"
+GENERATOR_VERSION = "1.1.0"
 ROOT = Path(__file__).resolve().parents[2]  # components/c1-privacy-assistant
 LEX = ROOT / "data" / "lexicons"
 SPLITS = ("train", "val", "test")
 SPLIT_W = (0.70, 0.15, 0.15)
-GROUP_W = {"sinhala": 0.75, "tamil": 0.15, "muslim": 0.10}
+GROUP_W = {"sinhala": 0.72, "tamil": 0.15, "muslim": 0.10, "burgher": 0.03}
 
 # entity classes: explicit identifiers are always masked (K2); quasi identifiers feed re-id
 EXPLICIT = {"PATIENT_NAME", "NIC", "PHONE", "MRN", "EMAIL", "DOB", "ADDRESS"}
@@ -141,17 +143,56 @@ def build_name_pools(names: dict):
     return pools, assigned
 
 
+# PHI kinds every split must contain (template token -> kind)
+COVER_KINDS = {
+    "{NAME}": "NAME", "{NAME_LOWER}": "NAME", "{NAME_UPPER}": "NAME", "{NAME2}": "NAME",
+    "{NIC}": "NIC", "{PHONE}": "PHONE", "{MRN}": "MRN", "{EMAIL}": "EMAIL", "{DOB}": "DOB",
+    "{ADDR}": "ADDR", "{AGE}": "AGE", "{AGE_ADJ}": "AGE", "{TOWN}": "TOWN", "{DATE}": "DATE",
+}
+NOTE_KINDS = {"NAME", "AGE", "TOWN", "DATE"}  # an embedded {NOTE} contains these
+# Hard-negative kinds every split must also contain: ids, staff names, reference numbers
+NEGATIVE_KINDS = {"{PID}": "ID", "{PID2}": "ID", "{DOCTOR}": "STAFF", "{DOCTOR2}": "STAFF",
+                  "{NURSE}": "STAFF", "{LABREF}": "REF"}  # fmt: skip
+LITERAL_ID = re.compile(r"\bD\d{3}\b")  # doctor ids written straight into a template
+
+
+def template_kinds(tpl: dict) -> set[str]:
+    """The PHI and hard-negative kinds a template produces, e.g. {"NAME", "PHONE", "STAFF"}."""
+    tokens = TOKEN_RE.findall(tpl["text"])
+    kinds = {COVER_KINDS[t] for t in tokens if t in COVER_KINDS}
+    kinds |= {NEGATIVE_KINDS[t] for t in tokens if t in NEGATIVE_KINDS}
+    if LITERAL_ID.search(tpl["text"]):
+        kinds.add("ID")
+    return kinds | (NOTE_KINDS if "{NOTE}" in tpl["text"] else set())
+
+
 def partition_templates(templates: list[dict]):
-    """Partition templates 70/15/15 per kind so the test split has unseen templates."""
+    """Share templates out to train/val/test with no template in two splits (v1.1).
+
+    Step 1: for each PHI kind, rarest first, make sure val, test and train each get at least
+    one template that produces it, so every split can be evaluated on every PHI type.
+    Step 2: hand the remaining templates to whichever split is furthest below its 70/15/15 share.
+    """
     r = random.Random(20261023)
     out = {s: {"phi": [], "neg": []} for s in SPLITS}
+    weight = dict(zip(SPLITS, SPLIT_W))
     for kind in ("phi", "neg"):
-        lst = sorted([t for t in templates if t["kind"] == kind], key=lambda t: t["id"])
-        r.shuffle(lst)
-        n = len(lst)
-        a, b = round(n * 0.70), round(n * 0.85)
-        for i, t in enumerate(lst):
-            out["train" if i < a else ("val" if i < b else "test")][kind].append(t)
+        left = sorted([t for t in templates if t["kind"] == kind], key=lambda t: t["id"])
+        r.shuffle(left)
+        # rarest kind first; ties broken by name so the split never depends on set order
+        cover = sorted({k for t in left for k in template_kinds(t)},
+                       key=lambda k: (sum(k in template_kinds(t) for t in left), k))
+        for need in cover:
+            for split in ("val", "test", "train"):
+                if any(need in template_kinds(t) for t in out[split][kind]):
+                    continue
+                pick = next((t for t in left if need in template_kinds(t)), None)
+                if pick:
+                    out[split][kind].append(pick)
+                    left.remove(pick)
+        for t in left:
+            split = min(SPLITS, key=lambda s: len(out[s][kind]) / weight[s])
+            out[split][kind].append(t)
     return out
 
 
@@ -192,7 +233,9 @@ def make_phone(rng) -> str:
         pre = rng.choice(["070", "071", "072", "074", "075", "076", "077", "078"])
         num = f"{rng.randint(1000000, 9999999)}"
         a, b = pre[1:], num
-        style = rng.choice(["plain", "plain", "space", "dash", "intl", "intl_space"])
+        style = rng.choice(["plain", "plain", "space", "dash", "intl", "intl_space", "spaced"])
+        if style == "spaced":  # "0 7 7 1 2 3 4 5 6 7", a common way to dodge filters
+            return " ".join(pre + b)
         if style == "plain":
             return pre + b
         if style == "space":
@@ -210,9 +253,12 @@ def make_phone(rng) -> str:
 
 
 def make_mrn(rng) -> str:
+    """The MRN number only. The label ("MRN: ") is added unlabelled when rendering (v1.1)."""
     digits = rng.randint(4, 8)
-    num = str(rng.randint(10 ** (digits - 1), 10**digits - 1)).zfill(digits)
-    return rng.choice(["MRN ", "MRN: "]) + num
+    return str(rng.randint(10 ** (digits - 1), 10**digits - 1)).zfill(digits)
+
+
+MRN_LABELS = ["MRN ", "MRN: ", "MRN: ", "MRN#", "MRN # "]
 
 
 def make_email(rng, name: str, dob: date) -> str:
@@ -225,7 +271,9 @@ def make_email(rng, name: str, dob: date) -> str:
     else:
         local = base or "patient"
     local += rng.choice(["", str(dob.year % 100), str(rng.randint(1, 99))])
-    return f"{local}@{rng.choice(['gmail.com', 'yahoo.com', 'hotmail.com', 'sltnet.lk'])}"
+    domain = rng.choice(["gmail.com", "yahoo.com", "hotmail.com", "sltnet.lk"])
+    at = rng.choice(["@"] * 11 + ["[at]"])  # sometimes disguised, as people do to dodge filters
+    return f"{local}{at}{domain}"
 
 
 def make_name(rng, split, pools, group, sex):
@@ -241,6 +289,20 @@ def make_name(rng, split, pools, group, sex):
         if mid != given:
             return f"{given} {mid} {sur}"
     return f"{given} {sur}"
+
+
+def make_staff(rng, split, pools, role: str) -> str:
+    """A doctor or nurse name. Staff names stay visible in C1, so they are NEVER labelled."""
+    group = rng.choices(list(GROUP_W), weights=list(GROUP_W.values()), k=1)[0]
+    pool = pools[split][group]
+    given = rng.choice(pool[rng.choice(["male", "female"])])
+    sur = rng.choice(pool["surname"])
+    if role == "doctor":
+        return rng.choice(
+            [f"Dr. {sur}", f"Dr {sur}", f"Dr. {given} {sur}", f"Dr {given[0]}. {sur}",
+             f"Prof. {sur}", f"Consultant {given} {sur}"]
+        )
+    return rng.choice([f"Nurse {given}", f"Sister {sur}", f"Nursing Officer {given} {sur}"])
 
 
 def make_patient(
@@ -279,7 +341,12 @@ def make_patient(
         ["", "", "/" + str(rng.randint(1, 9)), "A", "B"]
     )
     adult = age >= 16
+    group2 = rng.choices(list(GROUP_W), weights=list(GROUP_W.values()), k=1)[0]
     return {
+        "name2": make_name(rng, split, pools, group2, rng.choice("MF")),  # a second patient
+        "doctor": make_staff(rng, split, pools, "doctor"),
+        "doctor2": make_staff(rng, split, pools, "doctor"),
+        "nurse": make_staff(rng, split, pools, "nurse"),
         "scenario": sc,
         "sex": sex,
         "age": age,
@@ -400,7 +467,11 @@ def clinical_fields(rng, p, clin):
 
 
 def fmt_date(rng, d: date) -> str:
-    style = rng.choice(["iso", "dmy", "long", "dots"])
+    style = rng.choice(["iso", "dmy", "long", "dots", "full", "us"])
+    if style == "full":  # 14 March 1985
+        return f"{d.day} {d.strftime('%B %Y')}"
+    if style == "us":  # March 14, 1985
+        return f"{d.strftime('%B')} {d.day}, {d.year}"
     if style == "iso":
         return d.isoformat()
     if style == "dmy":
@@ -535,6 +606,58 @@ PHI_TEMPLATES = [
     ("P28", "Summarise {PID}: {NAME}, {AGE}, DOB {DOB}."),
     ("P29", "Update the record of {NAME} living at {ADDR}, phone {PHONE}."),
     ("P30", "Is {COMPLAINT} serious in a {AGE_ADJ} patient from {TOWN}?"),
+    # v1.1: names in more places, two patients, staff names next to patients, more formats
+    ("P31", "{NAME} was seen by {DOCTOR} today for {COMPLAINT}. Please draft the clinic summary."),
+    ("P32", "Please book a review with {DOCTOR} for {NAME}, {MRN}."),
+    ("P33", "{DOCTOR} asked me to check whether {NAME} (DOB {DOB}) needs a repeat HbA1c."),
+    ("P34", "Two patients for today: {NAME}, {AGE}, and {NAME2}. Who should be seen first?"),
+    ("P35", "Compare the BP trends of {NAME} and {NAME2} over the last month."),
+    ("P36", "{NAME}, date of birth {DOB}, NIC {NIC}. Is the NIC consistent with the date of birth?"),
+    ("P37", "Patient born on {DOB} in {TOWN}, {MRN}. Which vaccines are due?"),
+    ("P38", "D.O.B. {DOB}, {NAME}. Please calculate the exact age."),
+    ("P39", "pls check the reports of {NAME_LOWER} and call {PHONE}"),
+    ("P40", "URGENT: {NAME_UPPER} {NIC} transferred from {TOWN}."),
+    ("P41", "Send the discharge letter to {EMAIL} and copy {DOCTOR}."),
+    ("P42", "{NAME} can be reached at {PHONE} or {EMAIL}."),
+    ("P43", "Email from {EMAIL}: my father {NAME} still has {COMPLAINT}. What should we do?"),
+    ("P44", "Write a letter to {NAME} at {ADDR} about the missed appointment on {DATE}."),
+    ("P45", "Home visit needed: {ADDR}. Patient {NAME}, {AGE}, contact {PHONE}."),
+    ("P46", "Insurance form: Name {NAME}; NIC {NIC}; Address {ADDR}; Tel {PHONE}."),
+    ("P47", "Lab request for {MRN} ({NAME}): FBC and lipid profile. Ordered by {DOCTOR}."),
+    ("P48", "Which ward is {NAME} in? {MRN}."),
+    ("P49", "Does {NAME}'s sugar control look acceptable? {MRN}, {AGE}."),
+    ("P50", "As discussed with {NURSE}, {NAME} needs a dressing on alternate days."),
+    ("P51", "{NAME}\n{AGE}\n{TOWN}\n{COMPLAINT}"),
+    ("P52", "Name: {NAME} | {MRN} | DOB: {DOB}"),
+    ("P53", "Follow up for {NAME} on {DATE} with {DOCTOR}; remind via {PHONE}."),
+    ("P54", "Child {NAME}, {AGE}, mother's phone {PHONE}. Fever for two days, what dose of paracetamol?"),
+    ("P55", "Refer {NAME} ({NIC}) to the teaching hospital for a cardiology opinion."),
+    ("P56", "{NAME} ({AGE}, {TOWN}) has {COMPLAINT}; past history {PMH}. Plan?"),
+    ("P57", "Message for {NAME}: your results are ready, please call {PHONE}."),
+    ("P58", "Recheck {PID}: the patient {NAME} gave a new number, {PHONE}."),
+    ("P59", "Can you summarise the notes for {NAME}, born {DOB}?"),
+    ("P60", "Patient details: {NAME}, {AGE}, {NIC}, {ADDR}."),
+    ("P61", "{NAME2} is related to {NAME}. Both have {COMPLAINT}. Is it infectious?"),
+    ("P62", "Note from {DOCTOR}: {NAME} to continue {DRUG}, review in two weeks."),
+    ("P63", "Ward round: bed 4 {NAME}, bed 7 {NAME2}. Any interactions with {DRUG}?"),
+    ("P64", "email {EMAIL} the scan report of {NAME_LOWER}"),
+    ("P65", "Patient ID {PID}, name {NAME}, NIC {NIC}: summarise the last admission."),
+    ("P66", "Create a portal account for {NAME} with {EMAIL}."),
+    ("P67", "Reply to {EMAIL} confirming {NAME}'s appointment on {DATE}."),
+    ("P68", "Date of birth {DOB}. {NAME} from {ADDR} needs a medical certificate."),
+    # v1.1: names next to punctuation (brackets, quotes, slashes, line breaks, possessives)
+    ("P69", "Bed 3 (patient {NAME}) needs a review of {DRUG}."),
+    ("P70", "The family of \"{NAME}\" asked about visiting hours; reply to {PHONE}."),
+    ("P71", "{NAME}/{MRN}: please add the CT report to the file."),
+    ("P72", "Discharged today:\n- {NAME}\n- {NAME2}"),
+    ("P73", "Is {NAME}'s NIC {NIC} valid? The clerk thinks a digit is missing."),
+    ("P74", "Swab result for [{NAME}] came back negative; inform {DOCTOR}."),
+    ("P75", "Patient ID {PID}, {NAME} ({AGE}), {TOWN}: summarise the admission."),
+    ("P76", "Ask {NAME}'s daughter to email {EMAIL} with the old prescriptions."),
+    ("P77", "{NAME_LOWER} ({AGE}) from {TOWN}, wants a second opinion"),
+    ("P78", "Re: {NAME}; DOB {DOB}; {MRN}. Request for medical records."),
+    ("P79", "Cancel the appointment of {NAME}, tel. {PHONE}, booked with {DOCTOR}."),
+    ("P80", "{NAME_UPPER}, {AGE}, {ADDR}. FOR URGENT REVIEW."),
 ]
 NEG_TEMPLATES = [
     ("N01", "Summarise patient {PID}."),
@@ -562,6 +685,33 @@ NEG_TEMPLATES = [
     ("N23", "What is the Alzheimer disease staging used in clinic?"),
     ("N24", "Translate this instruction into Sinhala: take the tablet after meals."),
     ("N25", "Which tests are done at the Colombo and Kandy hospitals for dengue?"),
+    # v1.1: staff names (visible on purpose, never labelled), reference numbers, eponyms
+    ("N26", "Please ask {DOCTOR} to review the ward 5 roster."),
+    ("N27", "{DOCTOR} will take the diabetes clinic on Thursday."),
+    ("N28", "Who is on call tonight, {DOCTOR} or {DOCTOR2}?"),
+    ("N29", "{NURSE} reported that the BP machine in ward 2 is faulty."),
+    ("N30", "Lab reference {LABREF}: haemolysed sample, please repeat."),
+    ("N31", "Pharmacy order {LABREF}: 200 tablets of {DRUG}."),
+    ("N32", "What is the difference between Wilson disease and Menkes disease?"),
+    ("N33", "Is Bell palsy the same as a stroke?"),
+    ("N34", "Follow-up echocardiograms in Kawasaki disease: how often?"),
+    ("N35", "Explain the progression of Parkinson disease to a family."),
+    ("N36", "Clinic hours: Monday 8.00 to 12.00, Wednesday 14.00 to 17.00."),
+    ("N37", "Write a thank you note to {DOCTOR} for the lecture on sepsis."),
+    ("N38", "{DOCTOR} recommends a lower HbA1c target for frail patients. Is this evidence based?"),
+    ("N39", "Summarise the article by {DOCTOR} on dengue in children."),
+    ("N40", "Room 12 needs cleaning before the next patient."),
+    ("N41", "How do I document an allergy to {DRUG} correctly?"),
+    ("N42", "What dose of {DRUG} is used for a 30 kg child?"),
+    ("N43", "Is the reference range for TSH 0.4 to 4.0 mIU/L?"),
+    ("N44", "Compare {PID} with {PID2} for medication adherence."),
+    ("N45", "Hand over to {NURSE}: {PID} needs four hourly observations."),
+    # v1.1: ids and staff in places where a patient name would usually sit
+    ("N46", "Patient ID {PID} has been moved to ward 6."),
+    ("N47", "Doctor ID D017 is not on the rota; please check with {DOCTOR}."),
+    ("N48", "Patient {PID} (see {LABREF}) needs a repeat potassium."),
+    ("N49", "Reply to {NURSE}'s message about the oxygen supply."),
+    ("N50", "Bed 9 ({PID}) is ready for discharge after {DOCTOR}'s round."),
 ]
 TEMPLATES = [{"id": i, "kind": "phi", "text": t} for i, t in PHI_TEMPLATES] + [
     {"id": i, "kind": "neg", "text": t} for i, t in NEG_TEMPLATES
@@ -610,6 +760,16 @@ def render_prompt(rng, tpl, p, f, clin) -> tuple[Builder, str | None]:
             if title:
                 b.add(title)
             b.add(p["name"], "PATIENT_NAME")
+        elif part == "{NAME_LOWER}":  # typed quickly, all lowercase
+            b.add(p["name"].lower(), "PATIENT_NAME")
+        elif part == "{NAME_UPPER}":  # shouted, all capitals
+            b.add(p["name"].upper(), "PATIENT_NAME")
+        elif part == "{NAME2}":  # a second patient in the same prompt
+            b.add(p["name2"], "PATIENT_NAME")
+        elif part in ("{DOCTOR}", "{DOCTOR2}", "{NURSE}"):  # staff: visible, never labelled
+            b.add(p[part.strip("{}").lower()])
+        elif part == "{LABREF}":  # reference numbers are not identifiers
+            b.add(f"{rng.choice(['LAB', 'RX', 'ORD'])}-{rng.randint(10000, 99999)}")
         elif part == "{AGE}":
             b.add(age_phrase(rng, p), "AGE")
         elif part == "{AGE_ADJ}":
@@ -627,7 +787,8 @@ def render_prompt(rng, tpl, p, f, clin) -> tuple[Builder, str | None]:
             b.add(p["nic"], "NIC")
         elif part == "{PHONE}":
             b.add(p["phone"], "PHONE")
-        elif part == "{MRN}":
+        elif part == "{MRN}":  # label visible, number labelled (as C1 masks it)
+            b.add(rng.choice(MRN_LABELS))
             b.add(p["mrn"], "MRN")
         elif part == "{EMAIL}":
             b.add(p["email"], "EMAIL")
@@ -860,8 +1021,8 @@ def main(argv=None):
     ap = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
-    ap.add_argument("--notes", type=int, default=1200)
-    ap.add_argument("--prompts", type=int, default=3600)
+    ap.add_argument("--notes", type=int, default=2000)
+    ap.add_argument("--prompts", type=int, default=8000)
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--out", type=Path, default=ROOT / "data" / "processed")
     ap.add_argument(

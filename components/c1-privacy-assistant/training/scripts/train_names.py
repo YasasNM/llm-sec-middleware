@@ -13,6 +13,9 @@ our own val split. Nemotron-PII is now an external benchmark only (compare_name_
   titled-name heuristic, so the two can be compared.
 - Never reads the "test" split. That stays untouched until the frozen evaluation (Week 12, G4).
 - The model file is gitignored. Commit only models/manifest.json.
+
+The name lexicon fallback (c1.detection.names) is deliberately NOT used here: the lexicon holds
+val and test names, so it would leak the answers. This script measures the ML model only.
 """
 
 import argparse

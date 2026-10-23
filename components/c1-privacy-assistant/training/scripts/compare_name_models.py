@@ -11,6 +11,9 @@ Nemotron-PII is an external benchmark only; it is never used to train C1.
 Our own test split is never read; it stays frozen until Week 12 (G4).
 Nothing here is tuned: the thresholds 0.5, 0.65 and 0.8 are only reported side by side.
 The table is printed and saved to evaluation/results/ (gitignored).
+
+The name lexicon fallback (c1.detection.names) is deliberately NOT used here: the lexicon holds
+val and test names, so it would leak the answers. This script measures the ML model only.
 """
 
 import argparse

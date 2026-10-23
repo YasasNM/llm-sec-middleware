@@ -1,24 +1,24 @@
 {
   "dataset": "HC-PII-Corpus (synthetic, Sri Lankan formats)",
-  "generator": "training/scripts/build_corpus.py v1.0.0",
-  "command": "python training/scripts/build_corpus.py --notes 1200 --prompts 3600 --seed 42",
+  "generator": "training/scripts/build_corpus.py v1.1.0",
+  "command": "python training/scripts/build_corpus.py --notes 2000 --prompts 8000 --seed 42",
   "seed": 42,
   "python": "3.13.16",
   "files": {
     "clinical_notes.jsonl": {
-      "sha256": "c47900395107d38f3c6d86d39cbb1576ebed5915e6a3cee32189bce64a4dbf4f",
-      "bytes": 1633196,
-      "rows": 1200
+      "sha256": "bffde5e83a091ffd56341b35210961ae3020ad68dee15c0c1ed40ffc761f238f",
+      "bytes": 2728482,
+      "rows": 2000
     },
     "sensitivity_dataset.jsonl": {
-      "sha256": "8038d27e643bd8de7b4ec258c39ff5cd1ca9c2b21ea09f60f5d69dcb563e16c7",
-      "bytes": 2066066,
-      "rows": 3600
+      "sha256": "78cabc7ebf185cfcb507a2083c1b2a7cd18aad93f27855b5ffe3e581b4d326e5",
+      "bytes": 4315216,
+      "rows": 8000
     },
     "sensitivity_dataset.csv": {
-      "sha256": "57a036a7d2036aafad385299d7684c3800a8826509ffde04430acdad4ddff11e",
-      "bytes": 1209990,
-      "rows": 3600
+      "sha256": "023c337c4c3984c6adb48fb433e10ce71b85e40c540b6a9358bb167ae54c2098",
+      "bytes": 2438840,
+      "rows": 8000
     }
   },
   "location": "Regenerate with the command above (deterministic), or fetch from the team Drive.",

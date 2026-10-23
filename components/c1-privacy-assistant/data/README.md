@@ -84,6 +84,19 @@ python -m pytest tests/unit/test_corpus.py
 
 The output is deterministic: the same command gives the same SHA-256 as `manifest.json`.
 
+## External benchmark: Nemotron-PII (evaluation only)
+
+| Item | Detail |
+|---|---|
+| Source | Nemotron-PII by NVIDIA, Hugging Face `nvidia/Nemotron-PII`, licensed CC BY 4.0. Credit NVIDIA in the report |
+| Nature | Synthetic by its authors' own description (tagged synthetic), English, mostly US-centred names, addresses and phone formats |
+| Use in C1 | External benchmark only. Not used for training, threshold choice or any other tuning |
+| Sample | The published test split only. It uses held-out domains (none of its domain names appear in its train split), so the sample is taken from its "Health" and "Healthcare Providers" domains: 5,000 random rows, seed 42. This measures how the name model handles document types it never saw |
+| Labels | `first_name` and `last_name` spans, mapped to PATIENT_NAME. This is a simplification, because some of these people are not patients. Every other label counts as "not a patient name" |
+| Files | The parquet file and the prepared sample stay outside the repository and are never committed. Prepared with `training/scripts/prepare_nemotron.py`, scored with `training/scripts/compare_name_models.py` |
+
+A mixed model (our own corpus plus a Nemotron-PII train sample) was tried and scored F1 0.52 against 0.889 for the own-corpus model on our own validation split, so it was dropped.
+
 ## Limitations
 
 - English only. No Sinhala or Tamil script.

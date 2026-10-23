@@ -1,0 +1,20 @@
+# Run C3 on its own for development. The shared stack lives in infra/compose (not touched here).
+services:
+  c3:
+    build:
+      context: .
+      args:
+        EMBEDDER: ${C3_EMBEDDER_BUILD:-hashing}
+    ports:
+      - "8003:8003"
+    environment:
+      MG_SERVICE_NAME: c3
+      MG_ACCEPTED_KEYS: ${MG_ACCEPTED_KEYS:-gateway:dev-key-change-me}
+      C3_LOG_LEVEL: INFO
+    volumes:
+      - c3-data:/data
+      - ./var/policies_watch:/data/policies_watch   # drop .md files in <org_id>/ to test live updates
+    # Docker bind mounts on Windows and macOS may not deliver file events.
+    # If live updates do not fire, set indexer.use_polling_observer: true in configs/default.yaml.
+volumes:
+  c3-data:

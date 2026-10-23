@@ -1,0 +1,23 @@
+{
+  "data_version": "public-v1-seed7",
+  "seed": 7,
+  "retriever": {
+    "config.json": "69a2d4427d31477f4e570c96959839faa9294298a7d4d04c7c274c24b99f87fe",
+    "model.safetensors": "72d931a6c483ec589ca3c2abe686def794f77268bc3108c8fac406c062f7b792",
+    "tokenizer.json": "851ca67100d372ca3ae031a6abd168f53489eebfd7d89523f35c5c9b4d372c3c",
+    "tokenizer_config.json": "872b6936be955bc3aea75ed599264d865626d68feede7e58b01e378e6332bd74"
+  },
+  "generator": {
+    "best_epoch.json": "10a50e6e65d48e828a5ee2bb31f0bac5cf1e4785ef47d97118206b9096814d3c",
+    "calibration.json": "67c6bd9877b978eac9d44197ae289b6d92989809882ba30dfa5d4090d55a3d1c",
+    "config.json": "30ae4b16521f65664faaf8eea1d7fa069ffeceb001bea49384a515ab0240ace1",
+    "generation_config.json": "845d89edb39e694211342c7b71d4a98e756a19c2823b3d60f2374ed6a828e17a",
+    "model.safetensors": "ccd459eb27f9d6f8c95b610861a3f204c0d3e3276e2c072180d76e5bf757016e",
+    "tokenizer.json": "2432e8aa83414a69884a5cbd54a68f528c042d1f30780affbefcbb85091f022e",
+    "tokenizer_config.json": "3239e1d2715ab96d3eb84aa30a6cfa93e632155a28e4510165828315202e31ed"
+  },
+  "trained_clause_hashes_sha256": "1a112df720cac13f7fc54a15c1d66b5780dcab7590153b793ee7b6b4e1329601",
+  "trained_clause_count": 1063,
+  "stage": "complete",
+  "metrics": "results/evaluation.json"
+}

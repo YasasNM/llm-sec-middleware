@@ -1,0 +1,14 @@
+var/
+.venv/
+__pycache__/
+*.egg-info/
+data/policies/public/
+data/policies/train/
+data/policies/val/
+data/policies/test/
+data/manifest.json
+# model folders come from the Drive bundle (K29). Keep only the small records.
+models/retriever/
+models/generator/*
+!models/generator/calibration.json
+!models/generator/best_epoch.json

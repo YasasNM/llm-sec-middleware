@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MediGuard Policy Check Demo</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand"><span class="logo">M</span><div><b>MediGuard</b><small>Policy check demo</small></div></div>
+  <nav id="tabs" role="tablist">
+    <button role="tab" data-tab="chat" class="on">Chat</button>
+    <button role="tab" data-tab="policies">Policies</button>
+    <button role="tab" data-tab="behaviour">Behaviour</button>
+    <button role="tab" data-tab="about">About</button>
+  </nav>
+  <div class="who" role="group" aria-label="View as">
+    <span>View as</span>
+    <button id="roleClinician" class="seg on">Clinician</button>
+    <button id="roleAdmin" class="seg">Admin</button>
+  </div>
+</header>
+<div id="chips" class="chips"></div>
+
+<main>
+<!-- CHAT -->
+<section id="tab-chat" class="tab on">
+  <div class="grid2">
+    <div class="card">
+      <h2>Ask the assistant</h2>
+      <label>Example <select id="scenario"></select></label>
+      <label>Clinician asks
+        <textarea id="prompt" rows="3" placeholder="Type a question for the assistant"></textarea>
+      </label>
+      <label>Assistant answer <small class="muted" id="answerHint">You type what the model said, so the demo is repeatable.</small>
+        <textarea id="answer" rows="4" placeholder="The answer the assistant gives"></textarea>
+      </label>
+      <label class="check"><input type="checkbox" id="useLlm"> Ask the real language model instead <small class="muted" id="llmHint"></small></label>
+      <div class="row"><button id="send" class="primary">Check and send</button><span id="sendNote" class="muted"></span></div>
+      <div id="pipeline" class="pipeline" aria-live="polite"></div>
+    </div>
+    <div class="card">
+      <h2>Conversation <small class="muted" id="roleLabel">as a clinician</small></h2>
+      <div id="thread" class="thread"><p class="muted">No messages yet. Pick an example and press <b>Check and send</b>.</p></div>
+    </div>
+  </div>
+  <div id="adminPanel" class="card adminpanel" hidden>
+    <h2>Why this result <small class="muted">admin only, a clinician never sees this</small></h2>
+    <div id="adminBody"></div>
+  </div>
+</section>
+
+<!-- POLICIES -->
+<section id="tab-policies" class="tab">
+  <div class="card">
+    <div class="row between">
+      <h2>Policy documents</h2>
+      <div class="row">
+        <select id="demoPick">
+          <option value="riverside">Riverside policy (small, for live edits)</option>
+          <option value="pdpa">Sri Lanka Data Protection Act 2022 (real PDF)</option>
+          <option value="hipaa">HIPAA Privacy Rule (real, 687 clauses)</option>
+        </select>
+        <button id="loadDemo">Load</button>
+        <label class="filebtn">Upload PDF or Markdown<input type="file" id="uploadFile" accept=".pdf,.md,.markdown"></label>
+      </div>
+    </div>
+    <div id="polStatus" class="statusline"></div>
+    <div class="tablewrap"><table id="docTable"><thead><tr>
+      <th>Name</th><th>Code</th><th>Status</th><th>Clauses</th><th>Version</th><th>Updated</th><th></th>
+    </tr></thead><tbody></tbody></table></div>
+    <p id="polMsg" class="muted" role="status"></p>
+  </div>
+  <div class="grid2">
+    <div class="card" id="clauseCard" hidden>
+      <div class="row between"><h2 id="clauseTitle">Clauses</h2><input id="clauseFilter" type="search" placeholder="Filter clauses"></div>
+      <div id="clauseList" class="clauses"></div>
+    </div>
+    <div class="card" id="editCard" hidden>
+      <h2>Edit this policy live</h2>
+      <p class="muted">Change a rule, then save. Only changed clauses are re-embedded, and the next check uses the new version with no restart.</p>
+      <textarea id="mdEditor" rows="14" spellcheck="false"></textarea>
+      <div class="row"><button id="saveMd" class="primary">Save new version</button>
+        <button id="rescan" disabled>Re-check last answer</button><span id="enforce" class="muted"></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- BEHAVIOUR -->
+<section id="tab-behaviour" class="tab">
+  <div class="grid2">
+    <div class="card"><div class="row between"><h2>Users</h2><button id="resetEvents">Clear</button></div>
+      <p class="muted">A stand-in for the behaviour check. Repeated violations raise a user's level.</p>
+      <div class="tablewrap"><table id="userTable"><thead><tr><th>User</th><th>Checks</th><th>Violations</th><th>Leaks</th><th>Level</th></tr></thead><tbody></tbody></table></div></div>
+    <div class="card"><h2>Events sent by the policy check</h2>
+      <p class="muted">One per check. None is sent when the check itself fails, so errors never count against a user.</p>
+      <div class="tablewrap"><table id="eventTable"><thead><tr><th>Time</th><th>User</th><th>Result</th><th>Clause</th><th>Leaks</th></tr></thead><tbody></tbody></table></div></div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="tab-about" class="tab">
+  <div class="card prose">
+    <h2>What you are looking at</h2>
+    <p>Every answer from the AI assistant is checked against the hospital's own policy before a clinician sees it. A violation is withheld, and an administrator can see exactly which rule it broke and the words of that rule.</p>
+    <ol>
+      <li><b>Privacy check.</b> Identifiers in the question are replaced by placeholders. Here a simple stand-in does this.</li>
+      <li><b>Assistant answer.</b> In the demo you type the answer, or connect a real language model.</li>
+      <li><b>Policy check.</b> The part being demonstrated. It finds the relevant rules, a small trained model decides, and every citation is checked against the real rule text.</li>
+      <li><b>Behaviour check.</b> Receives one event per check. A stand-in shows the closed loop.</li>
+    </ol>
+    <p><b>Clinician view</b> shows a safe message and a reference number only. <b>Admin view</b> shows the rule, the quote and the model's confidence. Use the switch at the top right.</p>
+    <p class="muted">Honest limits: the model was trained on public legal texts and answers written by a language model, so treat verdicts as a demonstration, not as a clearance. The thumbs under each admin result save your judgement so real labelled data can be collected.</p>
+  </div>
+</section>
+</main>
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+<script src="/static/app.js"></script>
+</body>
+</html>

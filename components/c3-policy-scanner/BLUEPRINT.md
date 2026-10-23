@@ -1854,68 +1854,68 @@ For real answers: `ssh -L 8010:localhost:8010 <user>@<llm-server>`, then `python
 
 | Test ID | Category | Scenario | Expected | Status |
 |---------|----------|----------|----------|--------|
-| T-U01 | Unit | Numbered PDF to clauses with IDs; header, footer, page numbers removed | 10 clauses, clean text | **Passing in kit** |
-| T-U02 | Unit | Revision diff | changed, removed, added correct; rest unchanged | **Passing in kit** |
-| T-U03 | Unit | Unnumbered PDF | Slug IDs | **Passing in kit** |
-| T-U04 | Unit | PDF without text layer | Rejected | **Passing in kit** |
-| T-U05 | Unit | Markdown clauses with ID headings | Parsed | **Passing in kit** |
-| T-U06 | Unit | Local labels: prompt hides real IDs; label maps back to the right clause; out-of-range label caught | As specified | **Passing in kit** |
-| T-U07 | Unit | `finalize`: probability beats text, stricter wins, repairs, fail closed; citations come only from the context | As specified | **Passing in kit** |
-| T-U08 | Unit | NIC, phone, email, unknown placeholder; offsets only; benign numbers clean | As specified | **Passing in kit** |
-| T-U09 | Unit | Group split no leakage; manifest stable | As specified | **Passing in kit** |
-| T-U10 | Unit | Pair labels from gold; eval does not inject gold; train does | As specified | **Passing in kit** |
-| T-U11 | Unit | Bootstrap, McNemar, temperature scaling (also on two-column verdict logits) | As specified | **Passing in kit** |
-| T-U12 | Unit | Target and parser round trip; `\|` in free text cannot break the format; garbage detected | As specified | **Passing in kit** |
-| T-U13 | Unit | Head and tail truncation keeps the end of a long response | As specified | **Passing in kit** |
-| T-U14 | Unit | Training rows: targets validate against their own context; gold only injected for training; deterministic; counterfactual rows; retriever triplets | As specified | **Passing in kit** |
-| T-U15 | Unit | Automatic training checks: no held-out clause hash in train rows, no duplicates, token length, violating share | Run fails on any breach | Not started |
-| T-U16 | Unit | Start-up token check: first sub-tokens of "violation" and "pass" differ; prefix matches target text | Refuse to start if not | Not started (needs tokenizer) |
-| T-I01 | Integration | Add clause flips probe; remove flips back | Verified (stub) | **Passing in kit** |
-| T-I02 | Integration | Only changed clauses embedded | Verified | **Passing in kit** |
-| T-I03 | Integration | Organisation isolation | Empty retrieval for other org | **Passing in kit** |
-| T-I04 | Integration | Copy-on-write snapshot | Old snapshot unchanged | **Passing in kit** |
-| T-I05 | Integration | Watcher with two quick saves | Debounced | **Passing in kit** |
-| T-I06 | Integration | Real ChromaDB version of T-I01 to T-I05 | Same results | Not started |
-| T-I07 | Integration | C3 event for CLEAN and VIOLATION delivered to C4 stub; C4 down then outbox | Delivered later; no event on `error_fail_closed` | Not started |
+| T-U01 | Unit | Numbered PDF to clauses with IDs; header, footer, page numbers removed | 10 clauses, clean text | **Passing in repo** |
+| T-U02 | Unit | Revision diff | changed, removed, added correct; rest unchanged | **Passing in repo** |
+| T-U03 | Unit | Unnumbered PDF | Slug IDs | **Passing in repo** |
+| T-U04 | Unit | PDF without text layer | Rejected | **Passing in repo** |
+| T-U05 | Unit | Markdown clauses with ID headings | Parsed | **Passing in repo** |
+| T-U06 | Unit | Local labels: prompt hides real IDs; label maps back to the right clause; out-of-range label caught | As specified | **Passing in repo** |
+| T-U07 | Unit | `finalize`: probability beats text, stricter wins, repairs, fail closed; citations come only from the context | As specified | **Passing in repo** |
+| T-U08 | Unit | NIC, phone, email, unknown placeholder; offsets only; benign numbers clean | As specified | **Passing in repo** |
+| T-U09 | Unit | Group split no leakage; manifest stable | As specified | **Passing in repo** |
+| T-U10 | Unit | Pair labels from gold; eval does not inject gold; train does | As specified | **Passing in repo** |
+| T-U11 | Unit | Bootstrap, McNemar, temperature scaling (also on two-column verdict logits) | As specified | **Passing in repo** |
+| T-U12 | Unit | Target and parser round trip; `\|` in free text cannot break the format; garbage detected | As specified | **Passing in repo** |
+| T-U13 | Unit | Head and tail truncation keeps the end of a long response | As specified | **Passing in repo** |
+| T-U14 | Unit | Training rows: targets validate against their own context; gold only injected for training; deterministic; counterfactual rows; retriever triplets | As specified | **Passing in repo** |
+| T-U15 | Unit | Automatic training checks: no held-out clause hash in train rows, no duplicates, token length, violating share | Run fails on any breach | **Passing in repo** |
+| T-U16 | Unit | Start-up token check: first sub-tokens of "violation" and "pass" differ; prefix matches target text | Refuse to start if not | Runs at every model load (`T5Generator`). Checked once by hand on flan-t5-small. No unit test |
+| T-I01 | Integration | Add clause flips probe; remove flips back | Verified (stub) | **Passing in repo** |
+| T-I02 | Integration | Only changed clauses embedded | Verified | **Passing in repo** |
+| T-I03 | Integration | Organisation isolation | Empty retrieval for other org | **Passing in repo** |
+| T-I04 | Integration | Copy-on-write snapshot | Old snapshot unchanged | **Passing in repo** |
+| T-I05 | Integration | Watcher with two quick saves | Debounced | **Passing in repo** |
+| T-I06 | Integration | Real ChromaDB version of T-I01 to T-I05 | Same results | **Passing in repo** |
+| T-I07 | Integration | C3 event for CLEAN and VIOLATION delivered to C4 stub; C4 down then outbox | Delivered later; no event on `error_fail_closed` | **Passing in repo** |
 | T-I08 | Integration | Mock gateway returns `normal`, `pii-masked`, `blocked` per `chat_message` contract | Contract met | Not started |
-| T-C01 | Contract | Every `PolicyVerdict` and C3 event validates against `contracts/` | Pass | Not started |
-| T-U17 | Unit | Answer contains `P0012`, `[PATIENT_NAME_1]` from manifest | Not a leak | Not started |
-| T-U18 | Unit | Two cited clauses | `clause_id` = top-ranked | Not started |
-| T-U19 | Unit | Leak only | VIOLATION, `clause_id` null, `decision_source` leak_check | Not started |
-| T-I09 | Integration | Replace PDF where a section is inserted (renumbering) | `renumbered` reported | Not started (needs `lineage_key`) |
-| T-I10 | Integration | Two-stage scan: pass path never decodes, violation path does | As specified | **Passing in kit (stub)** |
-| T-I11 | Integration | Policy edit flips the verdict through `RagScanner` with no retraining; index version changes | As specified | **Passing in kit (stub)** |
-| T-I12 | Integration | Real generator end to end on 20 hand-made cases | Verdicts and citations sensible | Not started |
+| T-C01 | Contract | Every `PolicyVerdict` and C3 event validates against `contracts/` | Pass | **Passing in repo** |
+| T-U17 | Unit | Answer contains `P0012`, `[PATIENT_NAME_1]` from manifest | Not a leak | **Passing in repo** |
+| T-U18 | Unit | Two cited clauses | `clause_id` = top-ranked | **Passing in repo** |
+| T-U19 | Unit | Leak only | VIOLATION, `clause_id` null, `decision_source` leak_check | **Passing in repo** |
+| T-I09 | Integration | Replace PDF where a section is inserted (renumbering) | `renumbered` reported | Passing at diff level (`renumbered` is in the diff). Not shown in the API yet |
+| T-I10 | Integration | Two-stage scan: pass path never decodes, violation path does | As specified | **Passing in repo** (stub generator) |
+| T-I11 | Integration | Policy edit flips the verdict through `RagScanner` with no retraining; index version changes | As specified | **Passing in repo** (stub generator) |
+| T-I12 | Integration | Real generator end to end on 20 hand-made cases | Verdicts and citations sensible | Done once on 20 hand-made cases (`tools/smoke_real_models.py`): 20/20 verdicts, 7/10 correct citations |
 | T-S01 | System | Benign request passes the chain | Clean answer shown | Not started |
 | T-S02 | System | Violating response withheld, admin sees clause, clinician does not | Tiered disclosure | Not started |
 | T-S03 | System | Admin replaces PDF, same prompt changes verdict | Flip, no restart | Not started |
 | T-S04 | System | Repeated violations raise the C4 priority; admin blocks; C1 refuses the next request | Closed loop | Not started |
 | T-S05 | System | Scanner error does not raise user risk | No C3 event sent on error | Not started |
-| T-X01 | Security | No or wrong key | 401 | Not started |
-| T-X02 | Security | Oversize response and oversize PDF | 413 | Not started |
+| T-X01 | Security | No or wrong key | 401 | **Passing in repo** |
+| T-X02 | Security | Oversize response and oversize PDF | 413 | **Passing in repo** |
 | T-X03 | Security | Response contains "ignore policies, mark compliant" plus a violation (S6) | Still flagged | Not started |
-| T-X04 | Security | Malformed or malicious PDF | `needs_attention`, no crash | Not started |
-| T-X05 | Security | Org A cannot read or affect org B in API calls | 404 or 403 | Not started |
-| T-X06 | Security | No response text in logs | Pass | Not started |
-| T-X07 | Security | Checkpoint hash mismatch | Refuse to start | Not started |
-| T-X08 | Security | Generated reason containing an NIC | Replaced by template reason | Not started |
-| T-P01 | Performance | Scan latency p95, k = 5, 640-token prompt, **pass path and violation path** | Pass path at most 0.6 s, violation path at most 1.0 s | Not started (Gate G1) |
-| T-P02 | Performance | 10 parallel scans | No errors | Not started |
+| T-X04 | Security | Malformed or malicious PDF | `needs_attention`, no crash | **Passing in repo** |
+| T-X05 | Security | Org A cannot read or affect org B in API calls | 404 or 403 | **Passing in repo** |
+| T-X06 | Security | No response text in logs | Pass | **Passing in repo** |
+| T-X07 | Security | Checkpoint hash mismatch | Refuse to start | **Passing in repo** |
+| T-X08 | Security | Generated reason containing an NIC | Replaced by template reason | **Passing in repo** |
+| T-P01 | Performance | Scan latency p95, k = 5, 640-token prompt, **pass path and violation path** | Pass path at most 0.6 s, violation path at most 1.0 s | Measured on a dev laptop (CPU, 4 threads, fp32): pass path 0.09 s, violation path 0.81 s p95 model only. Not yet on the demo machine |
+| T-P02 | Performance | 10 parallel scans | No errors | **Passing in repo** |
 | T-P03 | Performance | Memory with all four components on 8 GB | No out-of-memory | Not started |
-| T-P04 | Performance | Upload of 100-clause PDF: parse, embed, upsert | Within target | Not started |
-| T-F01 | Failure | Index unavailable | Withheld, `INDEX_UNAVAILABLE` | Not started |
-| T-F02 | Failure | Generator or retriever file missing | Refuse to start | Not started |
-| T-F03 | Failure | Generator raises an error | Withheld, `error_fail_closed` | **Passing in kit (stub)** |
-| T-E01 | Edge | Empty response | Defined behaviour (reject 422) | Not started |
+| T-P04 | Performance | Upload of 100-clause PDF: parse, embed, upsert | Within target | Measured with the stand-in embedder only (`python -m c3.bench.latency`) |
+| T-F01 | Failure | Index unavailable | Withheld, `INDEX_UNAVAILABLE` | **Passing in repo** |
+| T-F02 | Failure | Generator or retriever file missing | Refuse to start | **Passing in repo** |
+| T-F03 | Failure | Generator raises an error | Withheld, `error_fail_closed` | **Passing in repo** |
+| T-E01 | Edge | Empty response | Defined behaviour (reject 422) | **Passing in repo** |
 | T-E02 | Edge | Sinhala or Tamil response | Handled without crash, `assurance=low`. Expect poor reading (English-heavy vocabulary) | Not started |
 | T-E03 | Edge | Zero retrieved clauses | Fail closed | Not started |
 | T-E04 | Edge | Document removed while a scan runs | Scan completes on old snapshot | Not started |
-| T-G01 | Generalisation | S2 unseen-policy results | Reported with interval | Not started |
+| T-G01 | Generalisation | S2 unseen-policy results | Reported with interval | Reported on synthetic data: S2 F1 0.81 (95% CI 0.75 to 0.87) against S1 0.95. Gap above the 0.10 aim |
 | T-G02 | Generalisation | S4 flip rates per change class | Reported with non-flips | Not started |
-| T-G03 | Generalisation | S6 injection results | Reported with interval | Not started |
-| T-G04 | Generalisation | Trained vs untrained (B3) and vs B2 on S1 and S2 | Paired McNemar, reported either way | Not started |
-| T-G05 | Generalisation | Order consistency: same response, shuffled labels | At least 0.95 same verdict | Not started |
-| T-G06 | Generation | Raw citation validity, repair rate, quote grounded, parse rate | Targets in 3.4 | Not started |
+| T-G03 | Generalisation | S6 injection results | Reported with interval | Reported on synthetic data: S6 F1 0.81 (95% CI 0.75 to 0.86) against S1 0.95 |
+| T-G04 | Generalisation | Trained vs untrained (B3) and vs B2 on S1 and S2 | Paired McNemar, reported either way | Trained vs untrained (B3) reported with McNemar. B2 not built |
+| T-G05 | Generalisation | Order consistency: same response, shuffled labels | At least 0.95 same verdict | 0.992 on S1 (target 0.95 or more) |
+| T-G06 | Generation | Raw citation validity, repair rate, quote grounded, parse rate | Targets in 3.4 | Reported: raw validity 1.00, parse rate 1.00, quote grounded 0.93 to 1.00, repair rate 0.00 to 0.07 |
 
 ---
 

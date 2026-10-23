@@ -1,0 +1,31 @@
+# Demo: trained models, in-memory index. Used by c3.demo.launcher
+# C3 defaults. Every number here is a placeholder until validation (blueprint 19.2).
+retrieval:
+  top_k: 5
+  max_k: 8
+  embedder: transformers       # hashing | transformers
+  embedder_dir: models/retriever
+  embedder_fallback_name: sentence-transformers/all-MiniLM-L6-v2
+  s_min: 0.20
+indexer:
+  debounce_ms: 400
+  use_polling_observer: false
+  max_pdf_mb: 20
+  max_md_kb: 1024
+  max_pages: 200
+  max_clauses: 500
+  min_text_chars: 80           # below this the PDF is treated as having no text layer
+  vector_backend: memory       # memory | chroma
+api:
+  max_response_chars: 50000
+  timeout_s: 5
+  fail_mode: closed
+generation:
+  enabled: true                # missing or changed model files stop start-up (T-F02, T-X07)
+  model_dir: generator
+  device: cpu
+  two_stage: true
+  with_quote: true
+  max_new_tokens: 48           # the trained target text is about 45 tokens
+  unseen_high_tau: 0.30
+  verify_hashes: true

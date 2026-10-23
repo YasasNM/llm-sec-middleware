@@ -3,265 +3,435 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>C1 Privacy Check</title>
+<title>C1 Privacy Assistant</title>
 <style>
-  html, body { height: 100%; margin: 0; }
-  body { font-family: system-ui, sans-serif; background: #fff; color: #222; line-height: 1.45;
-         display: flex; flex-direction: column; }
-  header { padding: 10px 16px; border-bottom: 1px solid #ddd; }
-  header h1 { font-size: 1.2em; margin: 0; }
-  header p { font-size: 0.85em; color: #666; margin: 2px 0 0; }
-  #messages { flex: 1; overflow-y: auto; padding: 16px; }
-  .row { display: flex; margin-bottom: 12px; }
-  .row.mine { justify-content: flex-end; }
-  .bubble { max-width: 75%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px;
-            white-space: pre-wrap; word-wrap: break-word; }
-  .mine .bubble { background: #eef3fb; }
-  .theirs .bubble { background: #f6f6f6; }
-  .who { font-size: 0.8em; color: #666; margin-bottom: 4px; }
-  .masked { background: #fff; border: 1px solid #ddd; padding: 6px; margin: 4px 0 8px; }
-  .label { font-weight: bold; }
-  .error { color: #b00020; }
-  .low { color: #1b7f1b; font-weight: bold; }
-  .medium { color: #b36b00; font-weight: bold; }
-  .high { color: #b00020; font-weight: bold; }
-  details { margin-top: 6px; }
-  summary { cursor: pointer; color: #333; }
-  table { border-collapse: collapse; margin: 4px 0; white-space: normal; }
-  th, td { border: 1px solid #ccc; padding: 2px 8px; text-align: left; font-size: 0.9em; }
-  ul { margin: 4px 0; padding-left: 20px; white-space: normal; }
-  footer { border-top: 1px solid #ddd; padding: 8px 16px; }
-  #text { width: 100%; height: 70px; font: inherit; padding: 6px; box-sizing: border-box; }
-  .controls { display: flex; justify-content: space-between; margin-top: 6px; }
-  select, button { font: inherit; padding: 4px 8px; }
-  #sample { max-width: 260px; }
-  .t-PATIENT_NAME { background: #ffd6d6; }
-  .t-NIC { background: #ffe0b3; }
-  .t-PHONE { background: #fff3a8; }
-  .t-MRN { background: #d4f0d4; }
-  .t-EMAIL { background: #d6e8ff; }
-  .t-DOB { background: #e6dcff; }
+  :root {
+    --bg: #f6f7f6; --card: #ffffff; --line: #dfe3df; --text: #1d211f; --muted: #646b67;
+    --accent: #2f7d55; --soft: #e8f3ed; --red: #c62828; --orange: #d97706;
+    --clean: #2f7d55; --low: #4d7c0f; --medium: #b45309; --high: #c62828; --on-chip: #ffffff;
+    --banner: #fff4e5; --banner-line: #f3c78a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #151716; --card: #1e2120; --line: #343937; --text: #e7eae8; --muted: #9ba29e;
+      --accent: #5cc08b; --soft: #1d3127; --red: #f0625f; --orange: #f5a524;
+      --clean: #5cc08b; --low: #a3d16a; --medium: #f5a524; --high: #f0625f; --on-chip: #151716;
+      --banner: #2b2214; --banner-line: #6b4f22;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: system-ui, sans-serif; font-size: 15px; line-height: 1.5;
+         background: var(--bg); color: var(--text); }
+  main { max-width: 760px; margin: 0 auto; padding: 24px 16px 40px; }
+  h1 { font-size: 1.4em; margin: 0 0 4px; }
+  .legend { color: var(--muted); font-size: 0.88em; margin: 0 0 14px; }
+  .legend span { margin-right: 14px; white-space: nowrap; }
+  .line { display: inline-block; width: 22px; height: 0; border-bottom: 3px solid; vertical-align: middle;
+          margin-right: 6px; border-radius: 2px; }
+  .line.direct { border-color: var(--red); } .line.clue { border-color: var(--orange); }
+  .editor { position: relative; background: var(--card); border: 1px solid var(--line); border-radius: 12px; }
+  .editor:focus-within { border-color: var(--accent); }
+  /* The text box and the mirror behind it must lay text out IDENTICALLY, or underlines drift */
+  #box, .mirror { box-sizing: border-box; width: 100%; height: 180px; margin: 0; padding: 12px 14px;
+                  border: 0; font-family: inherit; font-size: 15px; font-weight: 400; font-style: normal;
+                  line-height: 24px; letter-spacing: normal; word-spacing: normal; tab-size: 4;
+                  text-transform: none; text-indent: 0; text-align: left; font-kerning: normal;
+                  white-space: pre-wrap; overflow-wrap: break-word; word-break: normal;
+                  overflow-y: auto; scrollbar-gutter: stable; }
+  #box { position: relative; z-index: 1; display: block; background: transparent; color: var(--text);
+         resize: vertical; outline: none; }
+  .mirror { position: absolute; inset: 0; z-index: 0; height: 100%; overflow-y: hidden; color: transparent; }
+  .u { text-decoration-line: underline; text-decoration-style: wavy; text-decoration-thickness: 1.5px;
+       text-underline-offset: 4px; border-radius: 3px; outline: none; }
+  .u.direct { text-decoration-color: var(--red); } .u.clue { text-decoration-color: var(--orange); }
+  .u:focus-visible { box-shadow: 0 0 0 2px var(--accent); }
+  .bar { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 12px;
+         flex-wrap: wrap; }
+  .risk { font-weight: 600; }
+  .chip { display: inline-block; border-radius: 999px; padding: 1px 9px; font-size: 0.78em; font-weight: 700;
+          letter-spacing: 0.03em; color: var(--on-chip); margin-left: 6px; vertical-align: 1px; }
+  .Clean { background: var(--clean); } .Low { background: var(--low); }
+  .Medium { background: var(--medium); } .High { background: var(--high); }
+  button { font: inherit; font-size: 0.92em; border-radius: 8px; padding: 6px 12px; cursor: pointer;
+           border: 1px solid var(--line); background: var(--card); color: var(--text); }
+  button.primary { background: var(--accent); border-color: var(--accent); color: var(--on-chip); font-weight: 600; }
+  button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  #banner { display: none; margin-top: 12px; padding: 10px 12px; border-radius: 10px;
+            background: var(--banner); border: 1px solid var(--banner-line); }
+  #banner button { margin-top: 8px; }
+  .sent { margin-top: 18px; background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+          padding: 12px 14px; }
+  .sent h2 { font-size: 0.8em; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin: 0 0 6px; }
+  .entry { padding: 8px 0; border-top: 1px solid var(--line); }
+  .entry:first-child { border-top: 0; padding-top: 0; }
+  .entry .text { white-space: pre-wrap; overflow-wrap: break-word; }
+  .entry .note { color: var(--muted); font-size: 0.88em; margin-top: 4px; }
+  #error { display: none; color: var(--red); margin-top: 8px; }
+  .buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+  .token { color: var(--accent); background: var(--soft); border-radius: 4px; padding: 0 3px; font-weight: 600; }
+  .muted { color: var(--muted); }
+  #pop { position: fixed; display: none; z-index: 10; width: max-content; max-width: min(300px, calc(100vw - 16px));
+         background: var(--card); color: var(--text); border: 1px solid var(--line); border-radius: 10px;
+         padding: 10px 12px; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18); font-size: 0.9em; }
+  #pop .word { font-weight: 700; overflow-wrap: anywhere; }
+  #pop .chip { margin: 4px 0 2px; }
+  #pop button { margin-top: 8px; }
 </style>
 </head>
 <body>
-<header>
-  <h1>C1 Privacy Check</h1>
-  <p>Demo page. Sample notes are generated test data. Nothing typed here is stored or logged.</p>
-</header>
+<main>
+  <h1>C1 Privacy Assistant</h1>
+  <p class="legend">
+    <span><i class="line direct"></i>Direct identifier, hover to mask</span>
+    <span><i class="line clue"></i>Re-identification clue, hover to generalise</span>
+  </p>
 
-<div id="messages"></div>
-
-<footer>
-  <textarea id="text" placeholder="Type a message. Enter sends, Shift+Enter starts a new line."></textarea>
-  <div class="controls">
-    <select id="sample"><option value="">Samples</option></select>
-    <button id="send">Send</button>
+  <div class="editor">
+    <textarea id="box" aria-label="Clinical prompt. Enter sends (direct identifiers are always masked), Shift+Enter adds a new line. Tab moves to underlined words."
+      placeholder="Type a clinical prompt..."></textarea>
+    <div class="mirror" id="mirror"></div>
   </div>
-</footer>
+
+  <div class="bar">
+    <div class="risk" aria-live="polite">Privacy risk: <span id="score">0</span><span class="chip Clean" id="badge">Clean</span></div>
+    <div class="buttons">
+      <button id="send" title="Direct identifiers are always masked; re-identification clues go as typed">Send</button>
+      <button class="primary" id="sendAll" title="Mask direct identifiers and use every suggestion, then send">Mask all and send</button>
+    </div>
+  </div>
+
+  <div id="banner" role="status">
+    <div id="bannerText"></div>
+    <button id="applyAll">Apply all suggestions</button>
+  </div>
+
+  <div id="error" role="alert"></div>
+
+  <section class="sent" aria-label="Sent">
+    <h2>Sent</h2>
+    <div id="sentList" aria-live="polite"><p class="muted" id="sentEmpty">Nothing sent yet.</p></div>
+  </section>
+</main>
+<div id="pop" role="dialog" aria-label="Detected item"></div>
 
 <script>
-let samples = [];
+// Plain words for each finding type, used in the popover
+const CLUE_NAMES = { AGE: "age", CONDITION: "condition", LOCATION: "town", WARD: "ward" };
+const box = document.getElementById("box");
+const mirror = document.getElementById("mirror");
+const pop = document.getElementById("pop");
+let current = null;   // newest check of the composer: { text, result, items }
+let typingTimer = null;
+let hideTimer = null;
 
-// Fetch the sample notes from C1 and put them in the Samples dropdown
-async function loadSamples() {
-  const reply = await fetch("/demo/samples");
-  samples = await reply.json();
-  const select = document.getElementById("sample");
-  samples.forEach(function (sample, index) {
-    const option = document.createElement("option");
-    option.value = index;
-    option.textContent = sample.label;
-    select.appendChild(option);
-  });
+// Make an element that holds plain text only (typed text is never treated as HTML)
+function el(tag, className, text) {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (text !== undefined) node.textContent = text;
+  return node;
 }
 
-// Copy the chosen sample into the text box, then reset the dropdown
-function useSample() {
-  const select = document.getElementById("sample");
-  if (select.value !== "") {
-    document.getElementById("text").value = samples[select.value].text;
-    document.getElementById("text").focus();
-  }
-  select.value = "";
-}
-
-// Enter sends the message; Shift+Enter adds a new line
-function handleKey(event) {
-  if (event.key === "Enter" && !event.shiftKey) {
-    event.preventDefault();
-    send();
-  }
-}
-
-// Make an element with an optional class and plain text (never HTML)
-function makeElement(tag, className, text) {
-  const element = document.createElement(tag);
-  if (className) element.className = className;
-  if (text !== undefined) element.textContent = text;
-  return element;
-}
-
-// Add a message row to the chat, on the right for mine and on the left for C1
-function addBubble(isMine, title) {
-  const row = makeElement("div", "row " + (isMine ? "mine" : "theirs"));
-  const bubble = makeElement("div", "bubble");
-  bubble.appendChild(makeElement("div", "who", title));
-  row.appendChild(bubble);
-  document.getElementById("messages").appendChild(row);
-  return bubble;
-}
-
-// Keep the newest message in view
-function scrollToBottom() {
-  const area = document.getElementById("messages");
-  area.scrollTop = area.scrollHeight;
-}
-
-// Send the text box contents to C1 and show both sides of the exchange
-async function send() {
-  const box = document.getElementById("text");
-  const text = box.value;
-  if (text.trim() === "") return;
-  box.value = "";
-  const textHolder = makeElement("div", "", text);
-  addBubble(true, "You").appendChild(textHolder);
-  scrollToBottom();
-  setBusy(true);
-  try {
-    const result = await postAnalyze(text);
-    showHighlights(textHolder, text, result.entities);
-    addReply(text, result);
-  } catch (problem) {
-    addBubble(false, "C1").appendChild(makeElement("div", "error", problem.message));
-  }
-  setBusy(false);
-  scrollToBottom();
-}
-
-// Turn the Send button off while C1 is working, and back on after
-function setBusy(busy) {
-  const button = document.getElementById("send");
-  button.disabled = busy;
-  button.textContent = busy ? "Checking" : "Send";
-}
-
-// Call the demo only route; it needs no service key and returns no raw values
-async function postAnalyze(text) {
-  const reply = await fetch("/demo/analyze", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ text: text }),
-  });
-  if (!reply.ok) {
-    throw new Error("C1 could not check this message (error " + reply.status + ").");
-  }
+// Ask C1's demo-only route to check the text (the browser never holds a service key)
+async function analyze(text) {
+  const reply = await fetch("/demo/analyze", { method: "POST",
+    headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text: text }) });
+  if (!reply.ok) throw new Error("check failed " + reply.status);
   return reply.json();
 }
 
-// Redraw my own message with a coloured background behind each detected identifier
-function showHighlights(holder, text, entities) {
-  holder.textContent = "";
+// Highest number already used in the composer for each token type, e.g. {PATIENT_NAME: 1}
+function usedNumbers(text) {
+  const used = {};
+  for (const match of text.matchAll(/\[([A-Z_]+)_(\d+)\]/g)) {
+    used[match[1]] = Math.max(used[match[1]] || 0, Number(match[2]));
+  }
+  return used;
+}
+
+// The token C1 gave each direct identifier, shifted past tokens already in the composer
+function tokensFor(text, result) {
+  const used = usedNumbers(text);
+  let shift = 0;
+  return result.entities.map(function (e) {
+    const found = result.masked_text.slice(e.start + shift).match(/^\[([A-Z_]+)_(\d+)\]/);
+    if (!found) return "[" + e.type + "]";  // should not happen; still never leave the value
+    shift += found[0].length - (e.end - e.start);
+    return "[" + found[1] + "_" + (Number(found[2]) + (used[found[1]] || 0)) + "]";
+  });
+}
+
+// True when a clue already reads like its suggestion, so generalising would change nothing
+function alreadyGeneral(text, clue) {
+  return text.slice(clue.start, clue.end).toLowerCase() === clue.suggestion.toLowerCase();
+}
+
+// One list of everything to underline: red direct identifiers and orange clues, in text order
+function collectItems(text, result) {
+  const tokens = tokensFor(text, result);
+  const direct = result.entities.map(function (e, i) { return Object.assign({ kind: "direct", token: tokens[i] }, e); });
+  const clues = result.reid.items.map(function (q) { return Object.assign({ kind: "clue" }, q); })
+    .filter(function (q) { return !alreadyGeneral(text, q); })
+    .filter(function (q) { return !direct.some(function (d) { return q.start < d.end && d.start < q.end; }); });
+  return direct.concat(clues).sort(function (a, b) { return a.start - b.start; });
+}
+
+// While typing: clear old underlines and check again 300 ms after typing stops
+function onTyping() {
+  hidePopover();
+  drawUnderlines(box.value, []);
+  clearTimeout(typingTimer);
+  typingTimer = setTimeout(checkNow, 300);
+}
+
+// Check the CURRENT composer text and redraw underlines, risk and banner
+async function checkNow() {
+  const text = box.value;
+  if (text.trim() === "") { current = null; drawUnderlines(text, []); return showRisk(null); }
+  let result;
+  try { result = await analyze(text); } catch (problem) { return; }
+  if (text !== box.value) return;  // the user typed again meanwhile; a newer check is coming
+  current = { text: text, result: result, items: collectItems(text, result) };
+  drawUnderlines(text, current.items);
+  showRisk(current);
+}
+
+// Copy the text into the mirror behind the text box, wrapping each item in a wavy underline
+function drawUnderlines(text, items) {
+  mirror.textContent = "";
   let position = 0;
-  entities.forEach(function (entity) {
-    holder.appendChild(document.createTextNode(text.slice(position, entity.start)));
-    const mark = makeElement("span", "t-" + entity.type, text.slice(entity.start, entity.end));
-    mark.title = entity.type;
-    holder.appendChild(mark);
-    position = entity.end;
+  items.forEach(function (item, index) {
+    mirror.appendChild(document.createTextNode(text.slice(position, item.start)));
+    const mark = el("span", "u " + item.kind, text.slice(item.start, item.end));
+    mark.dataset.index = index;
+    mark.tabIndex = 0;
+    mark.setAttribute("role", "button");
+    mark.setAttribute("aria-label", item.kind === "direct" ? "Direct identifier " + item.type : "Re-identification clue " + item.type);
+    mirror.appendChild(mark);
+    position = item.end;
   });
-  holder.appendChild(document.createTextNode(text.slice(position)));
+  mirror.appendChild(document.createTextNode(text.slice(position) + " "));
+  mirror.scrollTop = box.scrollTop;
 }
 
-// Build C1's reply bubble from the analysis result
-function addReply(text, result) {
-  const bubble = addBubble(false, "C1");
-  bubble.appendChild(makeElement("div", "label", "What leaves C1:"));
-  bubble.appendChild(makeElement("div", "masked", result.masked_text));
-  addLine(bubble, "Masked: ", result.masking_percentage + " % of the characters", "");
-  addLine(bubble, "Risk level: ", result.risk.overall_level, result.risk.overall_level.toLowerCase());
-  if (result.reid.level !== "Low") {
-    bubble.appendChild(buildSuggestions(text, result.reid));
+// The risk number, its badge and the re-identification banner, for the composer text only
+function showRisk(state) {
+  const result = state ? state.result : null;
+  const score = result ? Math.max(result.risk.explicit.score, result.reid.score) : 0;
+  const level = score === 0 && (!state || state.items.length === 0) ? "Clean" : result.risk.overall_level;
+  document.getElementById("score").textContent = score;
+  const badge = document.getElementById("badge");
+  badge.textContent = level;
+  badge.className = "chip " + level;
+  showBanner(state);
+}
+
+// Show the orange banner only when re-identification risk is Medium or High and clues remain
+function showBanner(state) {
+  const banner = document.getElementById("banner");
+  const clues = state ? state.items.filter(function (i) { return i.kind === "clue"; }).length : 0;
+  const level = state ? state.result.reid.level : "Low";
+  banner.style.display = level !== "Low" && clues > 0 ? "block" : "none";
+  document.getElementById("bannerText").textContent = "Re-identification risk: " + level + ". " + clues
+    + (clues === 1 ? " clue" : " clues") + " underlined in orange. Hover each to generalise, or apply all.";
+}
+
+// Fill the popover for a red word: what it is, confidence, HIGH RISK, and "Mask this word"
+function fillDirect(item) {
+  pop.appendChild(el("div", "muted", "Detected as " + item.type));
+  const confidence = el("div", "", "Confidence " + Math.round(item.confidence * 100) + "%");
+  confidence.title = "How sure C1 is that this is a name. Regex matches are 100%, lexicon matches 60%, "
+    + "the model needs 65% or more.";
+  pop.appendChild(confidence);
+  pop.appendChild(el("span", "chip High", "HIGH RISK"));
+  pop.appendChild(el("br"));
+  pop.appendChild(actionButton("Mask this word", function () { maskItem(item); }));
+}
+
+// Fill the popover for an orange word: kind of clue, rarity, the suggestion, and "Generalise this"
+function fillClue(item) {
+  pop.appendChild(el("div", "muted", "Re-identification clue: " + (CLUE_NAMES[item.type] || item.type.toLowerCase())));
+  const level = item.rarity.charAt(0).toUpperCase() + item.rarity.slice(1);
+  pop.appendChild(el("span", "chip " + level, item.rarity.toUpperCase() + " RARITY"));
+  pop.appendChild(el("div", "", "Generalise to: " + item.suggestion));
+  pop.appendChild(actionButton("Generalise this", function () { replaceSpans([[item.start, item.end, item.suggestion]]); }));
+}
+
+// A popover button: run the action, close the popover, put the cursor back in the composer
+function actionButton(label, action) {
+  const button = el("button", "", label);
+  button.addEventListener("click", function () { hidePopover(); action(); box.focus(); });
+  return button;
+}
+
+// Open the popover beside one underlined word: below it, or above when there is no room
+function openPopover(mark) {
+  clearTimeout(hideTimer);
+  if (pop.style.display === "block" && pop.dataset.index === mark.dataset.index) return;
+  const item = current.items[mark.dataset.index];
+  pop.textContent = "";
+  pop.appendChild(el("div", "word", current.text.slice(item.start, item.end)));
+  if (item.kind === "direct") fillDirect(item); else fillClue(item);
+  pop.dataset.index = mark.dataset.index;
+  pop.style.display = "block";
+  placePopover(mark.getClientRects()[0] || mark.getBoundingClientRect());
+}
+
+// Put the popover just under the word, flipping it above when it would leave the screen
+function placePopover(rect) {
+  const left = Math.max(8, Math.min(rect.left, window.innerWidth - pop.offsetWidth - 8));
+  let top = rect.bottom + 6;
+  if (top + pop.offsetHeight > window.innerHeight - 8) top = rect.top - pop.offsetHeight - 6;
+  pop.style.left = left + "px";
+  pop.style.top = Math.max(8, top) + "px";
+}
+
+// Close the popover a moment later, so the mouse has time to move into it
+function hidePopoverSoon() {
+  clearTimeout(hideTimer);
+  hideTimer = setTimeout(hidePopover, 300);
+}
+
+// Close the popover now
+function hidePopover() {
+  clearTimeout(hideTimer);
+  pop.style.display = "none";
+  pop.dataset.index = "";
+}
+
+// The underlined word under the mouse, found by comparing the mouse with each underline's box
+function markAt(x, y) {
+  for (const mark of mirror.querySelectorAll("[data-index]")) {
+    for (const r of mark.getClientRects()) {
+      if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom + 4) return mark;
+    }
   }
-  bubble.appendChild(buildTokens(result.tokens));
-  bubble.appendChild(buildDetails(result));
+  return null;
 }
 
-// Add one "label: value" line, with an optional colour class on the value
-function addLine(parent, label, value, valueClass) {
-  const line = makeElement("div");
-  line.appendChild(makeElement("span", "label", label));
-  line.appendChild(makeElement("span", valueClass, value));
-  parent.appendChild(line);
+// Mouse moving over the composer: open the popover for the word under it, if any
+function onMouseMove(event) {
+  const mark = current ? markAt(event.clientX, event.clientY) : null;
+  if (mark) openPopover(mark); else if (pop.style.display === "block") hidePopoverSoon();
 }
 
-// The re-identification advice: what to change, and the safer wording of the whole message
-function buildSuggestions(text, reid) {
-  const part = makeElement("div");
-  part.appendChild(makeElement("p", "", reid.explanation));
-  const list = makeElement("ul");
-  reid.items.forEach(function (item) {
-    const original = text.slice(item.start, item.end);
-    list.appendChild(makeElement("li", "", "Change \"" + original + "\" to \"" + item.suggestion + "\""));
+// Mask one red word, and every other copy of the same value, with its token
+function maskItem(item) {
+  const same = current.items.filter(function (i) { return i.kind === "direct" && i.token === item.token; });
+  replaceSpans(same.map(function (i) { return [i.start, i.end, i.token]; }));
+}
+
+// Replace spans of the composer text (working from the end so positions stay right), then re-check
+function replaceSpans(spans) {
+  if (!current || current.text !== box.value) return;
+  box.value = replaceInText(box.value, spans);
+  hidePopover();
+  clearTimeout(typingTimer);
+  checkNow();
+}
+
+// Generalise every orange clue at once
+function applyAll() {
+  if (!current) return;
+  const clues = current.items.filter(function (i) { return i.kind === "clue"; });
+  replaceSpans(clues.map(function (i) { return [i.start, i.end, i.suggestion]; }));
+}
+
+// Plural helper: "1 clue" or "2 clues"
+function count(n, one, many) {
+  return n + " " + (n === 1 ? one : many);
+}
+
+// The note under a sent message: says exactly what C1 did, never more
+function sentNotes(maskedCount, generalisedCount) {
+  const notes = [maskedCount === 0 ? "No direct identifiers found"
+    : count(maskedCount, "direct identifier", "direct identifiers") + " masked automatically"];
+  if (generalisedCount > 0) notes.push(count(generalisedCount, "re-identification clue", "re-identification clues") + " generalised");
+  return notes;
+}
+
+// Add one sent message (newest first) with its tokens highlighted and its notes underneath
+function showSent(text, notes) {
+  const empty = document.getElementById("sentEmpty");
+  if (empty) empty.remove();
+  const entry = el("div", "entry");
+  const holder = el("div", "text");
+  text.split(/(\[[A-Z_]+_\d+\])/).forEach(function (part) {
+    holder.appendChild(/^\[[A-Z_]+_\d+\]$/.test(part) ? el("span", "token", part) : document.createTextNode(part));
   });
-  part.appendChild(list);
-  part.appendChild(makeElement("div", "label", "Safer wording:"));
-  part.appendChild(makeElement("div", "masked", reid.masked_with_suggestions));
-  return part;
+  entry.appendChild(holder);
+  notes.forEach(function (note) { entry.appendChild(el("div", "note", note)); });
+  const list = document.getElementById("sentList");
+  list.insertBefore(entry, list.firstChild);
 }
 
-// Make a plain table from header names and rows of values
-function makeTable(headers, rows) {
-  const table = makeElement("table");
-  const headRow = makeElement("tr");
-  headers.forEach(function (name) { headRow.appendChild(makeElement("th", "", name)); });
-  table.appendChild(headRow);
-  rows.forEach(function (values) {
-    const row = makeElement("tr");
-    values.forEach(function (value) { row.appendChild(makeElement("td", "", String(value))); });
-    table.appendChild(row);
-  });
-  return table;
+// Show or clear the error line under the buttons
+function showError(message) {
+  const line = document.getElementById("error");
+  line.textContent = message;
+  line.style.display = message ? "block" : "none";
 }
 
-// Make a collapsed section that opens when its title is clicked
-function makeSection(title, content) {
-  const section = makeElement("details");
-  section.appendChild(makeElement("summary", "", title));
-  section.appendChild(content);
-  return section;
-}
-
-// Collapsed list of placeholder tokens, with types only and never the original values
-function buildTokens(tokens) {
-  if (tokens.length === 0) {
-    return makeSection("Placeholder tokens (none)", makeElement("p", "", "Nothing was masked."));
+// Send the composer text. Direct identifiers are ALWAYS masked first (K2).
+// With useSuggestions, every re-identification clue is generalised too; otherwise clues go as typed.
+async function send(useSuggestions) {
+  const text = box.value;
+  if (text.trim() === "") return;
+  let result;
+  try { result = await analyze(text); } catch (problem) {
+    return showError("C1 could not check the text, so nothing was sent.");
   }
-  const rows = tokens.map(function (token) { return [token.token, token.type, token.count]; });
-  return makeSection("Placeholder tokens", makeTable(["Token", "Type", "Times used"], rows));
+  showError("");
+  const items = collectItems(text, result);
+  const direct = items.filter(function (i) { return i.kind === "direct"; });
+  const clues = useSuggestions ? items.filter(function (i) { return i.kind === "clue"; }) : [];
+  const spans = direct.map(function (i) { return [i.start, i.end, i.token]; })
+    .concat(clues.map(function (i) { return [i.start, i.end, i.suggestion]; }));
+  showSent(replaceInText(text, spans), sentNotes(direct.length, clues.length));
+  box.value = "";
+  onTyping();
 }
 
-// Collapsed technical details: each explicit identifier and the separate risk levels
-function buildDetails(result) {
-  const content = makeElement("div");
-  const rows = result.entities.map(function (entity) {
-    return [entity.type, entity.source, entity.confidence];
+// Replace [start, end, newText] spans in a text, working from the end so positions stay right
+function replaceInText(text, spans) {
+  spans.slice().sort(function (a, b) { return b[0] - a[0]; }).forEach(function (s) {
+    text = text.slice(0, s[0]) + s[2] + text.slice(s[1]);
   });
-  if (rows.length > 0) {
-    content.appendChild(makeTable(["Identifier type", "Found by", "Confidence"], rows));
-  }
-  content.appendChild(makeTable(["Check", "Score", "Level"], [
-    ["Explicit identifiers", result.risk.explicit.score, result.risk.explicit.level],
-    ["Re-identification", result.reid.score, result.reid.level],
-  ]));
-  content.appendChild(makeElement("p", "", "Name detector: " + result.name_detector
-    + ". Time in C1: " + result.latency_ms + " ms."));
-  return makeSection("Details", content);
+  return text;
 }
 
-document.getElementById("sample").addEventListener("change", useSample);
-document.getElementById("send").addEventListener("click", send);
-document.getElementById("text").addEventListener("keydown", handleKey);
-loadSamples();
+// Enter sends, Shift+Enter adds a new line, Escape closes the popover
+function onKey(event) {
+  if (event.key === "Enter" && !event.shiftKey) { event.preventDefault(); send(false); }
+  if (event.key === "Escape") hidePopover();
+}
+
+// Keyboard on an underlined word: Enter moves into the popover buttons, Escape goes back
+function onMarkKey(event) {
+  if (!event.target.dataset.index) return;
+  if (event.key === "Enter" || event.key === " ") { event.preventDefault(); pop.querySelector("button").focus(); }
+  if (event.key === "Escape") { hidePopover(); box.focus(); }
+}
+
+box.addEventListener("input", onTyping);
+box.addEventListener("keydown", onKey);
+box.addEventListener("scroll", function () { mirror.scrollTop = box.scrollTop; });
+box.addEventListener("mousemove", onMouseMove);
+box.addEventListener("mouseleave", function () { if (pop.style.display === "block") hidePopoverSoon(); });
+mirror.addEventListener("focusin", function (event) {
+  box.scrollTop = mirror.scrollTop;  // focusing a word may scroll the mirror; keep the text box in step
+  if (event.target.dataset.index) openPopover(event.target);
+});
+mirror.addEventListener("focusout", function (event) { if (!pop.contains(event.relatedTarget)) hidePopoverSoon(); });
+mirror.addEventListener("keydown", onMarkKey);
+pop.addEventListener("mouseenter", function () { clearTimeout(hideTimer); });
+pop.addEventListener("mouseleave", hidePopoverSoon);
+pop.addEventListener("focusout", function (event) { if (!pop.contains(event.relatedTarget)) hidePopoverSoon(); });
+pop.addEventListener("keydown", function (event) { if (event.key === "Escape") { hidePopover(); box.focus(); } });
+document.getElementById("send").addEventListener("click", function () { send(false); });
+document.getElementById("sendAll").addEventListener("click", function () { send(true); });
+document.getElementById("applyAll").addEventListener("click", applyAll);
+window.addEventListener("resize", hidePopover);
 </script>
 </body>
 </html>

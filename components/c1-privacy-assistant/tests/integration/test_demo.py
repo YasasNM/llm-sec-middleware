@@ -26,7 +26,7 @@ def test_demo_analyze_is_off_by_default(tmp_path):
 
 def test_demo_page_is_served(demo_client):
     reply = demo_client.get("/demo")
-    assert reply.status_code == 200 and "C1 Privacy Check" in reply.text
+    assert reply.status_code == 200 and "C1 Privacy Assistant" in reply.text
 
 
 def test_demo_page_has_no_external_links(demo_client):
@@ -72,3 +72,18 @@ def test_demo_analyze_keeps_the_size_limit(demo_client):
 
 def test_v1_routes_still_need_the_key_in_demo_mode(demo_client):
     assert demo_client.post("/v1/analyze", json={"text": "hi"}).status_code == 401
+
+
+def test_demo_text_made_only_of_tokens_is_clean(demo_client):
+    body = demo_client.post(
+        "/demo/analyze", json={"text": "[PATIENT_NAME_1] [PATIENT_NAME_2] [PHONE_1]"}
+    ).json()
+    assert body["entities"] == [] and body["reid"]["items"] == []
+    assert body["risk"]["explicit"]["score"] == 0 and body["reid"]["score"] == 0
+    assert body["masked_text"] == "[PATIENT_NAME_1] [PATIENT_NAME_2] [PHONE_1]"
+
+
+def test_demo_route_uses_the_name_lexicon(demo_client):
+    body = demo_client.post("/demo/analyze", json={"text": "send to nimal and kumari"}).json()
+    assert [e["source"] for e in body["entities"]] == ["lexicon", "lexicon"]
+    assert body["masked_text"] == "send to [PATIENT_NAME_1] and [PATIENT_NAME_2]"

@@ -21,6 +21,7 @@ class Settings:
     manifest_path: Path
     name_threshold: float
     config_folder: Path
+    demo_enabled: bool = False  # C1_DEMO=1 turns on the temporary /demo page (never in production)
 
 
 # Read one setting from the environment, or use the default
@@ -37,4 +38,5 @@ def load_settings() -> Settings:
         manifest_path=Path(env("C1_MODEL_MANIFEST", str(C1_ROOT / "models" / "manifest.json"))),
         name_threshold=float(env("C1_NAME_THRESHOLD", "0.65")),
         config_folder=Path(env("C1_CONFIG_FOLDER", str(C1_ROOT / "configs"))),
+        demo_enabled=env("C1_DEMO", "0") == "1",
     )

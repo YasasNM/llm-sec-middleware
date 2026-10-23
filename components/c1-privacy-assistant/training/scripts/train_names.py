@@ -1,8 +1,12 @@
-"""Train the M3 name model on the synthetic HC-PII corpus and write models/manifest.json.
+"""Train the M3 name model on our own corpus and record it in models/manifest.json.
 
 Run from components/c1-privacy-assistant (after build_corpus.py has filled data/processed/):
 
     python training/scripts/train_names.py
+
+The model is saved as models/c1_model.joblib. It is the only name model C1 uses.
+A mixed model (own corpus plus Nemotron-PII) was tried and dropped: F1 0.52 against 0.889 on
+our own val split. Nemotron-PII is now an external benchmark only (compare_name_models.py).
 
 - Trains on the "train" split only. Names never repeat across splits (split by name).
 - Reports exact-span precision, recall and F1 on the "val" split, for the model and for the
@@ -36,6 +40,8 @@ from c1.detection.titled_names import detect_titled_names
 
 C1_ROOT = Path(__file__).resolve().parents[2]
 DATA_FILES = ("clinical_notes.jsonl", "sensitivity_dataset.jsonl")
+MODEL_FILE = "c1_model.joblib"
+OWN_SOURCE = "HC-PII-Corpus (own generated corpus, train split)"
 
 
 # Read a JSON Lines file into a list of dictionaries
@@ -105,6 +111,11 @@ def span_scores(records: list[dict], detect) -> dict:
         true_positive += len(gold & found)
         predicted += len(found)
         actual += len(gold)
+    return prf(true_positive, predicted, actual)
+
+
+# Precision, recall and F1 from counts of correct, predicted and real names
+def prf(true_positive: int, predicted: int, actual: int) -> dict:
     precision = true_positive / predicted if predicted else 0.0
     recall = true_positive / actual if actual else 0.0
     f1 = 2 * precision * recall / (precision + recall) if precision + recall else 0.0
@@ -121,20 +132,39 @@ def library_versions() -> dict:
     }
 
 
-# Write models/manifest.json: file hash, data version, settings and validation metrics
-def write_manifest(model_path: Path, manifest_path: Path, threshold: float, metrics: dict) -> None:
+# The SHA-256 of our own corpus files, read from data/manifest.json
+def own_data_versions() -> dict:
     data_manifest = json.loads((C1_ROOT / "data" / "manifest.json").read_text())
-    manifest = {
-        "model": "C1 name model: TF-IDF (char 2-4 + context words) + LogisticRegression",
-        "files": {model_path.name: {"sha256": file_sha256(model_path)}},
-        "trained_on": {"dataset": data_manifest["dataset"], "split": "train",
-                       "data_files": {n: data_manifest["files"][n]["sha256"] for n in DATA_FILES}},
+    return {name: data_manifest["files"][name]["sha256"] for name in DATA_FILES}
+
+
+# One model's manifest entry: hash, sources, data versions, row counts, metrics, libraries
+def manifest_entry(model_path: Path, threshold: float, metrics: dict, training: dict) -> dict:
+    return {
+        "sha256": file_sha256(model_path),
+        "model": "TF-IDF (char 2-4 + context words) + LogisticRegression",
+        "sources": training["sources"],
+        "data_files": training["data_files"],
+        "rows": training["rows"],
         "threshold": threshold,
         "metrics_val": metrics,
         "library_versions": library_versions(),
         "created": date.today().isoformat(),
-        "command": "python training/scripts/train_names.py",
-    }  # fmt: skip
+        "command": training["command"],
+    }
+
+
+# Read models/manifest.json, or start an empty one
+def read_manifest(manifest_path: Path) -> dict:
+    if manifest_path.exists():
+        return json.loads(manifest_path.read_text())
+    return {"files": {}}
+
+
+# Add or replace one model's entry in models/manifest.json, keeping every other entry
+def write_manifest(manifest_path: Path, model_path: Path, entry: dict) -> None:
+    manifest = read_manifest(manifest_path)
+    manifest.setdefault("files", {})[model_path.name] = entry
     manifest_path.write_text(json.dumps(manifest, indent=2) + "\n")
 
 
@@ -142,9 +172,21 @@ def write_manifest(model_path: Path, manifest_path: Path, threshold: float, metr
 def parse_args(argv=None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Train the C1 name model (M3).")
     parser.add_argument("--data", type=Path, default=C1_ROOT / "data" / "processed")
-    parser.add_argument("--out", type=Path, default=C1_ROOT / "models" / "c1_model.joblib")
+    parser.add_argument("--out", type=Path, default=C1_ROOT / "models" / MODEL_FILE)
     parser.add_argument("--threshold", type=float, default=DEFAULT_THRESHOLD)
     return parser.parse_args(argv)
+
+
+# Load our own train split and describe it for the manifest
+def training_data(args: argparse.Namespace) -> tuple[list[dict], dict]:
+    own = load_split(args.data, "train")
+    info = {
+        "sources": [OWN_SOURCE],
+        "data_files": own_data_versions(),
+        "rows": {"own_train": len(own)},
+        "command": "python training/scripts/train_names.py",
+    }
+    return own, info
 
 
 # Score the model on val at a few thresholds, so the threshold choice is backed by numbers
@@ -157,10 +199,11 @@ def scores_by_threshold(val: list[dict], model: dict) -> dict:
     return table
 
 
-# Train on the train split, score on val, save the model and its manifest
+# Train, score on our own val split, save the model and its manifest entry
 def main(argv=None) -> int:
     args = parse_args(argv)
-    model = fit_model(*collect_examples(load_split(args.data, "train")))
+    records, training = training_data(args)
+    model = fit_model(*collect_examples(records))
     val = load_split(args.data, "val")
     metrics = {
         "ml": span_scores(val, lambda text: detect_ml_names(text, model, args.threshold)),
@@ -168,9 +211,11 @@ def main(argv=None) -> int:
         "heuristic": span_scores(val, detect_titled_names),
         "val_records": len(val),
     }
-    args.out.parent.mkdir(parents=True, exist_ok=True)
-    joblib.dump(model, args.out)
-    write_manifest(args.out, args.out.parent / "manifest.json", args.threshold, metrics)
+    out = args.out
+    out.parent.mkdir(parents=True, exist_ok=True)
+    joblib.dump(model, out)
+    entry = manifest_entry(out, args.threshold, metrics, training)
+    write_manifest(out.parent / "manifest.json", out, entry)
     print(json.dumps(metrics, indent=2))
     return 0
 

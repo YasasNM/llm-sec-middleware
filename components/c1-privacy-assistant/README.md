@@ -17,6 +17,13 @@ MG_ACCEPTED_KEYS="gateway:dev-key" uvicorn c1.main:create_app --factory --port 8
 Then open http://localhost:8001/docs, or call it with curl and the header `X-Service-Key: dev-key`.
 Routes so far: `GET /health`, `POST /v1/analyze`, `POST /v1/reid`. Settings: `.env.example`.
 
+Temporary demo page (off by default, never enable it in production):
+
+```bash
+C1_DEMO=1 MG_ACCEPTED_KEYS="gateway:dev-key" uvicorn c1.main:create_app --factory --port 8001
+# then open http://localhost:8001/demo
+```
+
 ## Data and models
 
 Only `manifest.json` files and small synthetic samples are committed. Weights and full datasets live on Drive or HF Hub (K29).

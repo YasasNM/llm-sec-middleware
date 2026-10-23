@@ -12,3 +12,5 @@ models/retriever/
 models/generator/*
 !models/generator/calibration.json
 !models/generator/best_epoch.json
+models_*/
+results_*/

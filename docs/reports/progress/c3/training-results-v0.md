@@ -114,3 +114,28 @@ the context, labelled pass. The text is identical, so only the rules can explain
 *rule dependence*, the share of caught violations that are let go when the broken rule is removed.
 
 **Next.** Re-zip the code, rerun the Colab training, and check the three results in section 2b of the runbook.
+
+---
+
+## Paired training: making the model read the rules
+
+The probe "remove the broken rule from the context" showed that even the first hand-written-data model mostly
+ignored the rules (only 19% of caught violations on S2 were let go). Training now pairs every violating row with
+copies of the same answer whose broken rule is taken out of the context (labelled pass), three per answer.
+
+| | Before pairing | With pairing |
+|---|---|---|
+| Rule dependence on S2 (caught violations let go when the rule is removed) | 19% | **76%** |
+| Live-edit check on the demo policy (violation caught, then let go without its rule, then caught again) | 3 of 4 caught | **4 of 4 caught** |
+| 20 hand-written cases: violations caught / false alarms | 7 / 0 of 10 | 7 / 1 of 10 |
+| Demo examples right | 9 of 12 | 11 of 12 |
+| S1 / S2 F1 on the hand-written pack | 0.97 / 0.83 | 0.84 / 0.65 |
+| False alarm rate on S2 | low | 0.47 |
+
+The model now depends on the policy, which is what live policy editing needs, but it flags too much. The fall in F1
+is the honest cost of removing the style shortcut with a 77M model and templated data. The next levers are more
+varied data (the Colab run with the pairing code), flan-t5-base, and threshold tuning on a validation set that
+contains paired rows.
+
+`models/` now holds this paired model. The first Colab public-data model is kept in `models_public_v1_colab/`
+and is not used because it failed the hand-written check (2 of 10 caught).

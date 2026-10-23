@@ -29,7 +29,8 @@ pip install -e ".[dev]"
 python -m c3.demo.launcher          # opens http://127.0.0.1:8000
 ```
 
-Needs the trained models in `models/` (see the runbook; the repository already has a first set).
+Needs the trained models in `models/` (see the runbook; the folder already holds a first set). On Windows you can
+double-click `start_demo.bat` and `run_checks.bat`, which always use the project's own Python.
 It starts three local services: the C3 policy check (8003), a C4 stub (8004) and a mock gateway with the web
 page (8000). The page has four tabs:
 
@@ -68,9 +69,11 @@ for the exact numbers.
 
 ## Known limits
 
-- The models currently in `models/` were trained on the earlier **hand-written** pack (first results, S2 F1 0.81).
-  Retraining on public data needs the Colab run, because the only LLM that fits a 4 GB laptop GPU (1.5B) writes
-  answers that do not reliably break or follow a clause.
+- `models/` holds a model trained on the **hand-written** pack with paired rule-removal rows, so it reads the policy
+  (live edits change the verdict) but over-flags (false alarm rate about 0.3 to 0.5 on held-out sets). The first Colab
+  public-data model is in `models_public_v1_colab/`: it scored S2 F1 0.97 but caught only 2 of 10 hand-written
+  violations, because it learned the style of the machine-written answers. Rebuild the Colab zip (the code changed)
+  and train again; check the three results in section 2b of the runbook before trusting any model.
 - The demo shows a model trained on templated language. It misses some paraphrased violations (for example
   "She can skip the tablets for a few days." alone) and should be presented as a demonstration, not a clearance.
 - The keyword baseline carries no signal; B1, B2 and B4 to B6 are not built.

@@ -1,0 +1,14 @@
+{
+  "epoch": 8,
+  "train_loss": 0.010900057257245516,
+  "val_auc": 0.8707870787078708,
+  "val_best_f1": 0.8202764976958526,
+  "val_auc_by_subset": {
+    "val_unseen": 0.8708
+  },
+  "val_f1_at_default": 0.6329113924050632,
+  "val_raw_citation_validity": 1.0,
+  "val_attribution_top1": 0.86,
+  "score": 0.8764254305614894,
+  "minutes": 12.566251138846079
+}

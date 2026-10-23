@@ -13,7 +13,9 @@ from c1.detection.ml_names import (
     detect_ml_names,
     file_sha256,
     group_into_names,
+    group_start,
     load_name_model,
+    same_group,
     tokenize,
     word_shape,
 )
@@ -54,6 +56,27 @@ def test_character_after():
     assert character_after(text, tokens[0]) == "after:dot"
     assert character_after(text, tokens[2]) == "after:comma"
     assert character_after(text, tokens[3]) == "after:edge"
+
+
+def test_digit_after_a_letter_is_marked():
+    text = "Patient ID P1728"
+    assert character_after(text, tokenize(text)[2]) == "after:digit"
+
+
+def test_same_group_joins_capitalised_words_but_not_titles():
+    text = "Dr. Nimal Perera saw nimal"
+    tokens = tokenize(text)
+    assert same_group(text, tokens[1], tokens[2])  # Nimal Perera
+    assert not same_group(text, tokens[0], tokens[1])  # a title ends the group
+    assert not same_group(text, tokens[3], tokens[4])  # lowercase words never group
+
+
+def test_group_start_is_the_word_before_the_name_group():
+    text = "Dr. Nimal Perera and Name: Edward Christopher Ludowyk"
+    tokens = tokenize(text)
+    assert group_start(text, tokens, 2) == "groupstart:dr"  # Perera
+    assert group_start(text, tokens, 6) == "groupstart:name"  # Christopher
+    assert group_start(text, tokens, 0) == "groupstart:<edge>"
 
 
 def test_grouping_joins_neighbours_above_threshold():
@@ -128,3 +151,9 @@ def test_load_model_without_manifest_returns_none(small_model, tmp_path):
 
 def test_token_dataclass_is_simple():
     assert Token("Nimal", 0, 5).text == "Nimal"
+
+
+def test_full_stop_after_a_whole_word_ends_the_name():
+    text = "ask kumari. nimal perera"
+    names = group_into_names(text, tokenize(text), [0.1, 0.9, 0.9, 0.9], 0.65)
+    assert [name.value for name in names] == ["kumari", "nimal perera"]

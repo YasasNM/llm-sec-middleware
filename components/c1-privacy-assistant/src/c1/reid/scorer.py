@@ -10,6 +10,7 @@ Inspired by k-anonymity (Sweeney 2002); it is rule based, not a k-anonymity impl
 
 from dataclasses import dataclass, field
 
+from c1.detection.placeholders import blank_placeholders, outside_placeholders
 from c1.reid.finders import QuasiIdentifier, find_quasi_identifiers
 from c1.reid.suggestions import apply_suggestions
 
@@ -60,7 +61,8 @@ def explain(kinds: list[str], level: str) -> str:
 
 # Score the re-identification risk of a prompt and build the safer version
 def score_reid(text: str, lists: dict) -> ReidResult:
-    found = find_quasi_identifiers(text, lists)
+    # Placeholder tokens are blanked first, so nothing inside "[WARD_1]" can count as a clue
+    found = outside_placeholders(find_quasi_identifiers(blank_placeholders(text), lists), text)
     per_kind = weight_per_kind(found, lists["rarity_weights"])
     count, raw = len(per_kind), sum(per_kind.values())
     level, score = level_and_score(count, raw, lists["levels"])

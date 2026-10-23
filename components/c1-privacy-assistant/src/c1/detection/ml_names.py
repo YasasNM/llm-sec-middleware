@@ -7,6 +7,9 @@ How it works:
    - its surroundings: the word before and after, the shape of those words (Capitalised,
      initial, lowercase) and the character right after it (a dot after "R" means an initial).
      Shapes matter because names never repeat between train and test, but shapes do.
+   - the word just before its group of capitalised words: "dr" for every word of
+     "Dr. Nimal Perera", "name" for every word of "Name: Edward Christopher Ludowyk".
+     This is how the model tells staff names (kept visible) from patient names.
 3. A Logistic Regression model gives each token a probability of being part of a name.
 4. Tokens at or above the threshold (0.65) that sit next to each other, separated only by
    spaces or initial dots, become one name span.
@@ -34,6 +37,10 @@ DEFAULT_THRESHOLD = 0.65
 
 # A word made of letters, optionally joined by hyphens: "Perera", "Abdul-Cader"
 WORD = re.compile(r"[A-Za-z]+(?:-[A-Za-z]+)*")
+
+# Titles end a group of capitalised words, so "Dr" itself is the word before "Nimal Perera"
+TITLE_WORDS = {"dr", "prof", "mr", "mrs", "ms", "miss", "master", "nurse", "sister",
+               "consultant", "officer", "patient", "pt", "name"}  # fmt: skip
 
 
 @dataclass
@@ -75,14 +82,32 @@ def character_after(text: str, token: Token) -> str:
         return "after:edge"
     names = {".": "dot", ",": "comma", "'": "apostrophe", ":": "colon"}
     character = text[token.end]
+    if character.isdigit():  # "P" in "P1728" is an id, not an initial
+        return "after:digit"
     return "after:space" if character.isspace() else f"after:{names.get(character, 'other')}"
 
 
-# Describe what surrounds token number `index`: both neighbours and the character after it
+# True when two neighbouring words are in the same group of capitalised words ("Nimal Perera")
+def same_group(text: str, left: Token, right: Token) -> bool:
+    capitalised = word_shape(left.text) != "x" and word_shape(right.text) != "x"
+    is_title = left.text.lower() in TITLE_WORDS
+    return capitalised and not is_title and text[left.end : right.start].strip(" .") == ""
+
+
+# The word just before the group of capitalised words that token `index` belongs to
+def group_start(text: str, tokens: list[Token], index: int) -> str:
+    first = index
+    while first > 0 and same_group(text, tokens[first - 1], tokens[first]):
+        first -= 1
+    return f"groupstart:{tokens[first - 1].text.lower() if first > 0 else '<edge>'}"
+
+
+# Describe what surrounds token `index`: neighbours, the character after it, its group start
 def context_of(text: str, tokens: list[Token], index: int) -> str:
     before = describe_neighbour("prev", tokens, index - 1)
     after = describe_neighbour("next", tokens, index + 1)
-    return f"{before} {after} {character_after(text, tokens[index])}"
+    group = group_start(text, tokens, index)
+    return f"{before} {after} {character_after(text, tokens[index])} {group}"
 
 
 # Turn tokens into the feature matrix the model expects (same code for training and serving)
@@ -103,9 +128,13 @@ def name_probabilities(model: dict, text: str, tokens: list[Token]) -> list[floa
     return [float(row[name_column]) for row in model["classifier"].predict_proba(features)]
 
 
-# True when only spaces or initial dots separate two tokens ("R.L. Gamage"), so they join up
+# True when only spaces, or the dot after an initial ("R.L. Gamage"), separate two tokens.
+# A full stop after a whole word ends the name: "kumari. nimal" is two names, not one.
 def only_spaces_between(text: str, left: Token, right: Token) -> bool:
-    return text[left.end : right.start].strip(" .") == ""
+    gap = text[left.end : right.start]
+    if gap.strip(" ") == "":
+        return True
+    return len(left.text) == 1 and gap.strip(" .") == ""
 
 
 # Join neighbouring name tokens into PATIENT_NAME entities; confidence is the weakest token's

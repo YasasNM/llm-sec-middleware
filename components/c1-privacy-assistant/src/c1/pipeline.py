@@ -14,8 +14,14 @@ from c1.config import Settings
 from c1.configs import load_config
 from c1.detection.entity import Entity
 from c1.detection.ml_names import load_name_model
-from c1.detection.names import find_names, name_detector_label
+from c1.detection.names import (
+    add_repeated_names,
+    find_names,
+    load_name_lexicon,
+    name_detector_label,
+)
 from c1.detection.overlaps import resolve_overlaps
+from c1.detection.placeholders import blank_placeholders, outside_placeholders
 from c1.detection.regex import detect_regex
 from c1.reid.scorer import ReidResult, score_reid
 from c1.risk import live_risk
@@ -29,6 +35,7 @@ class Resources:
     name_threshold: float
     reid_lists: dict
     risk_rules: dict
+    name_lexicon: frozenset[str] = frozenset()  # empty when the lexicon fallback is off
 
     # "ml" when the trained model loaded, otherwise "heuristic"
     @property
@@ -45,6 +52,11 @@ class Analysis:
     risk: dict
 
 
+# The name lexicon when the setting is on, otherwise an empty set
+def lexicon_for(settings: Settings) -> frozenset[str]:
+    return load_name_lexicon(settings.lexicon_path) if settings.name_lexicon else frozenset()
+
+
 # Load the name model and the YAML rules once, when the service starts
 def load_resources(settings: Settings) -> Resources:
     return Resources(
@@ -52,13 +64,19 @@ def load_resources(settings: Settings) -> Resources:
         name_threshold=settings.name_threshold,
         reid_lists=load_config("reid_lists.yaml", settings.config_folder),
         risk_rules=load_config("default.yaml", settings.config_folder)["risk"],
+        name_lexicon=lexicon_for(settings),
     )
 
 
-# Find every explicit identifier (regex + names) with overlaps resolved
+# Find every explicit identifier (regex, names, lexicon names), then copy names to repeats.
+# Detectors read a copy with placeholders blanked, so "[PATIENT_NAME_1]" never looks like a name.
 def find_explicit(text: str, resources: Resources) -> list[Entity]:
-    names = find_names(text, resources.name_model, resources.name_threshold)
-    return resolve_overlaps(detect_regex(text) + names)
+    clean = blank_placeholders(text)
+    regex = detect_regex(clean)
+    model, threshold = resources.name_model, resources.name_threshold
+    names = find_names(clean, model, threshold, resources.name_lexicon, regex)
+    found = add_repeated_names(clean, resolve_overlaps(regex + names))
+    return outside_placeholders(found, text)
 
 
 # Run the whole analysis on one piece of text

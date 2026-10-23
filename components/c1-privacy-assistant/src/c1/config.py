@@ -22,6 +22,8 @@ class Settings:
     name_threshold: float
     config_folder: Path
     demo_enabled: bool = False  # C1_DEMO=1 turns on the temporary /demo page (never in production)
+    name_lexicon: bool = True  # C1_NAME_LEXICON=0 turns off the lexicon fallback for names
+    lexicon_path: Path = C1_ROOT / "data" / "lexicons" / "names.json"
 
 
 # Read one setting from the environment, or use the default
@@ -39,4 +41,5 @@ def load_settings() -> Settings:
         name_threshold=float(env("C1_NAME_THRESHOLD", "0.65")),
         config_folder=Path(env("C1_CONFIG_FOLDER", str(C1_ROOT / "configs"))),
         demo_enabled=env("C1_DEMO", "0") == "1",
+        name_lexicon=env("C1_NAME_LEXICON", "1") == "1",
     )

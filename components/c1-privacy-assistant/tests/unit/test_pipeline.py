@@ -51,3 +51,15 @@ def test_name_detector_label_without_model():
 
 def test_elapsed_ms_is_a_whole_number():
     assert isinstance(elapsed_ms(0.0), int)
+
+
+def test_placeholder_tokens_are_never_detected_again():
+    text = "Patient [PATIENT_NAME_1] NIC [NIC_1], phone 0771234567"
+    result = analyze_text(text, heuristic_resources())
+    assert [entity.type for entity in result.entities] == ["PHONE"]
+
+
+def test_text_made_only_of_tokens_has_no_findings_and_no_risk():
+    result = analyze_text("[PATIENT_NAME_1] [PATIENT_NAME_2] [PHONE_1]", heuristic_resources())
+    assert result.entities == [] and result.reid.quasi_identifiers == []
+    assert result.risk["explicit"]["score"] == 0 and result.reid.score == 0

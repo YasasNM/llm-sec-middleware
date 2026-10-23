@@ -87,3 +87,14 @@ def test_demo_route_uses_the_name_lexicon(demo_client):
     body = demo_client.post("/demo/analyze", json={"text": "send to nimal and kumari"}).json()
     assert [e["source"] for e in body["entities"]] == ["lexicon", "lexicon"]
     assert body["masked_text"] == "send to [PATIENT_NAME_1] and [PATIENT_NAME_2]"
+
+
+def test_demo_gives_tidy_edits_and_no_clue_for_a_district(demo_client):
+    text = "Patient Linuka, 94-year-old HIV patient in Galle district, ward 3"
+    reid = demo_client.post("/demo/analyze", json={"text": text}).json()["reid"]
+    assert [item["type"] for item in reid["items"]] == ["AGE", "CONDITION", "WARD"]  # no LOCATION
+    age = reid["items"][0]["edit"]
+    assert text[age["start"] : age["end"]] == "94-year-old" and age["replacement"] == "elderly"
+    merged = reid["edits"][0]
+    assert text[merged["start"] : merged["end"]] == "94-year-old HIV patient"
+    assert merged["replacement"] == "elderly patient with a chronic condition"

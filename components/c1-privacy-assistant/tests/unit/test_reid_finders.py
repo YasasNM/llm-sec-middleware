@@ -138,3 +138,22 @@ def test_eponyms_with_their_word(text, expected):
 @pytest.mark.parametrize("text", ["Mr Wilson called", "go down the corridor", "Graves were dug"])
 def test_eponyms_alone_are_not_conditions(text):
     assert find_conditions(text, LISTS) == []
+
+
+@pytest.mark.parametrize(
+    "text",
+    ["from Galle district", "from Galle District", "from galle DISTRICT", "Galle district, ward"],
+)
+def test_town_written_as_district_is_already_general(text):
+    assert find_locations(text, LISTS) == []
+
+
+def test_province_is_already_general():
+    assert find_locations("lives in Kandy province", LISTS) == []
+
+
+def test_specific_town_before_a_district_is_still_a_clue():
+    found = find_locations("from Hikkaduwa, Galle district", LISTS)
+    assert [(item.match, item.suggestion) for item in found] == [
+        ("Hikkaduwa, Galle", "Galle district")
+    ]

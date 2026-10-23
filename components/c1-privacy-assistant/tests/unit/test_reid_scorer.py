@@ -41,7 +41,7 @@ def test_level_rules():
 
 def test_safer_prompt_uses_suggestions():
     result = score_reid("A 94-year-old from Hikkaduwa in ward 3", LISTS)
-    assert result.safer_prompt == "A elderly from Galle district in the ward"
+    assert result.safer_prompt == "An elderly from Galle district in the ward"
 
 
 def test_apply_suggestions_with_nothing_found():

@@ -161,9 +161,14 @@ function tokensFor(text, result) {
   });
 }
 
-// True when a clue already reads like its suggestion, so generalising would change nothing
+// True when an edit would change nothing (the text already reads like the suggestion)
+function changesNothing(text, edit) {
+  return text.slice(edit.start, edit.end).toLowerCase() === edit.replacement.toLowerCase();
+}
+
+// True when a clue is already general, so "Generalise this" must not be offered for it
 function alreadyGeneral(text, clue) {
-  return text.slice(clue.start, clue.end).toLowerCase() === clue.suggestion.toLowerCase();
+  return changesNothing(text, clue.edit);
 }
 
 // One list of everything to underline: red direct identifiers and orange clues, in text order
@@ -253,8 +258,10 @@ function fillClue(item) {
   pop.appendChild(el("div", "muted", "Re-identification clue: " + (CLUE_NAMES[item.type] || item.type.toLowerCase())));
   const level = item.rarity.charAt(0).toUpperCase() + item.rarity.slice(1);
   pop.appendChild(el("span", "chip " + level, item.rarity.toUpperCase() + " RARITY"));
-  pop.appendChild(el("div", "", "Generalise to: " + item.suggestion));
-  pop.appendChild(actionButton("Generalise this", function () { replaceSpans([[item.start, item.end, item.suggestion]]); }));
+  if (alreadyGeneral(current.text, item)) return;  // never offer a change that changes nothing
+  const edit = item.edit;  // tidied by C1: no doubled words, right "a"/"an"
+  pop.appendChild(el("div", "", "Generalise to: " + edit.replacement));
+  pop.appendChild(actionButton("Generalise this", function () { replaceSpans([[edit.start, edit.end, edit.replacement]]); }));
 }
 
 // A popover button: run the action, close the popover, put the cursor back in the composer
@@ -330,11 +337,20 @@ function replaceSpans(spans) {
   checkNow();
 }
 
-// Generalise every orange clue at once
+// All of C1's merged suggestion edits ("elderly patient with a chronic condition") that really
+// change something and do not touch a red direct identifier, as [start, end, newText] spans
+function suggestionSpans(text, result, items) {
+  const direct = items.filter(function (i) { return i.kind === "direct"; });
+  return result.reid.edits
+    .filter(function (e) { return !changesNothing(text, e); })
+    .filter(function (e) { return !direct.some(function (d) { return e.start < d.end && d.start < e.end; }); })
+    .map(function (e) { return [e.start, e.end, e.replacement]; });
+}
+
+// Generalise every orange clue at once, using C1's merged edits so the text reads naturally
 function applyAll() {
   if (!current) return;
-  const clues = current.items.filter(function (i) { return i.kind === "clue"; });
-  replaceSpans(clues.map(function (i) { return [i.start, i.end, i.suggestion]; }));
+  replaceSpans(suggestionSpans(current.text, current.result, current.items));
 }
 
 // Plural helper: "1 clue" or "2 clues"
@@ -385,8 +401,8 @@ async function send(useSuggestions) {
   const items = collectItems(text, result);
   const direct = items.filter(function (i) { return i.kind === "direct"; });
   const clues = useSuggestions ? items.filter(function (i) { return i.kind === "clue"; }) : [];
-  const spans = direct.map(function (i) { return [i.start, i.end, i.token]; })
-    .concat(clues.map(function (i) { return [i.start, i.end, i.suggestion]; }));
+  const edits = useSuggestions ? suggestionSpans(text, result, items) : [];
+  const spans = direct.map(function (i) { return [i.start, i.end, i.token]; }).concat(edits);
   showSent(replaceInText(text, spans), sentNotes(direct.length, clues.length));
   box.value = "";
   onTyping();

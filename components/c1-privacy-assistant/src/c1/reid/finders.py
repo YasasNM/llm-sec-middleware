@@ -144,12 +144,21 @@ def location_end(text: str, end: int, district: str) -> int:
     return end
 
 
+# True when the place is already general: "<town> district" or "<province> province" (any case).
+# Such a place is not a clue, so it is never suggested again ("Galle district district").
+def already_general(text: str, end: int) -> bool:
+    following = text[end : end + 10].lower()
+    return following.startswith(" district") or following.startswith(" province")
+
+
 # Find towns: big cities are low rarity, other towns medium; suggest the district instead
 def find_locations(text: str, lists: dict) -> list[QuasiIdentifier]:
     towns = lists["location"]["towns"]
     big_cities = set(lists["location"]["big_cities"])
     found = []
     for match in towns_pattern(towns).finditer(text):
+        if already_general(text, match.end()):
+            continue
         town, district = match.group(), towns[match.group()]
         end = location_end(text, match.end(), district) if town != district else match.end()
         rarity = "low" if town.split()[0] in big_cities else "medium"

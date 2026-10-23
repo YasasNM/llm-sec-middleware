@@ -20,6 +20,7 @@ from c1.masking.masker import MaskResult, mask
 from c1.pipeline import analyze_text, elapsed_ms
 from c1.reid.finders import QuasiIdentifier
 from c1.reid.scorer import score_reid
+from c1.reid.suggestions import Edit, suggestion_edits
 from c1.schemas import TextRequest
 
 router = APIRouter()
@@ -67,8 +68,14 @@ def entity_rows(entities: list[Entity]) -> list[dict]:
     ]
 
 
-# Re-identification findings as positions, rarity and suggestion only
-def reid_rows(found: list[QuasiIdentifier]) -> list[dict]:
+# One tidied edit as positions and the new wording (the wording comes from the config lists)
+def edit_row(edit: Edit) -> dict:
+    return {"start": edit.start, "end": edit.end, "replacement": edit.replacement}
+
+
+# Re-identification findings as positions, rarity and suggestion only, plus the edit that
+# "Generalise this" makes for that one finding (tidied: no doubled words, right article)
+def reid_rows(text: str, found: list[QuasiIdentifier]) -> list[dict]:
     return [
         {
             "type": q.type,
@@ -76,6 +83,7 @@ def reid_rows(found: list[QuasiIdentifier]) -> list[dict]:
             "end": q.end,
             "rarity": q.rarity,
             "suggestion": q.suggestion,
+            "edit": edit_row(suggestion_edits(text, [q])[0]),
         }
         for q in found
     ]
@@ -107,7 +115,11 @@ def demo_analyze(body: TextRequest, request: Request) -> dict:
             "level": analysis.reid.level,
             "score": analysis.reid.score,
             "explanation": analysis.reid.explanation,
-            "items": reid_rows(analysis.reid.quasi_identifiers),
+            "items": reid_rows(body.text, analysis.reid.quasi_identifiers),
+            # All suggestions at once, merged so they read naturally ("Apply all suggestions")
+            "edits": [
+                edit_row(e) for e in suggestion_edits(body.text, analysis.reid.quasi_identifiers)
+            ],
             "masked_with_suggestions": safer.safer_prompt,
         },
         "name_detector": request.app.state.resources.name_detector,

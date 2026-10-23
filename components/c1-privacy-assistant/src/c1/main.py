@@ -2,12 +2,13 @@
 
 Start it with:  uvicorn c1.main:create_app --factory --port 8001
 No CORS is added on purpose: only the gateway calls C1, never a browser.
+The one exception is the temporary /demo page, which exists only when C1_DEMO=1.
 """
 
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 
-from c1.api import analyze, health, reid
+from c1.api import analyze, demo, health, reid
 from c1.api.security import validation_error_without_input
 from c1.config import Settings, load_settings
 from c1.pipeline import load_resources
@@ -23,4 +24,6 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(health.router)
     app.include_router(analyze.router)
     app.include_router(reid.router)
+    if settings.demo_enabled:
+        app.include_router(demo.router)
     return app

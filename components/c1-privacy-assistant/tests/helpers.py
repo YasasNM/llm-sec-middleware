@@ -13,7 +13,7 @@ GATEWAY_HEADERS = {"X-Service-Key": GATEWAY_KEY}
 
 
 # Settings for tests: known keys, the real configs, and a model path that may not exist
-def settings_for_tests(model_folder: Path) -> Settings:
+def settings_for_tests(model_folder: Path, demo: bool = False) -> Settings:
     return Settings(
         service_name="c1",
         accepted_keys=f"gateway:{GATEWAY_KEY},c2:{OTHER_KEY}",
@@ -21,9 +21,10 @@ def settings_for_tests(model_folder: Path) -> Settings:
         manifest_path=model_folder / "manifest.json",
         name_threshold=0.65,
         config_folder=C1_ROOT / "configs",
+        demo_enabled=demo,
     )
 
 
 # A test client for the C1 app; with an empty folder the heuristic name detector is used
-def make_client(model_folder: Path) -> TestClient:
-    return TestClient(create_app(settings_for_tests(model_folder)))
+def make_client(model_folder: Path, demo: bool = False) -> TestClient:
+    return TestClient(create_app(settings_for_tests(model_folder, demo)))

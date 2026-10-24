@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>MediGuard Policy Check Demo</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand"><span class="logo">M</span><div><h1 class="brandname">MediGuard</h1><small>Policy check demo</small></div></div>
+  <nav id="tabs" role="tablist" aria-label="Sections">
+    <button role="tab" id="tabbtn-chat" aria-controls="tab-chat" aria-selected="true" data-tab="chat" class="on">Chat</button>
+    <button role="tab" id="tabbtn-policies" aria-controls="tab-policies" aria-selected="false" data-tab="policies">Policies</button>
+    <button role="tab" id="tabbtn-behaviour" aria-controls="tab-behaviour" aria-selected="false" data-tab="behaviour">Behaviour</button>
+    <button role="tab" id="tabbtn-about" aria-controls="tab-about" aria-selected="false" data-tab="about">About</button>
+  </nav>
+  <div class="who" role="group" aria-label="View as">
+    <span>View as</span>
+    <button id="roleClinician" class="seg on" aria-pressed="true">Clinician</button>
+    <button id="roleAdmin" class="seg" aria-pressed="false">Admin</button>
+  </div>
+</header>
+<div id="chips" class="chips"></div>
+
+<main>
+<!-- CHAT -->
+<section id="tab-chat" role="tabpanel" aria-labelledby="tabbtn-chat" class="tab on">
+  <div class="grid2">
+    <div class="card">
+      <h2>Ask the assistant</h2>
+      <label>Example<select id="scenario"></select></label>
+      <label>Clinician asks
+        <textarea id="prompt" rows="3" placeholder="Type a question for the assistant"></textarea>
+      </label>
+      <label>Assistant answer <small class="muted" id="answerHint">You type what the model said, so the demo is repeatable.</small>
+        <textarea id="answer" rows="4" placeholder="The answer the assistant gives"></textarea>
+      </label>
+      <label class="check"><input type="checkbox" id="useLlm"> Ask the real language model instead <small class="muted" id="llmHint"></small></label>
+      <div class="row"><button id="send" class="primary">Check and send</button><span id="sendNote" class="muted"></span></div>
+      <div id="pipeline" class="pipeline" aria-live="polite"></div>
+    </div>
+    <div class="card">
+      <h2>Conversation <small class="muted" id="roleLabel">as a clinician</small></h2>
+      <div id="thread" class="thread"><p class="muted">No messages yet. Pick an example and press <b>Check and send</b>.</p></div>
+    </div>
+  </div>
+  <div id="adminPanel" class="card adminpanel" hidden>
+    <div class="verdict-head">
+      <h2>Why this result <small class="muted">admin only, a clinician never sees this</small></h2>
+      <div id="adminVerdict" class="row"></div>
+    </div>
+    <div id="adminBody"></div>
+  </div>
+</section>
+
+<!-- POLICIES -->
+<section id="tab-policies" role="tabpanel" aria-labelledby="tabbtn-policies" class="tab">
+  <div class="card">
+    <div class="row between">
+      <h2>Policy documents</h2>
+      <div class="row">
+        <select id="demoPick">
+          <option value="riverside">Riverside policy (small, for live edits)</option>
+          <option value="pdpa">Sri Lanka Data Protection Act 2022 (real PDF)</option>
+          <option value="hipaa">HIPAA Privacy Rule (real, 687 clauses)</option>
+        </select>
+        <button id="loadDemo">Load</button>
+        <label class="filebtn">Upload PDF or Markdown<input type="file" id="uploadFile" accept=".pdf,.md,.markdown"></label>
+      </div>
+    </div>
+    <div id="polStatus" class="statusline"></div>
+    <div class="tablewrap"><table id="docTable"><thead><tr>
+      <th>Name</th><th>Code</th><th>Status</th><th>Clauses</th><th>Version</th><th>Updated</th><th></th>
+    </tr></thead><tbody></tbody></table></div>
+    <p id="polMsg" class="muted" role="status"></p>
+  </div>
+  <div class="grid2">
+    <div class="card" id="clauseCard" hidden>
+      <div class="row between"><h2 id="clauseTitle">Clauses</h2><input id="clauseFilter" type="search" placeholder="Filter clauses"></div>
+      <div id="clauseList" class="clauses"></div>
+    </div>
+    <div class="card" id="editCard" hidden>
+      <h2>Edit this policy live</h2>
+      <p class="muted">Change a rule, then save. Only changed clauses are re-embedded, and the next check uses the new version with no restart.</p>
+      <textarea id="mdEditor" rows="14" spellcheck="false"></textarea>
+      <div class="row"><button id="saveMd" class="primary">Save new version</button>
+        <button id="rescan" disabled>Re-check last answer</button><span id="enforce" class="muted"></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- BEHAVIOUR -->
+<section id="tab-behaviour" role="tabpanel" aria-labelledby="tabbtn-behaviour" class="tab">
+  <div class="grid2">
+    <div class="card"><div class="row between"><h2>Users</h2><button id="resetEvents" title="Clears the events and the user levels">Clear all</button></div>
+      <p class="muted">A stand-in for the behaviour check. Repeated violations raise a user's level.</p>
+      <div class="tablewrap"><table id="userTable"><thead><tr><th>User</th><th>Checks</th><th>Violations</th><th>Leaks</th><th>Level</th></tr></thead><tbody></tbody></table></div></div>
+    <div class="card"><h2>Events sent by the policy check</h2>
+      <p class="muted">One per check. None is sent when the check itself fails, so errors never count against a user.</p>
+      <div class="tablewrap"><table id="eventTable"><thead><tr><th>Time</th><th>User</th><th>Result</th><th>Clause</th><th>Leaks</th></tr></thead><tbody></tbody></table></div></div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="tab-about" role="tabpanel" aria-labelledby="tabbtn-about" class="tab">
+  <div class="card prose">
+    <h2>What you are looking at</h2>
+    <p>Every answer from the AI assistant is checked against the hospital's own policy before a clinician sees it. A violation is withheld, and an administrator can see exactly which rule it broke and the words of that rule.</p>
+    <ol>
+      <li><b>Privacy check.</b> Identifiers in the question are replaced by placeholders. Here a simple stand-in does this.</li>
+      <li><b>Assistant answer.</b> In the demo you type the answer, or connect a real language model.</li>
+      <li><b>Policy check.</b> The part being demonstrated. It finds the relevant rules, a small trained model decides, and every citation is checked against the real rule text.</li>
+      <li><b>Behaviour check.</b> Receives one event per check. A stand-in shows the closed loop.</li>
+    </ol>
+    <p><b>Clinician view</b> shows a safe message and a reference number only. <b>Admin view</b> shows the rule, the quote and the model's confidence. Use the switch at the top right.</p>
+    <p class="muted">Honest limits: the model shown here was trained on hand-written examples, so treat verdicts as a demonstration, not as a clearance. It sometimes flags a safe answer or cites a neighbouring rule. The thumbs under each admin result save your judgement so real labelled data can be collected.</p>
+  </div>
+  <div class="card prose" id="progress">
+    <h2>Progress: about 50% complete</h2>
+    <div class="progressbar" role="img" aria-label="About 50 percent complete"><i style="width:50%"></i></div>
+    <p class="muted">This is the first progress evaluation. Two requirements are finished and demonstrated here; the rest of the component is planned for the next evaluation.</p>
+    <h3>Done and shown in this demo</h3>
+    <ul>
+      <li><b>FR1, clause parsing with stable IDs.</b> A policy PDF or Markdown file becomes clauses with IDs that stay the same when the document is revised. Broken files are rejected with a reason.</li>
+      <li><b>FR2, live re-indexing of changed clauses only.</b> Editing or replacing a policy embeds only what changed and swaps in the new version with no restart. Open the Policies tab to try it.</li>
+      <li><b>The policy check itself,</b> shown in the Chat tab: relevant rules are found, a small trained model decides, citations are checked against the real rule text, and a failed check withholds the answer.</li>
+    </ul>
+    <h3>Yet to complete</h3>
+    <ul>
+      <li><b>Accurate rule citations.</b> The verdict is usually right, but the scanner sometimes cites a neighbouring rule (for example 4.2 where 4.1 was broken). Sharper attribution to the exact clause is still to do.</li>
+      <li><b>Better accuracy.</b> The model over-flags and misses some paraphrased violations. Threshold tuning, a larger model and human-reviewed labels are still to do.</li>
+      <li><b>Real connections.</b> The privacy, intent and behaviour steps here are stand-ins. Integration with the real gateway and the other components is not done.</li>
+      <li><b>Hardening.</b> Prompt-injection tests, Sinhala and Tamil answers, personal-data detection with Presidio, faster int8 serving and memory checks with all components running.</li>
+      <li><b>Evaluation.</b> Held-out unseen-policy sets, the remaining comparison baselines, and the system-level tests with the other components.</li>
+      <li><b>Packaging.</b> The container image is written but not built or tested.</li>
+    </ul>
+  </div>
+</section>
+</main>
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+<script src="/static/app.js"></script>
+</body>
+</html>

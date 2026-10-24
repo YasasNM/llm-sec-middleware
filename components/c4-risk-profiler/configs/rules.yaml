@@ -1,0 +1,13 @@
+# All scoring numbers live here (NFR-08). Do not hard-code them in Python.
+ruleset_version: rules-v1
+half_life_hours: 72      # starting value, tuned on the tuning set and frozen at G5
+window_days: 30
+rules:
+  R1: {impact: 10}                                   # suspicious prompt (C2 BLOCK)
+  R2: {impact: 15, c2_score: 0.90, leak_count: 3}    # high severity (derived)
+  R3: {impact: 15, count: 3, window_minutes: 30}     # repeated suspicious activity
+  R4: {impact: 15}                                   # policy violation (C3 VIOLATION)
+  R5: {impact: 20}                                   # identifier leakage in answers
+  R6: {impact: 10, min_share: 0.05, min_requests: 20}  # unusual time + suspicious
+  R7: {impact: 10, sessions: 3}                      # escalating across sessions
+priorities: {P1: 80, P2: 60, P3: 30}

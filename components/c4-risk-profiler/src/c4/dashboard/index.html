@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>C4 User Risk Profiler</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#/overview">MediGuard C4 <span>User risk profiler</span></a>
+    <nav class="nav" id="nav">
+      <a href="#/overview" data-page="overview">Overview</a>
+      <a href="#/access" data-page="access">Access control</a>
+      <a href="#/rules" data-page="rules">Scoring rules</a>
+      <a href="#/demo" data-page="demo">Demo tools</a>
+    </nav>
+    <span class="spacer"></span>
+    <a class="note-chip clock-chip" id="clockChip" href="#/demo" hidden></a>
+    <span class="note-chip">Dummy data</span>
+  </header>
+
+  <main id="view"></main>
+
+  <p class="foot">
+    The events on this page are dummy data. Real events from C1, C2 and C3 will replace them.
+    C4 never receives prompt or answer text, only ids, verdicts, scores and counts.
+  </p>
+
+  <!-- one dialog is reused for both Block and Unblock -->
+  <dialog id="decision">
+    <form method="dialog" id="decisionForm">
+      <h3 id="decisionTitle"></h3>
+      <p class="muted" id="decisionText"></p>
+      <label for="decisionReason" class="small muted">Reason (saved in the audit log)</label>
+      <textarea id="decisionReason" required></textarea>
+      <div class="row">
+        <button type="button" class="btn plain" id="decisionCancel">Cancel</button>
+        <button type="submit" class="btn" id="decisionOk"></button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status"></div>
+  <script src="app.js"></script>
+</body>
+</html>

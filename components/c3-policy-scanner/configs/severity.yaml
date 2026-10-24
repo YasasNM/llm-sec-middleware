@@ -1,0 +1,10 @@
+# Default severity when a document or clause does not set one (blueprint 19.2).
+category_severity:
+  data_handling: high
+  disclosure: high
+  prescribing: high
+  referral: medium
+  ai_usage: medium
+  incident_reporting: low
+  general: medium
+default_category: general

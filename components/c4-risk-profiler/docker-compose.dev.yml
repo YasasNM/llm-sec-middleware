@@ -1,0 +1,18 @@
+# Optional: run C4 + MongoDB with Docker.  From this folder:
+#   docker compose -f docker-compose.dev.yml up --build
+services:
+  mongo:
+    image: mongo:7
+    ports: ["27017:27017"]
+    volumes: ["c4_mongo:/data/db"]
+  c4:
+    build:
+      context: ../..
+      dockerfile: components/c4-risk-profiler/Dockerfile
+    ports: ["8004:8004"]
+    environment:
+      C4_MONGO_URL: mongodb://mongo:27017/c4
+      MG_ACCEPTED_KEYS: c1:dev-c1,c2:dev-c2,c3:dev-c3,gateway:dev-gateway
+    depends_on: [mongo]
+volumes:
+  c4_mongo:

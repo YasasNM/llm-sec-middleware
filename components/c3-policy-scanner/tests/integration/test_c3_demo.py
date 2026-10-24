@@ -258,3 +258,31 @@ def test_c4_stub_follows_the_event_contract():
     assert bad.status_code == 422                                # a violation needs a clause
     assert c.post("/v1/events/c3", headers=h, json={**event(3), "surprise": 1}).status_code == 422
     assert len(c.get("/_demo/events").json()) == 1
+
+
+# ---- index run history and demo reset ------------------------------------------------
+def test_index_runs_show_what_a_change_touched(stack):
+    doc = stack.get("/api/admin/policies").json()["documents"][0]
+    md = stack.get(f"/api/admin/policies/{doc['doc_id']}/markdown").json()
+    edited = md["markdown"].replace("Staff must report", "Staff must always report")
+    stack.put(f"/api/admin/policies/{doc['doc_id']}/markdown",
+              json={"markdown": edited, "filename": md["filename"]})
+    stack.c3.policies.wait_idle()
+    runs = stack.get("/api/admin/runs?limit=5").json()
+    assert runs[0]["changed"] == 1 and runs[0]["embedded"] == 1       # only the edited clause is embedded
+    assert runs[0]["added"] == 0 and runs[0]["removed"] == 0 and runs[0]["ok"]
+    assert runs[1]["added"] >= 1                                      # the first load added every clause
+
+
+def test_reset_riverside_replaces_the_copy_instead_of_adding_another(stack):
+    doc = stack.get("/api/admin/policies").json()["documents"][0]
+    md = stack.get(f"/api/admin/policies/{doc['doc_id']}/markdown").json()
+    stack.put(f"/api/admin/policies/{doc['doc_id']}/markdown",
+              json={"markdown": md["markdown"].replace("24 hours", "48 hours"), "filename": md["filename"]})
+    stack.c3.policies.wait_idle()
+    assert stack.post("/api/admin/reset-riverside").status_code == 200
+    stack.c3.policies.wait_idle()
+    st = stack.get("/api/admin/policies").json()
+    assert st["status"]["documents"] == 1                              # same document, new version
+    texts = " ".join(c["text"] for c in stack.get(f"/api/admin/policies/{doc['doc_id']}/clauses").json())
+    assert "24 hours" in texts and "48 hours" not in texts

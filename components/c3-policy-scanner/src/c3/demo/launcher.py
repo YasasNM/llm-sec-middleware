@@ -75,7 +75,8 @@ def main() -> None:
               "C3_MODEL_DIR": str(model_dir)}
     env_c4 = {**base, "C4_ACCEPTED_KEYS": "c3:demo-c3-key"}
     env_gw = {**base, "C3_URL": "http://127.0.0.1:8003", "C4_URL": "http://127.0.0.1:8004",
-              "GW_KEY": "demo-gateway-key", "OLLAMA_URL": a.ollama, "OLLAMA_MODEL": a.ollama_model}
+              "GW_KEY": "demo-gateway-key",
+              "OLLAMA_URL": a.ollama, "OLLAMA_MODEL": a.ollama_model}
 
     procs: list[subprocess.Popen] = []
 

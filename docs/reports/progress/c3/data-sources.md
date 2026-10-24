@@ -38,16 +38,7 @@ Held-out means whole documents. No clause of a validation or test document appea
 
 ## What the last run trained on
 
-| Source | Items |
-|---|---|
-| aegis2 | 1273 |
-| llm-generated | 1331 |
-| medquad | 295 |
-
-- Real text: **54%**
-- Machine-generated: **46%**
-- Machine-generated and checked by a person: **0%**
-- Hand-written templates: **0%**
+No public-data run has been recorded yet.
 
 ## Honest limits
 

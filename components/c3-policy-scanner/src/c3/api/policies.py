@@ -99,6 +99,15 @@ def policy_status(org_id: OrgId, request: Request):
     return _svc(request).status(org_id)
 
 
+@router.get("/runs")
+def index_runs(org_id: OrgId, request: Request, limit: int = 20):
+    """What each upload or edit changed in the index (FR2): added, changed, removed, re-embedded."""
+    rows = request.app.state.container.db.list_runs(org_id, max(1, min(limit, 100)))
+    return [{k: r[k] for k in ("run_id", "doc_id", "path", "parse_ms", "embed_ms", "upsert_ms",
+                               "added", "changed", "removed", "embedded", "index_version", "ok",
+                               "message", "t0")} for r in rows]
+
+
 @router.put("/{doc_id}", status_code=status.HTTP_202_ACCEPTED, response_model=PolicyDoc)
 async def replace(
     org_id: OrgId,

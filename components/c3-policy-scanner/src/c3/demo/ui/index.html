@@ -3,33 +3,34 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
 <title>MediGuard Policy Check Demo</title>
 <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
 <header class="top">
-  <div class="brand"><span class="logo">M</span><div><b>MediGuard</b><small>Policy check demo</small></div></div>
-  <nav id="tabs" role="tablist">
-    <button role="tab" data-tab="chat" class="on">Chat</button>
-    <button role="tab" data-tab="policies">Policies</button>
-    <button role="tab" data-tab="behaviour">Behaviour</button>
-    <button role="tab" data-tab="about">About</button>
+  <div class="brand"><span class="logo">M</span><div><h1 class="brandname">MediGuard</h1><small>Policy check demo</small></div></div>
+  <nav id="tabs" role="tablist" aria-label="Sections">
+    <button role="tab" id="tabbtn-chat" aria-controls="tab-chat" aria-selected="true" data-tab="chat" class="on">Chat</button>
+    <button role="tab" id="tabbtn-policies" aria-controls="tab-policies" aria-selected="false" data-tab="policies">Policies</button>
+    <button role="tab" id="tabbtn-behaviour" aria-controls="tab-behaviour" aria-selected="false" data-tab="behaviour">Behaviour</button>
+    <button role="tab" id="tabbtn-about" aria-controls="tab-about" aria-selected="false" data-tab="about">About</button>
   </nav>
   <div class="who" role="group" aria-label="View as">
     <span>View as</span>
-    <button id="roleClinician" class="seg on">Clinician</button>
-    <button id="roleAdmin" class="seg">Admin</button>
+    <button id="roleClinician" class="seg on" aria-pressed="true">Clinician</button>
+    <button id="roleAdmin" class="seg" aria-pressed="false">Admin</button>
   </div>
 </header>
 <div id="chips" class="chips"></div>
 
 <main>
 <!-- CHAT -->
-<section id="tab-chat" class="tab on">
+<section id="tab-chat" role="tabpanel" aria-labelledby="tabbtn-chat" class="tab on">
   <div class="grid2">
     <div class="card">
       <h2>Ask the assistant</h2>
-      <label>Example <select id="scenario"></select></label>
+      <label>Example<select id="scenario"></select></label>
       <label>Clinician asks
         <textarea id="prompt" rows="3" placeholder="Type a question for the assistant"></textarea>
       </label>
@@ -46,13 +47,16 @@
     </div>
   </div>
   <div id="adminPanel" class="card adminpanel" hidden>
-    <h2>Why this result <small class="muted">admin only, a clinician never sees this</small></h2>
+    <div class="verdict-head">
+      <h2>Why this result <small class="muted">admin only, a clinician never sees this</small></h2>
+      <div id="adminVerdict" class="row"></div>
+    </div>
     <div id="adminBody"></div>
   </div>
 </section>
 
 <!-- POLICIES -->
-<section id="tab-policies" class="tab">
+<section id="tab-policies" role="tabpanel" aria-labelledby="tabbtn-policies" class="tab">
   <div class="card">
     <div class="row between">
       <h2>Policy documents</h2>
@@ -88,9 +92,9 @@
 </section>
 
 <!-- BEHAVIOUR -->
-<section id="tab-behaviour" class="tab">
+<section id="tab-behaviour" role="tabpanel" aria-labelledby="tabbtn-behaviour" class="tab">
   <div class="grid2">
-    <div class="card"><div class="row between"><h2>Users</h2><button id="resetEvents">Clear</button></div>
+    <div class="card"><div class="row between"><h2>Users</h2><button id="resetEvents" title="Clears the events and the user levels">Clear all</button></div>
       <p class="muted">A stand-in for the behaviour check. Repeated violations raise a user's level.</p>
       <div class="tablewrap"><table id="userTable"><thead><tr><th>User</th><th>Checks</th><th>Violations</th><th>Leaks</th><th>Level</th></tr></thead><tbody></tbody></table></div></div>
     <div class="card"><h2>Events sent by the policy check</h2>
@@ -100,7 +104,7 @@
 </section>
 
 <!-- ABOUT -->
-<section id="tab-about" class="tab">
+<section id="tab-about" role="tabpanel" aria-labelledby="tabbtn-about" class="tab">
   <div class="card prose">
     <h2>What you are looking at</h2>
     <p>Every answer from the AI assistant is checked against the hospital's own policy before a clinician sees it. A violation is withheld, and an administrator can see exactly which rule it broke and the words of that rule.</p>
@@ -111,7 +115,27 @@
       <li><b>Behaviour check.</b> Receives one event per check. A stand-in shows the closed loop.</li>
     </ol>
     <p><b>Clinician view</b> shows a safe message and a reference number only. <b>Admin view</b> shows the rule, the quote and the model's confidence. Use the switch at the top right.</p>
-    <p class="muted">Honest limits: the model was trained on public legal texts and answers written by a language model, so treat verdicts as a demonstration, not as a clearance. The thumbs under each admin result save your judgement so real labelled data can be collected.</p>
+    <p class="muted">Honest limits: the model shown here was trained on hand-written examples, so treat verdicts as a demonstration, not as a clearance. It sometimes flags a safe answer or cites a neighbouring rule. The thumbs under each admin result save your judgement so real labelled data can be collected.</p>
+  </div>
+  <div class="card prose" id="progress">
+    <h2>Progress: about 50% complete</h2>
+    <div class="progressbar" role="img" aria-label="About 50 percent complete"><i style="width:50%"></i></div>
+    <p class="muted">This is the first progress evaluation. Two requirements are finished and demonstrated here; the rest of the component is planned for the next evaluation.</p>
+    <h3>Done and shown in this demo</h3>
+    <ul>
+      <li><b>FR1, clause parsing with stable IDs.</b> A policy PDF or Markdown file becomes clauses with IDs that stay the same when the document is revised. Broken files are rejected with a reason.</li>
+      <li><b>FR2, live re-indexing of changed clauses only.</b> Editing or replacing a policy embeds only what changed and swaps in the new version with no restart. Open the Policies tab to try it.</li>
+      <li><b>The policy check itself,</b> shown in the Chat tab: relevant rules are found, a small trained model decides, citations are checked against the real rule text, and a failed check withholds the answer.</li>
+    </ul>
+    <h3>Yet to complete</h3>
+    <ul>
+      <li><b>Training on public data.</b> The model shown here was trained on hand-written examples. The run on real public policies and answers is still to be redone and validated.</li>
+      <li><b>Better accuracy.</b> The model over-flags and misses some paraphrased violations. Threshold tuning, a larger model and human-reviewed labels are still to do.</li>
+      <li><b>Real connections.</b> The privacy, intent and behaviour steps here are stand-ins. Integration with the real gateway and the other components is not done.</li>
+      <li><b>Hardening.</b> Prompt-injection tests, Sinhala and Tamil answers, personal-data detection with Presidio, faster int8 serving and memory checks with all components running.</li>
+      <li><b>Evaluation.</b> Held-out unseen-policy sets, the remaining comparison baselines, and the system-level tests with the other components.</li>
+      <li><b>Packaging.</b> The container image is written but not built or tested.</li>
+    </ul>
   </div>
 </section>
 </main>

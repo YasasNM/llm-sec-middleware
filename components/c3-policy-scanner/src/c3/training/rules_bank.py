@@ -15,7 +15,7 @@ not a substitute for real LLM answers labelled by people (blueprint 8.4).
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 
 
 @dataclass(frozen=True)
@@ -587,6 +587,10 @@ RULES: list[Rule] = [
     ),
 ]
 
+# Many more compliant answers on each topic, so "it mentions medicines" stops meaning "violation".
+from .extra_compliant import EXTRA_OK_TRAIN  # noqa: E402
+
+RULES = [replace(r, ok_train=r.ok_train + EXTRA_OK_TRAIN.get(r.rid, ())) for r in RULES]
 RULES_BY_ID = {r.rid: r for r in RULES}
 
 # Clauses that nothing in a response can violate. They act as distractors in every document.

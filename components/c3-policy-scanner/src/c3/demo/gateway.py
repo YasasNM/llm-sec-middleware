@@ -264,6 +264,21 @@ def create_app(
         return check(c3("POST", base, files={"file": (name, path.read_bytes())},
                         data={"category": cat, "uploaded_by": "demo-admin"})).json()
 
+    @app.post("/api/admin/reset-riverside")
+    def reset_riverside():
+        """Put the bundled Riverside policy back (replaces the loaded copy, or uploads it)."""
+        data = RIVERSIDE.read_bytes()
+        for d in check(c3("GET", base)).json():
+            if d["name"].lower().startswith("riverside") and d["status"] != "removed":
+                return check(c3("PUT", f"{base}/{d['doc_id']}", files={"file": ("riverside-ai-policy.md", data)},
+                                data={"uploaded_by": "demo-admin"})).json()
+        return check(c3("POST", base, files={"file": ("riverside-ai-policy.md", data)},
+                        data={"category": "ai_usage", "uploaded_by": "demo-admin"})).json()
+
+    @app.get("/api/admin/runs")
+    def runs(limit: int = 20):
+        return check(c3("GET", f"{base}/runs", params={"limit": limit})).json()
+
     @app.get("/api/admin/trace/{request_id}")
     def trace(request_id: str):
         return check(c3("GET", f"/v1/orgs/{DEMO_ORG}/scans/{request_id}")).json()
@@ -305,6 +320,10 @@ def create_app(
     @app.get("/")
     def index():
         return FileResponse(UI / "index.html")
+
+    @app.get("/favicon.ico")
+    def favicon():
+        return JSONResponse({}, status_code=204)
 
     app.mount("/static", StaticFiles(directory=UI), name="static")
 

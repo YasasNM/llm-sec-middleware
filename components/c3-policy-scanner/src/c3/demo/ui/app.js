@@ -24,6 +24,7 @@ const pct = (x) => `${Math.round(x * 100)}%`;
 /* ---------- header, tabs, role ---------- */
 document.querySelectorAll("#tabs button").forEach((b) => b.addEventListener("click", () => {
   document.querySelectorAll("#tabs button").forEach((x) => x.classList.toggle("on", x === b));
+  document.querySelectorAll("#tabs button").forEach((x) => x.setAttribute("aria-selected", String(x === b)));
   document.querySelectorAll(".tab").forEach((t) => t.classList.toggle("on", t.id === `tab-${b.dataset.tab}`));
   if (b.dataset.tab === "policies") loadPolicies();
   if (b.dataset.tab === "behaviour") loadEvents();
@@ -32,6 +33,8 @@ function setRole(role) {
   state.role = role;
   $("roleClinician").classList.toggle("on", role === "clinician");
   $("roleAdmin").classList.toggle("on", role === "admin");
+  $("roleClinician").setAttribute("aria-pressed", String(role === "clinician"));
+  $("roleAdmin").setAttribute("aria-pressed", String(role === "admin"));
   $("roleLabel").textContent = role === "admin" ? "as an administrator" : "as a clinician";
   $("adminPanel").hidden = role !== "admin" || !state.last;
   if (role === "admin" && state.last) showTrace(state.last.requestId);
@@ -77,7 +80,7 @@ function bubble(cls, html) {
 }
 function renderPipeline(stages) {
   $("pipeline").innerHTML = stages.map((s) =>
-    `<div class="step ${s.stage === "Policy check" ? "hot" : ""}"><b>${esc(s.stage)}</b><span>${esc(s.note)}${s.ms ? ` · ${s.ms} ms` : ""}</span></div>`).join("");
+    `<div class="step ${s.stage === "Policy check" ? (s.note === "violation" ? "is-bad" : s.note === "clean" ? "is-ok" : "hot") : ""}"><b>${esc(s.stage)}</b><span>${esc(s.note)}${s.ms ? ` · ${s.ms} ms` : ""}</span></div>`).join("");
 }
 async function send(promptOverride) {
   const prompt = promptOverride?.prompt ?? $("prompt").value.trim();
@@ -86,9 +89,11 @@ async function send(promptOverride) {
   if (!answer && !$("useLlm").checked) return toast("Type the assistant's answer, or turn on the real model.");
   $("send").disabled = true; $("send").textContent = "Checking…";
   try {
+    const preset = state.scenarios[$("scenario").value];       // an unedited example searches only the policy it was written for
+    const categories = preset && preset.answer === answer && preset.prompt === prompt ? preset.categories : null;
     const res = await api("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ prompt, llm_answer: $("useLlm").checked ? null : answer,
-        use_llm: $("useLlm").checked, role: state.role, user_id: "dr.silva" }) });
+        use_llm: $("useLlm").checked, role: state.role, user_id: "dr.silva", categories }) });
     state.last = { requestId: res.message.requestId, prompt, answer: res.answer ?? answer };
     state.lastResult = res.message.type === "blocked" ? "withheld" : "clean";
     renderPipeline(res.stages);
@@ -97,7 +102,7 @@ async function send(promptOverride) {
     if (res.message.type === "blocked") {
       bubble("blocked", `<b>Answer withheld</b><br>${esc(res.withheld_text)}<small>Reference: ${esc(res.message.requestId)}</small>`);
     } else {
-      bubble("bot", `${esc(res.message.content)}<small>✓ Checked against hospital policy · ${esc(res.message.requestId)}</small>`);
+      bubble("bot is-clean", `${esc(res.message.content)}<small>✓ Checked against hospital policy · ${esc(res.message.requestId)}</small>`);
     }
     $("rescan").disabled = false;
     if (state.role === "admin" && res.admin) renderAdmin(res.admin, res.message.requestId);
@@ -111,25 +116,28 @@ $("send").onclick = () => send();
 function latencyBar(b) {
   const parts = Object.entries(b || {}).filter(([, v]) => v > 0);
   const total = parts.reduce((a, [, v]) => a + v, 0) || 1;
-  const colors = ["#0e7c86", "#5a67d8", "#d69e2e", "#c05621", "#2f855a", "#b83280"];
-  return `<div class="lat" role="img" aria-label="Time spent in each step">${parts.map(([k, v], i) =>
-    `<i style="width:${(v / total) * 100}%;background:${colors[i % 6]}" title="${esc(k)} ${v} ms"></i>`).join("")}</div>
-    <div class="legend">${parts.map(([k, v], i) => `<span><span style="color:${colors[i % 6]}">■</span> ${esc(k)} ${v} ms</span>`).join("")}</div>`;
+  if (!parts.length) return "";                                          // a reopened result has no timing breakdown
+  const slow = parts.reduce((m, [, v]) => Math.max(m, v), 0);
+  const cls = (v) => (v === slow ? "lat-slow" : "lat-step");           // the slowest step stands out, the rest stay quiet
+  return `<div class="lat" role="img" aria-label="Time spent in each step">${parts.map(([k, v]) =>
+    `<i class="${cls(v)}" style="width:${(v / total) * 100}%" title="${esc(k)} ${v} ms"></i>`).join("")}</div>
+    <div class="legend">${parts.map(([k, v]) => `<span><span class="sw ${cls(v)}"></span>${esc(k.replace(/_/g, " "))} ${v} ms</span>`).join("")}</div>`;
 }
 function renderAdmin(v, requestId) {
   const bad = v.c3_verdict === "VIOLATION";
   const gen = v.generation || {};
   const cites = (v.cited_clauses || []).map((c) => `<div class="cite"><b>${esc(c.clause_id)}</b> · ${esc(c.title)}
-      <small class="muted"> · ${esc(c.doc_name || "")} · rank ${esc(c.retrieval_rank)} · ${esc(c.citation_status)}</small>
+      <small class="muted"> · ${[c.doc_name, `rank ${c.retrieval_rank}`, c.citation_status].filter(Boolean).map(esc).join(" · ")}</small>
       <q>${esc(c.quote)}</q></div>`).join("");
   const leak = v.leak_check && v.leak_check.entities && v.leak_check.entities.length
     ? `<p><span class="badge bad">Identifier leak</span> ${v.leak_check.entities.map((e) => esc(e.type)).join(", ")} found in the answer.</p>` : "";
-  const meter = gen.p_violation != null ? `<div class="meter" title="probability of violation"><i style="width:${pct(gen.p_violation)}"></i><u style="left:${pct(gen.tau)}" title="threshold"></u></div>
+  const meter = gen.p_violation != null ? `<div class="meter" role="img" aria-label="Probability of violation ${pct(gen.p_violation)}, threshold ${pct(gen.tau)}" title="probability of violation"><i style="width:${pct(gen.p_violation)}"></i><u style="left:${pct(gen.tau)}" title="threshold"></u></div>
       <small class="muted">Model confidence ${pct(gen.p_violation)} · threshold ${pct(gen.tau)}${gen.decoded ? "" : " · no explanation needed"}</small>` : "";
-  $("adminBody").innerHTML = `
-    <div class="row"><span class="badge ${bad ? "bad" : "ok"}">${bad ? "WITHHELD" : "ALLOWED"}</span>
+  $("adminPanel").classList.toggle("is-bad", bad); $("adminPanel").classList.toggle("is-ok", !bad);
+  $("adminVerdict").innerHTML = `<span class="badge solid ${bad ? "bad" : "ok"}">${bad ? "WITHHELD" : "ALLOWED"}</span>
       <span class="badge ${v.assurance === "low" ? "warn" : "ok"}">assurance ${esc(v.assurance || "n/a")}</span>
-      <span class="muted">decided by ${esc((v.decision_source || "").replace(/_/g, " "))} · ${esc(v.latency_ms)} ms</span></div>
+      <span class="muted">decided by ${esc((v.decision_source || "").replace(/_/g, " "))} · ${esc(v.latency_ms)} ms</span>`;
+  $("adminBody").innerHTML = `
     ${v.error_code ? `<p class="badge warn">Check failed (${esc(v.error_code)}): the answer is withheld and no event is sent.</p>` : ""}
     ${meter}${leak}
     ${bad && cites ? `<h3>Rule broken</h3>${cites}<p><b>Reason:</b> ${esc(v.rationale)}</p>` : bad ? "" : "<p>No policy rule was broken.</p>"}
@@ -171,10 +179,10 @@ async function loadPolicies() {
     const names = { ready: "Ready", updating: "Updating…", empty: "No policies yet", attention: "Needs attention" };
     $("polStatus").innerHTML = `<b>${esc(names[status.state] || status.state)}</b> · ${status.documents} document(s) · ${status.clauses} clauses · version <code>${esc(status.index_version.slice(-9))}</code>`;
     $("docTable").querySelector("tbody").innerHTML = documents.length ? documents.map((d) => `<tr>
-      <td><b>${esc(d.name)}</b><br><small class="muted">${esc(d.filename)}${d.status_message ? " · " + esc(d.status_message) : ""}</small></td>
+      <td class="namecell"><b>${esc(d.name)}</b><br><small class="muted">${esc(d.filename)}</small>${d.status_message ? `<small class="warnnote clamp" title="${esc(d.status_message)}">${esc(d.status_message)}</small>` : ""}</td>
       <td><code>${esc(d.doc_code)}</code></td><td><span class="badge ${chipFor(d.status)}">${esc(d.status.replace("_", " "))}</span></td>
       <td>${d.clause_count}</td><td>v${d.version}</td><td>${esc(d.uploaded_at.slice(11, 19))}</td>
-      <td class="row"><button data-act="clauses" data-id="${esc(d.doc_id)}">Clauses</button>
+      <td class="actions"><button data-act="clauses" data-id="${esc(d.doc_id)}">Clauses</button>
         <button data-act="edit" data-id="${esc(d.doc_id)}">Edit</button>
         <label class="filebtn">Replace<input type="file" data-act="replace" data-id="${esc(d.doc_id)}" accept=".pdf,.md,.markdown"></label>
         <button data-act="delete" data-id="${esc(d.doc_id)}">Delete</button></td></tr>`).join("")

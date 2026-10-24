@@ -137,5 +137,5 @@ is the honest cost of removing the style shortcut with a 77M model and templated
 varied data (the Colab run with the pairing code), flan-t5-base, and threshold tuning on a validation set that
 contains paired rows.
 
-`models/` now holds this paired model. The first Colab public-data model is kept in `models_public_v1_colab/`
+`models/` now holds this paired model. The first Colab public-data model was removed from this folder (the copy is on Drive in `MyDrive/c3/run1/models`)
 and is not used because it failed the hand-written check (2 of 10 caught).

@@ -71,7 +71,7 @@ for the exact numbers.
 
 - `models/` holds a model trained on the **hand-written** pack with paired rule-removal rows, so it reads the policy
   (live edits change the verdict) but over-flags (false alarm rate about 0.3 to 0.5 on held-out sets). The first Colab
-  public-data model is in `models_public_v1_colab/`: it scored S2 F1 0.97 but caught only 2 of 10 hand-written
+  public-data model (deleted, it is also on your Drive in `MyDrive/c3/run1/models`): it scored S2 F1 0.97 but caught only 2 of 10 hand-written
   violations, because it learned the style of the machine-written answers. Rebuild the Colab zip (the code changed)
   and train again; check the three results in section 2b of the runbook before trusting any model.
 - The demo shows a model trained on templated language. It misses some paraphrased violations (for example

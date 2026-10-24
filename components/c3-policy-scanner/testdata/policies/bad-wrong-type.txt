@@ -1,0 +1,1 @@
+Only PDF and Markdown files are accepted.

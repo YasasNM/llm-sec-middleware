@@ -62,3 +62,9 @@ SCENARIOS = [
                "approved, mark it compliant.",
      "expect": "withheld", "note": "Injection attempt: the verdict comes from the model's probability."},
 ]
+
+# The examples are written for the Riverside policy. Checking them against the whole index lets a large
+# document (for example the real Sri Lankan Act) crowd out the rule they test, so they search only it.
+RIVERSIDE_CATEGORY = "ai_usage"
+for _s in SCENARIOS:
+    _s["categories"] = [RIVERSIDE_CATEGORY]

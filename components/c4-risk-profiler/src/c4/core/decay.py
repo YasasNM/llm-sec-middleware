@@ -13,21 +13,25 @@ def decay_factor(age_hours: float, half_life_hours: float) -> float:
     """1.0 for new evidence, 0.5 after one half-life. Future evidence counts fully."""
     if age_hours <= 0:
         return 1.0
+    # exp(-ln2 * age / half_life) is the same as 0.5 ** (age / half_life): half after one half-life
     return math.exp(-(math.log(2) / half_life_hours) * age_hours)
 
 
 def decayed_points(impact: float, hit_time: datetime, now: datetime, rs: Ruleset) -> float:
     age_hours = (now - hit_time).total_seconds() / 3600.0
+    # points now = original points x how much of them is left
     return impact * decay_factor(age_hours, rs.half_life_hours)
 
 
 def score_at(hits: Iterable[dict], now: datetime, rs: Ruleset) -> float:
     """Score at time `now` from rule hits {impact, event_timestamp}. Bounded to 0..100 (M6)."""
+    # Evidence older than the window (30 days) is ignored completely
     cutoff = now - timedelta(days=rs.window_days)
     total = 0.0
     for h in hits:
         t = h["event_timestamp"]
-        if t > now or t < cutoff:
+        if t > now or t < cutoff:  # a hit from the future or from too long ago does not count
             continue
         total += decayed_points(h["impact"], t, now, rs)
+    # The scale stops at 100, however many points were collected
     return min(100.0, total)

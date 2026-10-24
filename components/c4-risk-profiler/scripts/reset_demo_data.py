@@ -14,10 +14,12 @@ from c4.config import Settings  # noqa: E402
 from c4.db import collections as col  # noqa: E402
 from c4.db.mongo import get_db  # noqa: E402
 
+# A safety stop: the script does nothing unless you type --yes
 if "--yes" not in sys.argv:
     sys.exit("This deletes all C4 data. Run again with --yes to confirm.")
 settings = Settings()
 db = get_db(settings.mongo_url)
+# Empty each of the five collections (the collections and their indexes stay)
 for name in (col.EVENTS, col.HITS, col.FEATURES, col.PROFILES, col.ACTIONS):
     deleted = db[name].delete_many({}).deleted_count
     print(f"{name}: {deleted} documents deleted")

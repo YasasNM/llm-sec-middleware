@@ -1,3 +1,5 @@
+"""GET /health: is C4 alive, and can it reach MongoDB? (open, no key needed)"""
+
 from __future__ import annotations
 
 from fastapi import APIRouter, Request
@@ -10,6 +12,7 @@ router = APIRouter(tags=["health"])
 @router.get("/health")
 def health(request: Request):
     try:
+        # Any cheap call proves the database answers
         request.app.state.db.list_collection_names()
         mongo = "ok"
     except Exception:  # noqa: BLE001  (any database problem is reported, not raised)

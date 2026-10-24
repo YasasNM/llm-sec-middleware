@@ -17,17 +17,19 @@ def _iso(dt: datetime | None) -> str | None:
 
 def compute_features(events: list[dict], hits: list[dict], as_of: datetime, rs: Ruleset) -> dict:
     """Counters and histograms for one user, over the history window."""
+    # Only look at the last 30 days (the window), oldest first
     since = as_of - timedelta(days=rs.window_days)
     win = [e for e in sort_events(events) if since <= e["event_timestamp"] <= as_of]
     win_ids = {e["event_id"] for e in win}
     win_hits = [h for h in hits if h["event_id"] in win_ids]
 
+    # One request produces up to three events (C1, C2, C3), so requests are counted by request_id
     request_time: dict[str, datetime] = {}
     sessions: dict[str, dict] = {}
     masks: list[float] = []
     intent_blocks = violations = leak_events = leaked_items = 0
     for e in win:
-        request_time.setdefault(e["request_id"], e["event_timestamp"])
+        request_time.setdefault(e["request_id"], e["event_timestamp"])  # keep the first time seen
         s = sessions.setdefault(
             e["session_id"],
             {
@@ -36,7 +38,7 @@ def compute_features(events: list[dict], hits: list[dict], as_of: datetime, rs: 
                 "suspicious_events": 0,
             },
         )
-        if is_suspicious(e):
+        if is_suspicious(e):  # C2 BLOCK or C3 VIOLATION
             s["suspicious_events"] += 1
         if e["source"] == "c1":
             masks.append(float(e["masking_percentage"]))
@@ -49,9 +51,11 @@ def compute_features(events: list[dict], hits: list[dict], as_of: datetime, rs: 
                 leak_events += 1
                 leaked_items += int(e["leaked_pii_count"])
 
+    # How many requests at each hour of the day (UTC). Used by rule R6 and the hour chart.
     hour_hist = [0] * 24
     for t in request_time.values():
         hour_hist[t.hour] += 1
+    # "High severity" events are the ones where R2 or R5 fired
     high_events = {h["event_id"] for h in win_hits if h["rule_id"] in ("R2", "R5")}
     return {
         "hour_histogram": hour_hist,
@@ -69,6 +73,7 @@ def compute_features(events: list[dict], hits: list[dict], as_of: datetime, rs: 
             "high_severity": len(high_events),
             "unfamiliar_time_events": sum(1 for h in win_hits if h["rule_id"] == "R6"),
         },
+        # masking: sum and count let us keep a running average without storing every value
         "masking": {
             "sum": round(sum(masks), 3),
             "count": len(masks),
@@ -78,6 +83,7 @@ def compute_features(events: list[dict], hits: list[dict], as_of: datetime, rs: 
 
 
 def behaviour_summary(features: dict) -> dict:
+    """The small block of numbers shown on a profile (counters plus two masking figures)."""
     c, m = features["counters"], features["masking"]
     return {
         **c,
@@ -90,6 +96,7 @@ def behaviour_summary(features: dict) -> dict:
 
 def top_contributors(hits: list[dict], now: datetime, rs: Ruleset) -> list[dict]:
     """Decayed points per rule, biggest first. Every point comes from a stored rule hit."""
+    # Add up the decayed points of every rule hit, grouped by rule
     since = now - timedelta(days=rs.window_days)
     pts: dict[str, float] = defaultdict(float)
     for h in hits:
@@ -98,8 +105,9 @@ def top_contributors(hits: list[dict], now: datetime, rs: Ruleset) -> list[dict]
     rows = [
         {"rule_id": r, "title": RULE_TITLES[r], "points": round(p, 1)}
         for r, p in pts.items()
-        if p >= 0.05
+        if p >= 0.05  # a rule with almost nothing left is not worth showing
     ]
+    # Biggest reason first; the rule id breaks ties so the order is always the same
     return sorted(rows, key=lambda r: (-r["points"], r["rule_id"]))
 
 
@@ -108,6 +116,7 @@ def build_profile(
 ) -> dict:
     """Profile fields computed from events and rule hits (status is set by admin actions)."""
     feats = compute_features(events, hits, as_of, rs)
+    # One decimal is enough; more digits would suggest accuracy the rules do not have
     score = round(score_at(hits, as_of, rs), 1)
     prio = priority_for(score, rs)
     times = [e["event_timestamp"] for e in events]

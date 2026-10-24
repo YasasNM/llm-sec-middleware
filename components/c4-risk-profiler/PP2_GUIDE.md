@@ -11,23 +11,28 @@
 | Admin endpoints: users list, profile, timeline, block, unblock, action log, block list for C1 | Done |
 | Dummy data: 7 behaviour scenarios, seeded and reproducible | Done |
 | Fixed event-count baseline and comparison run | Done (first version) |
-| Automatic tests (unit, integration, contract, security, speed) | 52 passing |
-| Risk dashboard screens | Not started (next phase, needs the gateway) |
+| Automatic tests (unit, integration, contract, security, speed, dashboard) | 66 passing |
+| Risk dashboard in the browser (overview, user page, access control, scoring rules, demo tools) | Done (served by C4, demo version) |
+| Block enforcement: block list published for C1; simulated gate shows a blocked user refused (HTTP 403) | Done for the demo. Real enforcement is inside C1 / the gateway (next phase) |
 | Real events from C1, C2, C3 | Not started (integration phase) |
 | Half-life tuning, full evaluation metrics, 10,000-event test | Not started (weeks 13 to 20) |
 
-## 2. Five-minute demo
+## 2. Demo (no commands, about 8 minutes)
 
-1. Start MongoDB and C4 (`uvicorn c4.main:app --port 8004`). Open `http://localhost:8004/docs`.
-2. Run `python scripts\event_generator.py --all`. It sends about 1,900 dummy events through the real API.
-3. `GET /v1/users` (gateway key): 7 users. Three are P1, four are P4. This is the dashboard data.
-4. `GET /v1/users/user_005/profile`: burst attacker, score 100, `BLOCK_RECOMMENDED`, top reasons listed.
-5. `GET /v1/users/user_005/timeline`: each event with the rule that fired and the score after it.
-6. `POST /v1/users/user_005/block` with `{"org_id":"org_001","by":"admin_001","reason":"Burst of attacks"}`.
-7. `GET /v1/blocklist?org_id=org_001` (c1 key): `user_005` is listed. C1 reads this to refuse the user.
-8. `GET /v1/users/user_002/profile`: careless power-user, 480 events, high masking, still P4.
-9. Show MongoDB Compass: database `c4`, the five collections, one document of each.
-10. Run `python evaluation\run_scenarios.py`: C4 against the event-count baseline.
+Start: double-click `Start_C4_Demo.bat`. The browser opens the dashboard. On the day, always press **Load demo data** first: the data is dated from that moment, and scores fade with time.
+
+1. **Demo tools** page: press **Load demo data**. 7 dummy users, about 1,800 events.
+2. **Overview**: 3 users critical, 4 low. The meter ticks mark the priority levels.
+3. Open **user_005**. Show the score, "Why this score" (rules and points), the score-over-time line and the event timeline.
+4. Press **Block user**, write a reason, confirm. The status changes to Blocked.
+5. **Access control**: the user is on the block list. In **Test the gate**, send a request as `user_005`: Blocked, HTTP 403. Send one as `user_001`: Allowed. The audit log shows who blocked and why.
+6. **Demo tools**: press **Start attack** for `user_live`. Go to Overview and watch the score climb from Low to Critical in about 8 seconds.
+7. **Demo tools, Move time forward**: press +3 days twice. A "Time moved" tag appears and scores fade (user_005 drops from critical to about 70). Press **Back to now**. Only the clock moves, no stored data changes.
+8. **Scoring rules**: the 7 rules, the decay curve, the priority levels, all read from `rules.yaml`.
+9. MongoDB Compass: database `c4`, five collections.
+10. Tests (optional): `python -m pytest` and `python evaluation\run_scenarios.py`.
+
+Honest limits to say if asked: the data is dummy; the gate here is a simulation of C1; real events from C1 to C3 and real enforcement come in the next phase.
 
 ## 3. What to say (plain version)
 

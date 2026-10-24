@@ -5,6 +5,7 @@ from pathlib import Path
 
 import pytest
 from c4.config import Settings
+from c4.core import clock
 from c4.core.ruleset import load_ruleset
 from c4.db.mongo import get_db
 from c4.main import create_app
@@ -13,6 +14,14 @@ from fastapi.testclient import TestClient
 KEYS = {"c1": "key-c1", "c2": "key-c2", "c3": "key-c3", "gateway": "key-gw"}
 RULES_FILE = Path(__file__).resolve().parents[1] / "configs" / "rules.yaml"
 _counter = itertools.count()
+
+
+@pytest.fixture(autouse=True)
+def real_time():
+    """Every test starts with the real clock (one test moves it forward)."""
+    clock.reset()
+    yield
+    clock.reset()
 
 
 @pytest.fixture

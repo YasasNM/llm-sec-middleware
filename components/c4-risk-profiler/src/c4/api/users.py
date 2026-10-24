@@ -5,11 +5,11 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 
 from c4.auth import require_caller
-from c4.core.classify import LABELS, priority_for
-from c4.core.recompute import get_profile, live_scores, load_events, load_hits, now_utc
+from c4.core.overview import collect_users
+from c4.core.recompute import get_profile, load_events, load_hits
 from c4.core.timeline import build_timeline
-from c4.db import collections as col
 
+# Every route in this file needs the gateway key (the gateway has already checked the admin role)
 router = APIRouter(prefix="/v1", tags=["users"], dependencies=[Depends(require_caller("gateway"))])
 
 
@@ -21,31 +21,8 @@ def list_users(
     status: str | None = Query(default=None, pattern="^(active|blocked)$"),
     q: str | None = None,
 ):
-    db, rs = request.app.state.db, request.app.state.rules
-    now = now_utc()
-    live = live_scores(db, rs, org_id, now)
-    rows = []
-    for p in db[col.PROFILES].find({"org_id": org_id}, {"_id": 0}):
-        info = live.get(p["user_id"], {"score": 0.0, "main_reason": None})
-        prio = priority_for(info["score"], rs)
-        rows.append(
-            {
-                "user_id": p["user_id"],
-                "score": info["score"],
-                "priority": prio,
-                "priority_label": LABELS[prio],
-                "status": p.get("status", "active"),
-                "main_reason": info["main_reason"],
-                "last_updated": p.get("updated_at"),
-                "last_activity": p.get("last_activity"),
-                "request_count": p["behaviour_summary"]["requests"],
-            }
-        )
-    summary = {
-        "total_users": len(rows),
-        **{k: sum(1 for r in rows if r["priority"] == k) for k in ("P1", "P2", "P3", "P4")},
-        "blocked": sum(1 for r in rows if r["status"] == "blocked"),
-    }
+    rows, summary = collect_users(request.app.state.db, request.app.state.rules, org_id)
+    # The summary counts everybody; the filters only shrink the list below it.
     users = [
         r
         for r in rows
@@ -53,12 +30,12 @@ def list_users(
         and (not status or r["status"] == status)
         and (not q or q.lower() in r["user_id"].lower())
     ]
-    users.sort(key=lambda r: (-r["score"], r["user_id"]))
     return {"summary": summary, "users": users}
 
 
 @router.get("/users/{user_id}/profile")
 def profile(request: Request, user_id: str, org_id: str):
+    # get_profile re-scores the user for the current time, so decay is always up to date
     prof = get_profile(request.app.state.db, request.app.state.rules, org_id, user_id)
     if prof is None:
         raise HTTPException(status_code=404, detail="user not found")
@@ -67,6 +44,7 @@ def profile(request: Request, user_id: str, org_id: str):
 
 @router.get("/users/{user_id}/timeline")
 def timeline(request: Request, user_id: str, org_id: str, limit: int = Query(100, ge=1, le=1000)):
+    # Every event of the user with the rules that fired on it and the score right after
     db, rs = request.app.state.db, request.app.state.rules
     events = load_events(db, org_id, user_id)
     if not events:

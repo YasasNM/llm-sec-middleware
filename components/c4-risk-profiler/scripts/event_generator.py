@@ -40,16 +40,18 @@ def read_keys() -> dict[str, str]:
     return keys
 
 
+# One counter per outcome, so the summary line shows accepted / duplicate / rejected
 def send(client: httpx.Client, keys: dict[str, str], items: list[dict]) -> dict[str, int]:
     counts = {"accepted": 0, "duplicate": 0, "rejected": 0}
     for n, item in enumerate(items, start=1):
         src = item["source"]
+        # Each source posts with its own key, exactly like the real components will
         r = client.post(
             f"/v1/events/{src}", json=item["payload"], headers={"X-Service-Key": keys[src]}
         )
-        if r.status_code == 202:
+        if r.status_code == 202:  # 202 = stored
             counts["accepted"] += 1
-        elif r.status_code == 200:
+        elif r.status_code == 200:  # 200 = already had it (duplicate event_id)
             counts["duplicate"] += 1
         else:
             counts["rejected"] += 1

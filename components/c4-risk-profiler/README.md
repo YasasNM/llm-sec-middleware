@@ -1,6 +1,6 @@
 # C4 Heuristic Cross-Session Risk Profiler
 
-Owner: Sandul · Port: 8004 · Status: **PP2 build** (scoring backend working with dummy data)
+Owner: Sandul · Port: 8004 in the blueprint (the demo uses 8000) · Status: **PP2 build** (scoring backend and dashboard working with dummy data)
 
 - Build blueprint: [BLUEPRINT.md](BLUEPRINT.md) · PP2 notes and demo script: [PP2_GUIDE.md](PP2_GUIDE.md)
 - Shared interfaces: [../../contracts/CONTRACTS.md](../../contracts/CONTRACTS.md)
@@ -23,30 +23,29 @@ P1 to P4, and a block recommendation. An admin blocks; C1 enforces through `/v1/
 | FR-07 | Profile updates when a new event arrives (also late events) | `recompute.py` |
 | FR-08 | P1 gives `BLOCK_RECOMMENDED`; admin block and unblock; block list for C1 | `api/actions.py`, `api/blocklist.py` |
 
-Not built yet: risk dashboard screens (`apps/web/src/features/risk`), real C1 to C3 events,
-tuning of the half-life, the full evaluation, 10,000-event performance run.
+| FR-09 | Risk dashboard in the browser (overview, user page, access control, scoring rules) | `src/c4/dashboard/`, `api/dashboard.py` |
 
-## Run it on Windows (PowerShell, from this folder)
+Still to do: real C1 to C3 events instead of dummy data, the live block in C1 / the gateway
+(C4 already publishes the block list), tuning of the half-life, the full evaluation, the
+10,000-event performance run.
+
+## Run it on Windows
+
+Easiest: double-click **`Start_C4_Demo.bat`** in this folder (MongoDB must be running, which
+it does by itself after installation). The dashboard opens at http://localhost:8000/dashboard/ .
+On the page, open **Demo tools** and press **Load demo data**.
+
+From a terminal (this folder), for the tests and the scenario table:
 
 ```powershell
-python -m venv .venv
-.venv\Scripts\Activate.ps1
 pip install -e ".[dev]"
-copy .env.example .env          # then keep the default keys for the demo
-pytest                          # 52 tests, no database needed
+python -m pytest                       # 66 tests, no database needed
 python evaluation\run_scenarios.py     # 7 scenarios, C4 vs baseline, no database needed
+python -m uvicorn c4.main:app --port 8000
 ```
 
-With MongoDB Community running on this computer (default `localhost:27017`):
-
-```powershell
-uvicorn c4.main:app --port 8004                              # terminal 1
-python scripts\event_generator.py --all                      # terminal 2: dummy data
-```
-
-Then open http://localhost:8004/docs . Each endpoint has an `X-Service-Key` field. Use the
-`gateway` key from your `.env` for the admin endpoints.
-Look at the data in MongoDB Compass: database `c4`, five collections.
+Look at the data in MongoDB Compass: database `c4`, five collections. The API list with
+`X-Service-Key` is at http://localhost:8000/docs (use the `gateway` key from `.env`).
 
 ## MongoDB collections (database `c4`)
 
@@ -59,10 +58,13 @@ See BLUEPRINT.md section 13.4 for fields and indexes.
 configs/rules.yaml        all scoring numbers (no thresholds in code)
 src/c4/main.py            the app           src/c4/auth.py      service-key check
 src/c4/api/               endpoints         src/c4/core/        rules, decay, features, profile
-src/c4/db/                MongoDB           scripts/            dummy-data generator, reset
-evaluation/               scenarios (dummy data), fixed event-count baseline, comparison run
-tests/                    unit, integration, contract, security, performance
+src/c4/db/                MongoDB           src/c4/dashboard/   the browser page (HTML, CSS, JS)
+src/c4/demo/              dummy scenarios and the live-attack helper
+scripts/                  dummy-data generator, reset
+evaluation/               fixed event-count baseline and comparison run
+tests/                    unit, integration, contract, security, performance, dashboard
 ```
+A full explanation of every file is in FILE_GUIDE.docx (Word).
 
 ## Data and models
 

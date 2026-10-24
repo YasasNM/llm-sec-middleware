@@ -5,19 +5,17 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends, Request
 
 from c4.auth import require_caller
+from c4.core.admin import blocked_user_ids
 from c4.core.recompute import now_utc
-from c4.db import collections as col
 
 router = APIRouter(prefix="/v1", tags=["blocklist"])
 
 
+# C1 uses this list to refuse requests from blocked users; the gateway may read it too.
 @router.get("/blocklist", dependencies=[Depends(require_caller("c1", "gateway"))])
 def blocklist(request: Request, org_id: str):
-    rows = request.app.state.db[col.PROFILES].find(
-        {"org_id": org_id, "status": "blocked"}, {"user_id": 1}
-    )
     return {
         "org_id": org_id,
-        "user_ids": sorted(r["user_id"] for r in rows),
+        "user_ids": blocked_user_ids(request.app.state.db, org_id),
         "generated_at": now_utc().strftime("%Y-%m-%dT%H:%M:%SZ"),
     }

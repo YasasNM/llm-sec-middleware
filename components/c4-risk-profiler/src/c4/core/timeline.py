@@ -10,6 +10,7 @@ SOURCE_LABEL = {"c1": "Privacy check", "c2": "Intent check", "c3": "Policy check
 
 
 def _title(ev: dict) -> str:
+    """A plain sentence for an event. It contains no prompt or answer text (C4 never has any)."""
     if ev["source"] == "c1":
         return f"Prompt received, {ev['masking_percentage']}% masked"
     if ev["source"] == "c2":
@@ -20,6 +21,7 @@ def _title(ev: dict) -> str:
 
 
 def _fields(ev: dict) -> dict:
+    # Only the agreed fields of each source are shown
     keys = {
         "c1": ("masking_percentage",),
         "c2": ("c2_verdict", "c2_score"),
@@ -31,6 +33,7 @@ def _fields(ev: dict) -> dict:
 def build_timeline(
     events: list[dict], hits: list[dict], rs: Ruleset, limit: int = 100
 ) -> list[dict]:
+    # Group the rule hits by the event that caused them
     by_event: dict[str, list[dict]] = {}
     for h in hits:
         by_event.setdefault(h["event_id"], []).append(h)
@@ -39,12 +42,14 @@ def build_timeline(
     for ev in sorted(events, key=lambda e: e["event_timestamp"], reverse=True)[:limit]:
         ev_hits = sorted(by_event.get(ev["event_id"], []), key=lambda h: h["rule_id"])
         fired = {h["rule_id"] for h in ev_hits}
+        # Display severity: R2/R5 = High, any other suspicious event = Medium, the rest = Low
         if fired & {"R2", "R5"}:
             severity = "High"
         elif is_suspicious(ev):
             severity = "Medium"
         else:
             severity = "Low"
+        # Events with a hit carry the stored score; the others get a freshly calculated one
         if ev_hits:
             score_after = ev_hits[0]["score_after"]
         else:

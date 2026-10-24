@@ -25,6 +25,7 @@ from evaluation.scenarios import SCENARIOS, build_scenario  # noqa: E402
 
 
 def internal(items: list[dict]) -> list[dict]:
+    """Turn the generated events into the shape C4 keeps in MongoDB (with a real datetime)."""
     return [
         {
             **i["payload"],
@@ -42,6 +43,7 @@ def main() -> None:
     args = ap.parse_args()
 
     rs = load_ruleset(args.rules)
+    # All 7 scenarios are scored at the same moment, "now"
     end = datetime.now(UTC).replace(microsecond=0)
     print(f"ruleset {rs.version}, half-life {rs.half_life_hours} h, seed {args.seed}\n")
     head = (
@@ -52,10 +54,10 @@ def main() -> None:
     print("-" * len(head))
     for name in SCENARIOS:
         events = internal(build_scenario(name, seed=args.seed, end=end))
-        hits = replay(events, rs)
+        hits = replay(events, rs)  # C4: rules plus time decay
         score = round(score_at(hits, end, rs), 1)
         peak = max([h["score_after"] for h in hits], default=0.0)
-        base = baseline_score(events, end, rs.window_days)
+        base = baseline_score(events, end, rs.window_days)  # the simple event counter to compare
         reasons = sorted({h["rule_id"] for h in hits})
         print(
             f"{name:<22}{len(events):>7}{peak:>7.1f}{score:>10.1f}{priority_for(score, rs):>5}"

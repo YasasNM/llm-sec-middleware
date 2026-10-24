@@ -13,6 +13,7 @@ POINTS_PER_SUSPICIOUS_EVENT = 10.0
 
 def baseline_score(events: list[dict], as_of: datetime, window_days: int = 30) -> float:
     since = as_of - timedelta(days=window_days)
+    # Count every suspicious event in the window; no rules, no weights, no fading with age
     count = sum(
         1
         for e in events

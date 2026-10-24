@@ -44,6 +44,7 @@ def _hit(ev: dict, rule_id: str, rs: Ruleset) -> dict:
 
 def replay(events: list[dict], rs: Ruleset) -> list[dict]:
     hits: list[dict] = []
+    # State we carry forward while walking through the events in time order
     request_times: list = []  # one time per unique request_id
     seen_requests: set[str] = set()
     sessions: list[dict] = []  # in order of first activity
@@ -53,6 +54,7 @@ def replay(events: list[dict], rs: Ruleset) -> list[dict]:
     for ev in sort_events(events):
         t = ev["event_timestamp"]
 
+        # Remember every request once (needed for rule R6) and every session in order of first use
         if ev["request_id"] not in seen_requests:
             seen_requests.add(ev["request_id"])
             request_times.append(t)
@@ -61,8 +63,10 @@ def replay(events: list[dict], rs: Ruleset) -> list[dict]:
             session_index[ev["session_id"]] = s
             sessions.append(s)
 
-        fired: list[str] = []
+        fired: list[str] = []  # rules that fire on this one event
         suspicious = is_suspicious(ev)
+
+        # R1 and R4 are the basic signals. R2 and R5 mark severe cases on top of them.
 
         if ev["source"] == "c2" and ev["c2_verdict"] == "BLOCK":
             fired.append("R1")
@@ -75,26 +79,31 @@ def replay(events: list[dict], rs: Ruleset) -> list[dict]:
             if ev["leaked_pii_count"] >= rs.param("R2", "leak_count"):
                 fired.append("R2")
 
+        # R3, R6 and R7 look at patterns, so they only matter on a suspicious event
         if suspicious:
             sess = session_index[ev["session_id"]]
             sess["suspicious"] += 1
 
             # R3: enough suspicious events inside a short window; fires once per window
             window = timedelta(minutes=rs.param("R3", "window_minutes"))
+            # keep only the suspicious events that are still inside the window, then add this one
             r3_times = [x for x in r3_times if t - x <= window] + [t]
             if len(r3_times) >= rs.param("R3", "count"):
                 fired.append("R3")
+                # start counting again, so R3 fires once per burst, not on every event
                 r3_times = []
 
             # R6: suspicious event at an hour the user rarely uses
             since = t - timedelta(days=rs.window_days)
             recent = [x for x in request_times if since <= x <= t]
             if len(recent) >= rs.param("R6", "min_requests"):
+                # share = fraction of the user's requests that happened at this hour of the day
                 share = sum(1 for x in recent if x.hour == t.hour) / len(recent)
                 if share < rs.param("R6", "min_share"):
                     fired.append("R6")
 
             # R7: suspicious count rises across the last N sessions
+            # Needs the last n sessions to have strictly more suspicious events each time (1, 2, 3)
             n = int(rs.param("R7", "sessions"))
             k = len(sessions) - 1
             if (
@@ -108,8 +117,10 @@ def replay(events: list[dict], rs: Ruleset) -> list[dict]:
                     fired.append("R7")
                     sess["r7_fired"] = True
 
+        # set() so a rule never fires twice on the same event (R2 can be reached two ways)
         new_hits = [_hit(ev, rid, rs) for rid in sorted(set(fired))]
         hits.extend(new_hits)
+        # Score right after this event. Stored on the hit so the timeline can show how it grew.
         score_now = round(score_at(hits, t, rs), 1)
         for h in new_hits:
             h["score_after"] = score_now

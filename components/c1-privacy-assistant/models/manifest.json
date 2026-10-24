@@ -2,7 +2,7 @@
   "model": "C1 name model: TF-IDF (char 2-4 + context words) + LogisticRegression",
   "files": {
     "c1_model.joblib": {
-      "sha256": "3e49943c692eac48af44f9156a9674591eebbddcab0723ceec21966109a20297",
+      "sha256": "51442527b24d0d2ae44190460e0f37598199481c3b7811ebdc6c3a52ab56d2d6",
       "model": "TF-IDF (char 2-4 + context words) + LogisticRegression",
       "sources": [
         "HC-PII-Corpus (own generated corpus, train split)"

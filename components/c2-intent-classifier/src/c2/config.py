@@ -39,7 +39,7 @@ class Settings(BaseSettings):
     c4_url: str = Field(default="http://127.0.0.1:8004", alias="MG_C4_URL")
     outbox_path: Path = Field(default=COMPONENT_ROOT / "data" / "c2.db", alias="MG_OUTBOX_PATH")
 
-    model_version: str = Field(default="c2-electra-small-v0", alias="C2_MODEL_VERSION")
+    model_version: str = Field(default="c2-electra-base-v1", alias="C2_MODEL_VERSION")
     classifier_checkpoint_path: Path = Field(
         default_factory=_default_checkpoint, alias="C2_CLASSIFIER_CHECKPOINT_PATH"
     )
@@ -51,7 +51,7 @@ class Settings(BaseSettings):
     )
     allow_unauthenticated: bool = Field(default=False, alias="C2_ALLOW_UNAUTHENTICATED")
     dev_ui: bool = Field(default=False, alias="C2_DEV_UI")
-    max_length: int = Field(default=512, alias="C2_MAX_LENGTH")
+    max_length: int = Field(default=256, alias="C2_MAX_LENGTH")
     host: str = Field(default="0.0.0.0", alias="C2_HOST")
     port: int = Field(default=8002, alias="C2_PORT")
 

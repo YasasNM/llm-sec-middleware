@@ -48,7 +48,7 @@ def test_built_event_matches_contract() -> None:
         nearest_attack_ids=["hc-001-023"],
         degraded=False,
         latency_ms=61,
-        model_version="c2-electra-small-v0",
+        model_version="c2-electra-base-v1",
     )
     event = build_event(req, out)
     jsonschema.validate(event.model_dump(), _schema("c2_event.schema.json"))

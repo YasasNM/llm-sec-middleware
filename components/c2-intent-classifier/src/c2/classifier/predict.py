@@ -7,7 +7,7 @@ from c2.ensemble.decide import BranchResult
 
 
 class ClassifierService:
-    """ELECTRA-small binary classifier trained on HC-AttackCorpus (Local_dev checkpoint)."""
+    """ELECTRA-base binary classifier trained on HC-AttackCorpus."""
 
     def __init__(self, settings: Settings) -> None:
         self.settings = settings

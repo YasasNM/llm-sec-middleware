@@ -5,7 +5,7 @@ Owner: Nisith · Port: 8002
 Screens a C1-masked prompt for attack intent with two branches:
 
 1. Similarity search against known attacks (ChromaDB)
-2. ELECTRA-small classifier trained on HC-AttackCorpus
+2. ELECTRA-base classifier trained on HC-AttackCorpus
 
 The ensemble returns `PASS` or `BLOCK` to the gateway and sends one C2 event to C4 for every classified request (`fail_safe` is the exception).
 

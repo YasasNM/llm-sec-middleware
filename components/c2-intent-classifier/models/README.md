@@ -1,11 +1,9 @@
 # C2 models
 
-Tokenizer files live in `classifier/`. The ELECTRA-small weights (`model.safetensors`, ~52 MB) stay off Git (K29).
+Tokenizer and config files live in `classifier/`. The ELECTRA-base weights (`model.safetensors`, ~418 MB) stay off Git (K29).
 
-Local laptop:
+Current model: `c2-electra-base-v1` (`google/electra-base-discriminator`, trained at max_length 256). See `manifest.json` for hashes.
 
-```bash
-python scripts/link_checkpoint.py
-```
+Get the weights from Google Drive `MyDrive/LLM-C2/model_comparison/google__electra-base-discriminator_final/` and place `model.safetensors` in `classifier/`, or set `C2_CLASSIFIER_CHECKPOINT_PATH` to a folder containing all four files.
 
-That copies `Local_dev/llm-c2-tester/c2_classifier_final/model.safetensors` into this folder, or you can set `C2_CLASSIFIER_CHECKPOINT_PATH` to the Local_dev folder.
+Do not use `scripts/link_checkpoint.py` unless you pass an explicit source path (see script).

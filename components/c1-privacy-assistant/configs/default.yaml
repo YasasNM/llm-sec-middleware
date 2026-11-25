@@ -1,0 +1,21 @@
+# C1 default settings. Environment variables (C1_*) will override these in Step 5.
+
+# Live risk level shown in the UI (M7, BLUEPRINT 12.3)
+risk:
+  # Points per class of explicit identifier
+  class_weights:
+    high: 30
+    medium: 20
+    low: 10
+  # Which class each explicit identifier belongs to
+  entity_classes:
+    NIC: high
+    MRN: high
+    PATIENT_NAME: medium
+    DOB: medium
+    PHONE: medium
+    EMAIL: medium
+  # Explicit score at or above these values sets the level
+  levels:
+    high_from: 50
+    medium_from: 20

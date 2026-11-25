@@ -1,0 +1,109 @@
+text,entity_type,risk,entities_json,split,kind,template_id,id
+Translate the discharge instructions for Inoka Hettiarachchi into Sinhala.,PATIENT_NAME,high,"[{""type"": ""PATIENT_NAME"", ""start"": 41, ""end"": 60, ""value"": ""Inoka Hettiarachchi""}]",train,phi,P15,hcpii-prompt-train-00001
+"Convert this note into SOAP format:
+Date: 6 Jan 2026
+1) Name: Uthayan Ratnasingam
+2) Age: 39 years
+3) Presenting complaint: Excessive thirst and passing urine frequently for 1 week
+4) Past medical history:
+   DM: Yes, 1 year, on metformin and gliclazide
+   BP: No
+5) Allergies: Nil
+6) Smoking: Non smoker
+   Alcohol / drug abuse: Occasional alcohol (arrack or beer), no drug abuse
+Family history: Sister: Asthma; Uncle: DM
+Living area: Pannala
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: -",PATIENT_NAME,high,"[{""type"": ""PATIENT_NAME"", ""start"": 62, ""end"": 81, ""value"": ""Uthayan Ratnasingam""}, {""type"": ""AGE"", ""start"": 90, ""end"": 98, ""value"": ""39 years""}, {""type"": ""LOCATION"", ""start"": 436, ""end"": 443, ""value"": ""Pannala""}]",train,phi,P12,hcpii-prompt-train-00002
+"Does Mr. Ranjith Dharmasena's sugar control look acceptable? MRN: 327252, 77 years old.",MRN,high,"[{""type"": ""PATIENT_NAME"", ""start"": 9, ""end"": 27, ""value"": ""Ranjith Dharmasena""}, {""type"": ""MRN"", ""start"": 66, ""end"": 72, ""value"": ""327252""}, {""type"": ""AGE"", ""start"": 74, ""end"": 86, ""value"": ""77 years old""}]",train,phi,P49,hcpii-prompt-train-00003
+"Draft a sick leave certificate for R.N. Silva, 560801090V, for sore throat and cough for 6 days.",NIC,high,"[{""type"": ""PATIENT_NAME"", ""start"": 35, ""end"": 45, ""value"": ""R.N. Silva""}, {""type"": ""NIC"", ""start"": 47, ""end"": 57, ""value"": ""560801090V""}]",train,phi,P25,hcpii-prompt-train-00004
+Explain Graves disease and Hashimoto thyroiditis to a new intern.,NONE,low,[],train,hard_negative_or_no_phi,N20,hcpii-prompt-train-00005
+Who is the next of kin for Imesha Wanigasekara? Contact iwanigasekara@hotmail.com.,EMAIL,high,"[{""type"": ""PATIENT_NAME"", ""start"": 27, ""end"": 46, ""value"": ""Imesha Wanigasekara""}, {""type"": ""EMAIL"", ""start"": 56, ""end"": 81, ""value"": ""iwanigasekara@hotmail.com""}]",train,phi,P24,hcpii-prompt-train-00006
+"Who is on call tonight, Dr K. Senaratne or Prof. Thavarajah?",NONE,low,[],train,hard_negative_or_no_phi,N28,hcpii-prompt-train-00007
+Bed 9 (P1281) is ready for discharge after Dr K. Premadasa's round.,NONE,low,[],train,hard_negative_or_no_phi,N50,hcpii-prompt-train-00008
+"Write a discharge summary for Priyanka Gunawardena, 33-year-old, living at No. 122A, Dharmapala Mawatha, Chilaw. Admitted with joint pains and morning stiffness for 11 months.",PATIENT_NAME,high,"[{""type"": ""PATIENT_NAME"", ""start"": 30, ""end"": 50, ""value"": ""Priyanka Gunawardena""}, {""type"": ""AGE"", ""start"": 52, ""end"": 63, ""value"": ""33-year-old""}, {""type"": ""ADDRESS"", ""start"": 75, ""end"": 111, ""value"": ""No. 122A, Dharmapala Mawatha, Chilaw""}]",train,phi,P05,hcpii-prompt-train-00009
+"Convert this note into SOAP format:
+Date: April 23, 2026
+1) Name: Upeksha Sumudu Dharmasena
+2) Age: 31 years
+3) Presenting complaint: Urticarial rash after a meal for 7 days
+4) Past medical history:
+   DM: No
+   BP: No
+5) Allergies: NKDA
+6) Smoking: Never smoked
+   Alcohol / drug abuse: No alcohol, no drug abuse
+Family history: Nil
+Living area: Colombo 05
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: -",PATIENT_NAME,high,"[{""type"": ""PATIENT_NAME"", ""start"": 66, ""end"": 91, ""value"": ""Upeksha Sumudu Dharmasena""}, {""type"": ""AGE"", ""start"": 100, ""end"": 108, ""value"": ""31 years""}, {""type"": ""LOCATION"", ""start"": 347, ""end"": 357, ""value"": ""Colombo 05""}]",train,phi,P12,hcpii-prompt-train-00010
+Who is the next of kin for Mr. Damith Ekanayake? Contact dekanayake29[at]hotmail.com.,EMAIL,high,"[{""type"": ""PATIENT_NAME"", ""start"": 31, ""end"": 47, ""value"": ""Damith Ekanayake""}, {""type"": ""EMAIL"", ""start"": 57, ""end"": 84, ""value"": ""dekanayake29[at]hotmail.com""}]",train,phi,P24,hcpii-prompt-train-00011
+Nurse Pubudu reported that the BP machine in ward 2 is faulty.,NONE,low,[],train,hard_negative_or_no_phi,N29,hcpii-prompt-train-00012
+Bed 9 (P5897) is ready for discharge after Dr. Prasad Gunawardena's round.,NONE,low,[],train,hard_negative_or_no_phi,N50,hcpii-prompt-train-00013
+"Patient details: Dinesh Sivapalan, 41 y/o, 843438948V, No. 123/5, 3rd Lane, Katugastota.",NIC,high,"[{""type"": ""PATIENT_NAME"", ""start"": 17, ""end"": 33, ""value"": ""Dinesh Sivapalan""}, {""type"": ""AGE"", ""start"": 35, ""end"": 41, ""value"": ""41 y/o""}, {""type"": ""NIC"", ""start"": 43, ""end"": 53, ""value"": ""843438948V""}, {""type"": ""ADDRESS"", ""start"": 55, ""end"": 87, ""value"": ""No. 123/5, 3rd Lane, Katugastota""}]",train,phi,P60,hcpii-prompt-train-00014
+How is a flare of Crohn disease managed?,NONE,low,[],train,hard_negative_or_no_phi,N05,hcpii-prompt-train-00015
+URGENT: NADEEKA RANAWEERA 925015986V transferred from Hatton.,NIC,high,"[{""type"": ""PATIENT_NAME"", ""start"": 8, ""end"": 25, ""value"": ""NADEEKA RANAWEERA""}, {""type"": ""NIC"", ""start"": 26, ""end"": 36, ""value"": ""925015986V""}, {""type"": ""LOCATION"", ""start"": 54, ""end"": 60, ""value"": ""Hatton""}]",train,phi,P40,hcpii-prompt-train-00016
+"S.A. KODIKARA, 18-year-old, No. 175B, Cross Street, Bibile. FOR URGENT REVIEW.",PATIENT_NAME,high,"[{""type"": ""PATIENT_NAME"", ""start"": 0, ""end"": 13, ""value"": ""S.A. KODIKARA""}, {""type"": ""AGE"", ""start"": 15, ""end"": 26, ""value"": ""18-year-old""}, {""type"": ""ADDRESS"", ""start"": 28, ""end"": 58, ""value"": ""No. 175B, Cross Street, Bibile""}]",train,phi,P80,hcpii-prompt-train-00017
+What is the screening schedule for children with Down syndrome?,NONE,low,[],train,hard_negative_or_no_phi,N06,hcpii-prompt-train-00018
+"KAJAN NIROJAN THARMALINGAM, 33-year-old, No. 82, Vihara Mawatha, Narammala. FOR URGENT REVIEW.",PATIENT_NAME,high,"[{""type"": ""PATIENT_NAME"", ""start"": 0, ""end"": 26, ""value"": ""KAJAN NIROJAN THARMALINGAM""}, {""type"": ""AGE"", ""start"": 28, ""end"": 39, ""value"": ""33-year-old""}, {""type"": ""ADDRESS"", ""start"": 41, ""end"": 74, ""value"": ""No. 82, Vihara Mawatha, Narammala""}]",train,phi,P80,hcpii-prompt-train-00019
+Draft a poster reminding people about the diabetes clinic on Tuesdays.,NONE,low,[],train,hard_negative_or_no_phi,N12,hcpii-prompt-train-00020
+Reply to sachith.pathirana@hotmail.com confirming Sachith Thilina Pathirana's appointment on 31.05.2026.,EMAIL,high,"[{""type"": ""EMAIL"", ""start"": 9, ""end"": 38, ""value"": ""sachith.pathirana@hotmail.com""}, {""type"": ""PATIENT_NAME"", ""start"": 50, ""end"": 75, ""value"": ""Sachith Thilina Pathirana""}]",val,phi,P67,hcpii-prompt-val-00001
+Dose of gliclazide for a patient weighing 62 kg.,NONE,low,[],val,hard_negative_or_no_phi,N17,hcpii-prompt-val-00002
+"Please book a review with Dr S. Jayaweera for Mahinda Kumarasinghe, MRN#1103338.",MRN,high,"[{""type"": ""PATIENT_NAME"", ""start"": 46, ""end"": 66, ""value"": ""Mahinda Kumarasinghe""}, {""type"": ""MRN"", ""start"": 72, ""end"": 79, ""value"": ""1103338""}]",val,phi,P32,hcpii-prompt-val-00003
+"Date of birth July 22, 2010. Malini Sandya Karunaratne from No. 19A, Church Road, Negombo needs a medical certificate.",PATIENT_NAME,high,"[{""type"": ""DOB"", ""start"": 14, ""end"": 27, ""value"": ""July 22, 2010""}, {""type"": ""PATIENT_NAME"", ""start"": 29, ""end"": 54, ""value"": ""Malini Sandya Karunaratne""}, {""type"": ""ADDRESS"", ""start"": 60, ""end"": 89, ""value"": ""No. 19A, Church Road, Negombo""}]",val,phi,P68,hcpii-prompt-val-00004
+"The family of ""Aqeela Zubair"" asked about visiting hours; reply to 0708703209.",PHONE,high,"[{""type"": ""PATIENT_NAME"", ""start"": 15, ""end"": 28, ""value"": ""Aqeela Zubair""}, {""type"": ""PHONE"", ""start"": 67, ""end"": 77, ""value"": ""0708703209""}]",val,phi,P70,hcpii-prompt-val-00005
+Compare P2265 with P1708 for medication adherence.,NONE,low,[],val,hard_negative_or_no_phi,N44,hcpii-prompt-val-00006
+"Can you explain Ms. Methmi Wickremaratne's test results to the family? DOB 05.01.1964, MRN # 3637263.",MRN,high,"[{""type"": ""PATIENT_NAME"", ""start"": 20, ""end"": 40, ""value"": ""Methmi Wickremaratne""}, {""type"": ""DOB"", ""start"": 75, ""end"": 85, ""value"": ""05.01.1964""}, {""type"": ""MRN"", ""start"": 93, ""end"": 100, ""value"": ""3637263""}]",val,phi,P20,hcpii-prompt-val-00007
+Explain the difference between Parkinson disease and Addison disease.,NONE,low,[],val,hard_negative_or_no_phi,N04,hcpii-prompt-val-00008
+Which ward is Thahir Faizal Ansar in? MRN: 7364816.,MRN,high,"[{""type"": ""PATIENT_NAME"", ""start"": 14, ""end"": 33, ""value"": ""Thahir Faizal Ansar""}, {""type"": ""MRN"", ""start"": 43, ""end"": 50, ""value"": ""7364816""}]",val,phi,P48,hcpii-prompt-val-00009
+Patient P9908 (see LAB-78338) needs a repeat potassium.,NONE,low,[],val,hard_negative_or_no_phi,N48,hcpii-prompt-val-00010
+Translate this instruction into Sinhala: take the tablet after meals.,NONE,low,[],val,hard_negative_or_no_phi,N24,hcpii-prompt-val-00011
+"Please book a review with Dr. Malini Withanage for Subashini Mahalingam, MRN: 541144.",MRN,high,"[{""type"": ""PATIENT_NAME"", ""start"": 51, ""end"": 71, ""value"": ""Subashini Mahalingam""}, {""type"": ""MRN"", ""start"": 78, ""end"": 84, ""value"": ""541144""}]",val,phi,P32,hcpii-prompt-val-00012
+Is Ms. Shehani Sandya Suraweera's NIC 816156562V valid? The clerk thinks a digit is missing.,NIC,high,"[{""type"": ""PATIENT_NAME"", ""start"": 7, ""end"": 31, ""value"": ""Shehani Sandya Suraweera""}, {""type"": ""NIC"", ""start"": 38, ""end"": 48, ""value"": ""816156562V""}]",val,phi,P73,hcpii-prompt-val-00013
+"Can you explain Shehani Ramani Jayaweera's test results to the family? DOB 25.04.1978, MRN: 5148.",MRN,high,"[{""type"": ""PATIENT_NAME"", ""start"": 16, ""end"": 40, ""value"": ""Shehani Ramani Jayaweera""}, {""type"": ""DOB"", ""start"": 75, ""end"": 85, ""value"": ""25.04.1978""}, {""type"": ""MRN"", ""start"": 92, ""end"": 96, ""value"": ""5148""}]",val,phi,P20,hcpii-prompt-val-00014
+What is the usual starting dose of losartan in adults?,NONE,low,[],val,hard_negative_or_no_phi,N03,hcpii-prompt-val-00015
+"Please book a review with Dr S. Nadarajah for T. Karunaratne, MRN: 109301.",MRN,high,"[{""type"": ""PATIENT_NAME"", ""start"": 46, ""end"": 60, ""value"": ""T. Karunaratne""}, {""type"": ""MRN"", ""start"": 67, ""end"": 73, ""value"": ""109301""}]",val,phi,P32,hcpii-prompt-val-00016
+"Please rewrite this note in simple English for the patient:
+Date: April 2, 2026
+1) Name: Dilini Kumarasinghe
+2) Age: 24 years
+3) Presenting complaint: Pain on passing urine with lower abdominal pain for 5 days
+4) Past medical history:
+   DM: No
+   BP: No
+5) Allergies: No known allergies
+6) Smoking: Never smoked
+   Alcohol / drug abuse: No alcohol, no drug abuse
+Family history: Paternal grandfather: HTN
+Living area: Hali-Ela, Badulla
+O/E:
+   Pallor: -
+   Cyanosed: -
+   Edema: -",PATIENT_NAME,high,"[{""type"": ""PATIENT_NAME"", ""start"": 89, ""end"": 108, ""value"": ""Dilini Kumarasinghe""}, {""type"": ""AGE"", ""start"": 117, ""end"": 125, ""value"": ""24 years""}, {""type"": ""LOCATION"", ""start"": 419, ""end"": 436, ""value"": ""Hali-Ela, Badulla""}]",val,phi,P27,hcpii-prompt-val-00017
+Which ward is Ms. Malini Withanage in? MRN#6462188.,MRN,high,"[{""type"": ""PATIENT_NAME"", ""start"": 18, ""end"": 34, ""value"": ""Malini Withanage""}, {""type"": ""MRN"", ""start"": 43, ""end"": 50, ""value"": ""6462188""}]",val,phi,P48,hcpii-prompt-val-00018
+Which ward is Vihanga Suraweera in? MRN#4110.,MRN,high,"[{""type"": ""PATIENT_NAME"", ""start"": 14, ""end"": 31, ""value"": ""Vihanga Suraweera""}, {""type"": ""MRN"", ""start"": 40, ""end"": 44, ""value"": ""4110""}]",val,phi,P48,hcpii-prompt-val-00019
+Translate this instruction into Sinhala: take the tablet after meals.,NONE,low,[],val,hard_negative_or_no_phi,N24,hcpii-prompt-val-00020
+Name: Y.O. Hewage | MRN 1867 | DOB: 17 December 1981,MRN,high,"[{""type"": ""PATIENT_NAME"", ""start"": 6, ""end"": 17, ""value"": ""Y.O. Hewage""}, {""type"": ""MRN"", ""start"": 24, ""end"": 28, ""value"": ""1867""}, {""type"": ""DOB"", ""start"": 36, ""end"": 52, ""value"": ""17 December 1981""}]",test,phi,P52,hcpii-prompt-test-00001
+"Write a letter to Senthil Ariyaratnam at No. 70A, 5th Cross Street, Kotte about the missed appointment on August 28, 2026.",PATIENT_NAME,high,"[{""type"": ""PATIENT_NAME"", ""start"": 18, ""end"": 37, ""value"": ""Senthil Ariyaratnam""}, {""type"": ""ADDRESS"", ""start"": 41, ""end"": 73, ""value"": ""No. 70A, 5th Cross Street, Kotte""}]",test,phi,P44,hcpii-prompt-test-00002
+"Insurance form: Name Ms. Yamuna Wijeratne; NIC 200372491409; Address No. 113, Market Road, Wariyapola; Tel 071 835 6012.",NIC,high,"[{""type"": ""PATIENT_NAME"", ""start"": 25, ""end"": 41, ""value"": ""Yamuna Wijeratne""}, {""type"": ""NIC"", ""start"": 47, ""end"": 59, ""value"": ""200372491409""}, {""type"": ""ADDRESS"", ""start"": 69, ""end"": 101, ""value"": ""No. 113, Market Road, Wariyapola""}, {""type"": ""PHONE"", ""start"": 107, ""end"": 119, ""value"": ""071 835 6012""}]",test,phi,P46,hcpii-prompt-test-00003
+"Write a letter to Mrs. Rihana Farook at No. 180A, Temple Road, Hatton about the missed appointment on 29.08.2026.",PATIENT_NAME,high,"[{""type"": ""PATIENT_NAME"", ""start"": 23, ""end"": 36, ""value"": ""Rihana Farook""}, {""type"": ""ADDRESS"", ""start"": 40, ""end"": 69, ""value"": ""No. 180A, Temple Road, Hatton""}]",test,phi,P44,hcpii-prompt-test-00004
+G.S. Cooray is related to V. Sivanesan. Both have chest pain on exertion for 5 days. Is it infectious?,PATIENT_NAME,high,"[{""type"": ""PATIENT_NAME"", ""start"": 0, ""end"": 11, ""value"": ""G.S. Cooray""}, {""type"": ""PATIENT_NAME"", ""start"": 26, ""end"": 38, ""value"": ""V. Sivanesan""}]",test,phi,P61,hcpii-prompt-test-00005
+Name: Erandi Perera | MRN#7853464 | DOB: 8 October 1962,MRN,high,"[{""type"": ""PATIENT_NAME"", ""start"": 6, ""end"": 19, ""value"": ""Erandi Perera""}, {""type"": ""MRN"", ""start"": 26, ""end"": 33, ""value"": ""7853464""}, {""type"": ""DOB"", ""start"": 41, ""end"": 55, ""value"": ""8 October 1962""}]",test,phi,P52,hcpii-prompt-test-00006
+Write a thank you note to Dr. Jabir for the lecture on sepsis.,NONE,low,[],test,hard_negative_or_no_phi,N37,hcpii-prompt-test-00007
+"Write a letter to Ganga Abeyratne at No. 198A, Lake Road, Nuwara Eliya about the missed appointment on 2026-07-10.",PATIENT_NAME,high,"[{""type"": ""PATIENT_NAME"", ""start"": 18, ""end"": 33, ""value"": ""Ganga Abeyratne""}, {""type"": ""ADDRESS"", ""start"": 37, ""end"": 70, ""value"": ""No. 198A, Lake Road, Nuwara Eliya""}]",test,phi,P44,hcpii-prompt-test-00008
+Ask Hasitha Sampath Dias's daughter to email hdias74@hotmail.com with the old prescriptions.,EMAIL,high,"[{""type"": ""PATIENT_NAME"", ""start"": 4, ""end"": 24, ""value"": ""Hasitha Sampath Dias""}, {""type"": ""EMAIL"", ""start"": 45, ""end"": 64, ""value"": ""hdias74@hotmail.com""}]",test,phi,P76,hcpii-prompt-test-00009
+Name: Kannan Thiagarajah | MRN # 4184716 | DOB: 15.12.1970,MRN,high,"[{""type"": ""PATIENT_NAME"", ""start"": 6, ""end"": 24, ""value"": ""Kannan Thiagarajah""}, {""type"": ""MRN"", ""start"": 33, ""end"": 40, ""value"": ""4184716""}, {""type"": ""DOB"", ""start"": 48, ""end"": 58, ""value"": ""15.12.1970""}]",test,phi,P52,hcpii-prompt-test-00010
+Send the discharge letter to afra.abdeen13@sltnet.lk and copy Prof. Abeyratne.,EMAIL,high,"[{""type"": ""EMAIL"", ""start"": 29, ""end"": 52, ""value"": ""afra.abdeen13@sltnet.lk""}]",test,phi,P41,hcpii-prompt-test-00011
+Cut-off values: HbA1c 6.5% and fasting glucose 126 mg/dL. What do they mean?,NONE,low,[],test,hard_negative_or_no_phi,N18,hcpii-prompt-test-00012
+Patient Wasanthi Fernando 656723860V presents with burning epigastric pain for 7 weeks. Suggest differential diagnoses.,NIC,high,"[{""type"": ""PATIENT_NAME"", ""start"": 8, ""end"": 25, ""value"": ""Wasanthi Fernando""}, {""type"": ""NIC"", ""start"": 26, ""end"": 36, ""value"": ""656723860V""}]",test,phi,P02,hcpii-prompt-test-00013
+"Insurance form: Name Ms. Zainab Rauf; NIC 197282655555; Address No. 135B, Pagoda Road, Kalmunai; Tel +94757000527.",NIC,high,"[{""type"": ""PATIENT_NAME"", ""start"": 25, ""end"": 36, ""value"": ""Zainab Rauf""}, {""type"": ""NIC"", ""start"": 42, ""end"": 54, ""value"": ""197282655555""}, {""type"": ""ADDRESS"", ""start"": 64, ""end"": 95, ""value"": ""No. 135B, Pagoda Road, Kalmunai""}, {""type"": ""PHONE"", ""start"": 101, ""end"": 113, ""value"": ""+94757000527""}]",test,phi,P46,hcpii-prompt-test-00014
+Summarise the national guideline on dengue fluid management.,NONE,low,[],test,hard_negative_or_no_phi,N13,hcpii-prompt-test-00015
+Is Bell palsy the same as a stroke?,NONE,low,[],test,hard_negative_or_no_phi,N33,hcpii-prompt-test-00016
+"Patient ID P3441, name Yamuna Dias, NIC 635994475V: summarise the last admission.",NIC,high,"[{""type"": ""PATIENT_NAME"", ""start"": 23, ""end"": 34, ""value"": ""Yamuna Dias""}, {""type"": ""NIC"", ""start"": 40, ""end"": 50, ""value"": ""635994475V""}]",test,phi,P65,hcpii-prompt-test-00017
+M. Wickramasinghe/MRN: 79780915: please add the CT report to the file.,MRN,high,"[{""type"": ""PATIENT_NAME"", ""start"": 0, ""end"": 17, ""value"": ""M. Wickramasinghe""}, {""type"": ""MRN"", ""start"": 23, ""end"": 31, ""value"": ""79780915""}]",test,phi,P71,hcpii-prompt-test-00018
+Send the discharge letter to babeyratne23@gmail.com and copy Dr Subramaniam.,EMAIL,high,"[{""type"": ""EMAIL"", ""start"": 29, ""end"": 51, ""value"": ""babeyratne23@gmail.com""}]",test,phi,P41,hcpii-prompt-test-00019
+Send the discharge letter to indraniatapattu89@hotmail.com and copy Dr S. Munasinghe.,EMAIL,high,"[{""type"": ""EMAIL"", ""start"": 29, ""end"": 58, ""value"": ""indraniatapattu89@hotmail.com""}]",test,phi,P41,hcpii-prompt-test-00020

@@ -1,20 +1,21 @@
 {
-  "model_version": "c2-electra-small-v0",
-  "architecture": "google/electra-small-discriminator",
+  "model_version": "c2-electra-base-v1",
+  "architecture": "google/electra-base-discriminator",
   "task": "binary sequence classification (0=benign, 1=attack)",
+  "max_length_trained": 256,
   "library": {
-    "transformers": "4.57.6",
+    "transformers": "5.20.2 (saved with); loads on 4.57.6",
     "torch": "2.8.0"
   },
   "files": [
     {
       "path": "classifier/config.json",
-      "sha256": "5e5f019f0aac531213a282de002cf3604fdfc951b2bf3774f4605b9e3e9c7766",
+      "sha256": "4b3e0e25f0bf54221fafcb195667ecf82f00f497b16f9ae30f454cdff31a9e02",
       "in_git": true
     },
     {
       "path": "classifier/tokenizer.json",
-      "sha256": "d241a60d5e8f04cc1b2b3e9ef7a4921b27bf526d9f6050ab90f9267a1f9e5c66",
+      "sha256": "8b79639ec74b46604e730f505186eaafb1006d2fd00f2c4930d168bb7f894680",
       "in_git": true
     },
     {
@@ -24,11 +25,11 @@
     },
     {
       "path": "classifier/model.safetensors",
-      "sha256": "d1efa5f12821ff775d549521e641221ae64899d3597373fccff77f8d889c36dd",
+      "sha256": "b751851a6ac2607e563814c24d77570c0ef315cae05e0b75433e1b94427c86ef",
       "in_git": false,
-      "bytes": 54221200,
-      "location": "Google Drive MyDrive/LLM-C2/c2_classifier_final/ or Local_dev/llm-c2-tester/c2_classifier_final/"
+      "bytes": 437959248,
+      "location": "Google Drive MyDrive/LLM-C2/model_comparison/google__electra-base-discriminator_final/"
     }
   ],
-  "notes": "Weights are gitignored (K29). Run scripts/link_checkpoint.py to copy or symlink model.safetensors into models/classifier/."
+  "notes": "Weights are gitignored (K29). Copy model.safetensors from the Drive folder above into models/classifier/. Previous model (electra-small, c2-electra-small-v0) is archived in Local_dev/llm-c2-tester/c2_classifier_final_electra-small-v0_archive/ and Drive LLM-C2/c2_classifier_final/."
 }

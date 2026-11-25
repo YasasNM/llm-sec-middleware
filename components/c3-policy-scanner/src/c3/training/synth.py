@@ -298,7 +298,7 @@ def build_items(
             gold = [r.rid for r in chosen]
             kind = "multi" if k == 2 else "violating"
         else:
-            hard = rng.random() < 0.5
+            hard = rng.random() < 0.7
             comp: list[str] = []
             if hard:
                 for r in rng.sample(org_rules, rng.choice([1, 1, 2])):

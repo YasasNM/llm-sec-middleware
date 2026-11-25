@@ -25,6 +25,9 @@ def main() -> int:
                 return 1
         else:
             return 1
+    if source.resolve() == DEST.resolve():
+        print(f"{DEST} already is the model weights (source resolves to destination); nothing to do.")
+        return 0
     DEST.parent.mkdir(parents=True, exist_ok=True)
     if DEST.exists() or DEST.is_symlink():
         DEST.unlink()

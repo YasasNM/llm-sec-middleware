@@ -127,14 +127,16 @@
       <li><b>FR2, live re-indexing of changed clauses only.</b> Editing or replacing a policy embeds only what changed and swaps in the new version with no restart. Open the Policies tab to try it.</li>
       <li><b>The policy check itself,</b> shown in the Chat tab: relevant rules are found, a small trained model decides, citations are checked against the real rule text, and a failed check withholds the answer.</li>
     </ul>
-    <h3>Yet to complete</h3>
+    <h3>Yet to complete: functions</h3>
     <ul>
-      <li><b>Accurate rule citations.</b> The verdict is usually right, but the scanner sometimes cites a neighbouring rule (for example 4.2 where 4.1 was broken). Sharper attribution to the exact clause is still to do.</li>
-      <li><b>Better accuracy.</b> The model over-flags and misses some paraphrased violations. Threshold tuning, a larger model and human-reviewed labels are still to do.</li>
-      <li><b>Real connections.</b> The privacy, intent and behaviour steps here are stand-ins. Integration with the real gateway and the other components is not done.</li>
-      <li><b>Hardening.</b> Prompt-injection tests, Sinhala and Tamil answers, personal-data detection with Presidio, faster int8 serving and memory checks with all components running.</li>
-      <li><b>Evaluation.</b> Held-out unseen-policy sets, the remaining comparison baselines, and the system-level tests with the other components.</li>
-      <li><b>Packaging.</b> The container image is written but not built or tested.</li>
+      <li><b>Personal data detection (FR7, FR27).</b> The leak check finds identity numbers, phone numbers and emails by pattern. Names and addresses are not caught yet. A dedicated detector (Presidio) still has to be added, and it must also scan the reason and quote the scanner writes.</li>
+      <li><b>Accurate rule citation (FR5, FR24).</b> The verdict is usually right, but the scanner sometimes cites a neighbouring rule. Citing exactly the broken clause is still to do.</li>
+      <li><b>Citing every broken rule (FR16).</b> When an answer breaks more than one rule, all of them should be cited. Today the scanner cites one clause per answer.</li>
+      <li><b>Fewer false alarms (FR4, FR22).</b> Safe answers that talk about the same topic as a rule are sometimes withheld. The generator still has to be trained on real public policies and answers, with human-reviewed labels.</li>
+      <li><b>Calibrated thresholds (FR6).</b> The decision thresholds per severity were set on hand-written data. They still have to be set on real labelled data.</li>
+      <li><b>Renumbering report (FR2, FR20).</b> When a section is inserted and clauses are renumbered, the comparison notices it but the policy screen and API do not show it yet.</li>
+      <li><b>Admin alert on scanner failure (FR15).</b> A failed check is withheld and logged, but admins are not alerted.</li>
+      <li><b>Sinhala and Tamil answers.</b> An answer in these languages should be accepted and marked low assurance. This is not handled yet.</li>
     </ul>
   </div>
 </section>

@@ -1,0 +1,27 @@
+{
+  "_note": "Real Sri Lankan towns with their district. A town is a quasi-identifier (LOCATION). 'region' is used only to correlate Tamil and Muslim names with northern/eastern towns.",
+  "towns": [
+    ["Mulleriyawa","Colombo","west"],["Maharagama","Colombo","west"],["Nugegoda","Colombo","west"],["Dehiwala","Colombo","west"],["Moratuwa","Colombo","west"],["Kotte","Colombo","west"],["Kaduwela","Colombo","west"],["Homagama","Colombo","west"],["Piliyandala","Colombo","west"],["Avissawella","Colombo","west"],["Colombo 05","Colombo","west"],["Kollupitiya","Colombo","west"],["Wellampitiya","Colombo","west"],
+    ["Negombo","Gampaha","west"],["Ja-Ela","Gampaha","west"],["Wattala","Gampaha","west"],["Kiribathgoda","Gampaha","west"],["Kadawatha","Gampaha","west"],["Minuwangoda","Gampaha","west"],["Veyangoda","Gampaha","west"],["Nittambuwa","Gampaha","west"],["Gampaha","Gampaha","west"],
+    ["Panadura","Kalutara","west"],["Horana","Kalutara","west"],["Beruwala","Kalutara","west"],["Aluthgama","Kalutara","west"],["Kalutara","Kalutara","west"],
+    ["Peradeniya","Kandy","central"],["Katugastota","Kandy","central"],["Gampola","Kandy","central"],["Pilimathalawa","Kandy","central"],["Kandy","Kandy","central"],["Kundasale","Kandy","central"],
+    ["Dambulla","Matale","central"],["Galewela","Matale","central"],["Matale","Matale","central"],["Nuwara Eliya","Nuwara Eliya","central"],["Hatton","Nuwara Eliya","central"],
+    ["Hikkaduwa","Galle","south"],["Ambalangoda","Galle","south"],["Elpitiya","Galle","south"],["Baddegama","Galle","south"],["Galle","Galle","south"],
+    ["Weligama","Matara","south"],["Akuressa","Matara","south"],["Dikwella","Matara","south"],["Matara","Matara","south"],
+    ["Tangalle","Hambantota","south"],["Tissamaharama","Hambantota","south"],["Ambalantota","Hambantota","south"],["Hambantota","Hambantota","south"],
+    ["Kuliyapitiya","Kurunegala","northwest"],["Wariyapola","Kurunegala","northwest"],["Pannala","Kurunegala","northwest"],["Narammala","Kurunegala","northwest"],["Kurunegala","Kurunegala","northwest"],
+    ["Chilaw","Puttalam","northwest"],["Wennappuwa","Puttalam","northwest"],["Puttalam","Puttalam","northwest"],
+    ["Kekirawa","Anuradhapura","northcentral"],["Medawachchiya","Anuradhapura","northcentral"],["Anuradhapura","Anuradhapura","northcentral"],
+    ["Hingurakgoda","Polonnaruwa","northcentral"],["Medirigiriya","Polonnaruwa","northcentral"],["Giritale","Polonnaruwa","northcentral"],["Polonnaruwa","Polonnaruwa","northcentral"],
+    ["Bandarawela","Badulla","uva"],["Mahiyanganaya","Badulla","uva"],["Hali-Ela","Badulla","uva"],["Badulla","Badulla","uva"],
+    ["Wellawaya","Monaragala","uva"],["Bibile","Monaragala","uva"],["Monaragala","Monaragala","uva"],
+    ["Balangoda","Ratnapura","sabaragamuwa"],["Embilipitiya","Ratnapura","sabaragamuwa"],["Eheliyagoda","Ratnapura","sabaragamuwa"],["Ratnapura","Ratnapura","sabaragamuwa"],
+    ["Mawanella","Kegalle","sabaragamuwa"],["Warakapola","Kegalle","sabaragamuwa"],["Rambukkana","Kegalle","sabaragamuwa"],["Kegalle","Kegalle","sabaragamuwa"],
+    ["Chavakachcheri","Jaffna","north"],["Point Pedro","Jaffna","north"],["Nallur","Jaffna","north"],["Jaffna","Jaffna","north"],
+    ["Vavuniya","Vavuniya","north"],["Mannar","Mannar","north"],["Kilinochchi","Kilinochchi","north"],
+    ["Kattankudy","Batticaloa","east"],["Eravur","Batticaloa","east"],["Batticaloa","Batticaloa","east"],
+    ["Kalmunai","Ampara","east"],["Akkaraipattu","Ampara","east"],["Ampara","Ampara","east"],
+    ["Kantale","Trincomalee","east"],["Trincomalee","Trincomalee","east"]
+  ],
+  "streets": ["Temple Road","Station Road","Church Road","Lake Road","High Level Road","Galle Road","Kandy Road","School Lane","Mosque Road","Pagoda Road","Main Street","Hospital Road","Park Road","Old Road","New Town Road","Cross Street","Beach Road","Rubber Estate Road","Canal Road","Mill Road","Market Road","Kovil Road","Vihara Mawatha","Dharmapala Mawatha","Lane 2","3rd Lane","5th Cross Street"]
+}

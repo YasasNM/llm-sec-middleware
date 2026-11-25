@@ -87,7 +87,8 @@
   </p>
 
   <div class="editor">
-    <textarea id="box" aria-label="Clinical prompt. Enter sends (direct identifiers are always masked), Shift+Enter adds a new line. Tab moves to underlined words."
+    <textarea id="box" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+      aria-label="Clinical prompt. Enter sends the text exactly as it is (only what you masked or generalised is changed), Shift+Enter adds a new line. Tab moves to underlined words."
       placeholder="Type a clinical prompt..."></textarea>
     <div class="mirror" id="mirror"></div>
   </div>
@@ -95,7 +96,7 @@
   <div class="bar">
     <div class="risk" aria-live="polite">Privacy risk: <span id="score">0</span><span class="chip Clean" id="badge">Clean</span></div>
     <div class="buttons">
-      <button id="send" title="Direct identifiers are always masked; re-identification clues go as typed">Send</button>
+      <button id="send" title="Sends the text exactly as you left it: only what you masked or generalised is changed">Send</button>
       <button class="primary" id="sendAll" title="Mask direct identifiers and use every suggestion, then send">Mask all and send</button>
     </div>
   </div>
@@ -241,14 +242,18 @@ function showBanner(state) {
     + (clues === 1 ? " clue" : " clues") + " underlined in orange. Hover each to generalise, or apply all.";
 }
 
-// Fill the popover for a red word: what it is, confidence, HIGH RISK, and "Mask this word"
+// Fill the popover for a red word: what it is, confidence, its risk class, and "Mask this word".
+// The risk class (high, medium or low) is sent by C1 for each entity, from configs/default.yaml
+// risk.entity_classes, so the page holds no type-to-risk table of its own.
 function fillDirect(item) {
   pop.appendChild(el("div", "muted", "Detected as " + item.type));
   const confidence = el("div", "", "Confidence " + Math.round(item.confidence * 100) + "%");
   confidence.title = "How sure C1 is that this is a name. Regex matches are 100%, lexicon matches 60%, "
     + "the model needs 65% or more.";
   pop.appendChild(confidence);
-  pop.appendChild(el("span", "chip High", "HIGH RISK"));
+  const riskClass = item.risk_class || "low";
+  const chip = riskClass.charAt(0).toUpperCase() + riskClass.slice(1);  // "medium" -> "Medium"
+  pop.appendChild(el("span", "chip " + chip, riskClass.toUpperCase() + " RISK"));
   pop.appendChild(el("br"));
   pop.appendChild(actionButton("Mask this word", function () { maskItem(item); }));
 }
@@ -388,22 +393,33 @@ function showError(message) {
   line.style.display = message ? "block" : "none";
 }
 
-// Send the composer text. Direct identifiers are ALWAYS masked first (K2).
-// With useSuggestions, every re-identification clue is generalised too; otherwise clues go as typed.
+// The note under a "Send": "1 masked by user, 1 direct identifier sent unmasked"
+function asTypedNote(reply) {
+  return reply.masked_by_user + " masked by user, "
+    + count(reply.unmasked_sent, "direct identifier", "direct identifiers") + " sent unmasked";
+}
+
+// Send the composer text through C1's demo-only route /demo/send.
+// DEMO flow only: the gateway API /v1/check is different and always masks every direct identifier.
+// "Send" (useSuggestions false, mode as_typed) sends the text exactly as the user left it: only
+// the words masked or generalised by hovering are changed. "Mask all and send" (mode mask_all)
+// masks every red word and generalises every orange clue.
 async function send(useSuggestions) {
   const text = box.value;
   if (text.trim() === "") return;
-  let result;
-  try { result = await analyze(text); } catch (problem) {
+  const mode = useSuggestions ? "mask_all" : "as_typed";
+  let reply;
+  try {
+    reply = await fetch("/demo/send", { method: "POST",
+      headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text: text, mode: mode }) });
+    if (!reply.ok) throw new Error("send failed " + reply.status);
+    reply = await reply.json();
+  } catch (problem) {
     return showError("C1 could not check the text, so nothing was sent.");
   }
   showError("");
-  const items = collectItems(text, result);
-  const direct = items.filter(function (i) { return i.kind === "direct"; });
-  const clues = useSuggestions ? items.filter(function (i) { return i.kind === "clue"; }) : [];
-  const edits = useSuggestions ? suggestionSpans(text, result, items) : [];
-  const spans = direct.map(function (i) { return [i.start, i.end, i.token]; }).concat(edits);
-  showSent(replaceInText(text, spans), sentNotes(direct.length, clues.length));
+  const notes = useSuggestions ? sentNotes(reply.masked_automatically, reply.generalised) : [asTypedNote(reply)];
+  showSent(reply.sent_text, notes);
   box.value = "";
   onTyping();
 }

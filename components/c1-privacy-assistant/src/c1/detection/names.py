@@ -22,6 +22,8 @@ from c1.detection.titled_names import detect_context_names, detect_titled_names
 
 LEXICON_CONFIDENCE = 0.6
 SHORTEST_LEXICON_WORD = 4
+# A found name needs at least this many letters before its other copies are masked too
+SHORTEST_REPEAT = 2
 # A name right after one of these titles is a staff member, who stays visible
 STAFF_TITLES = {"dr", "nurse", "sister", "consultant", "prof"}
 # Lexicon names that are also ordinary English or medical words, so they are never matched alone
@@ -143,9 +145,24 @@ def smaller_name_inside(inner: Entity, start: int, end: int) -> bool:
     return inner.type == "PATIENT_NAME" and inside and (inner.start, inner.end) != (start, end)
 
 
+# True when the span starts a sentence: at the very start, or after ".", "!" or "?"
+def at_sentence_start(text: str, start: int) -> bool:
+    before = text[:start].rstrip()
+    return before == "" or before[-1] in ".!?"
+
+
+# True when a lowercase copy may be repeated. A model name at a sentence start may only have
+# been found because of its capital letter, so only copies with the same capitals count.
+def repeat_ignores_case(text: str, name: Entity) -> bool:
+    return not (name.source == "ml" and at_sentence_start(text, name.start))
+
+
 # Every other whole-word copy (ignoring case) of a found name; it may swallow smaller names
 def find_repeats(text: str, name: Entity, taken: list[Entity]) -> list[Entity]:
-    pattern = re.compile(rf"(?<![A-Za-z]){re.escape(name.value)}(?![A-Za-z])", re.IGNORECASE)
+    if sum(character.isalpha() for character in name.value) < SHORTEST_REPEAT:
+        return []  # a single letter such as "A" is never repeated
+    flags = re.IGNORECASE if repeat_ignores_case(text, name) else 0
+    pattern = re.compile(rf"(?<![A-Za-z]){re.escape(name.value)}(?![A-Za-z])", flags)
     repeats = []
     for match in pattern.finditer(text):
         start, end = match.span()

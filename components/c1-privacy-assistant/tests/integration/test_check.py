@@ -187,3 +187,19 @@ def test_bad_body_gives_422_without_echo_and_no_event(c1, changes):
     reply = check(client, **changes)
     assert reply.status_code == 422 and "Nimal" not in reply.text
     assert c4.events == []
+
+
+def test_v1_check_still_masks_every_direct_identifier(c1):
+    # Unlike the demo's "Send", the gateway API never sends a direct identifier unmasked
+    client, _, _ = c1
+    text = "Patient Kumari Silva, NIC 199012345678, needs a follow-up."
+    body = valid_body(check(client, text=text, apply_reid_suggestions=False))
+    assert body["masked_text"] == "Patient [PATIENT_NAME_1], NIC [NIC_1], needs a follow-up."
+    assert "199012345678" not in json.dumps(body) and "Kumari" not in json.dumps(body)
+
+
+def test_v1_check_masks_what_the_user_left_unmasked(c1):
+    client, _, _ = c1
+    text = "Patient [PATIENT_NAME_1], NIC 199012345678, needs a follow-up."
+    body = valid_body(check(client, text=text, apply_reid_suggestions=False))
+    assert "199012345678" not in body["masked_text"] and "[NIC_1]" in body["masked_text"]

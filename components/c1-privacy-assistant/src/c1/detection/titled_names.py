@@ -90,6 +90,27 @@ CONTEXT_STOP = STAFF_WORDS | {
     "phone", "email", "address", "report", "results", "test", "tests", "bp", "dose", "drug",
     "medication", "medicine", "tablets", "surgery", "operation", "case", "file", "care",
 }  # fmt: skip
+# Cues where an English word very often comes next ("patient support", "patient care")
+PATIENT_CUES = [["patient"], ["pt"]]
+# Common English words that follow "patient" in ordinary sentences; never a name after it
+PATIENT_STOP = {
+    "support", "options", "option", "care", "carer", "carers", "with", "is", "was", "has", "in",
+    "on", "and", "the", "a", "an", "history", "notes", "note", "record", "records", "details",
+    "information", "info", "safety", "education", "transport", "plan", "plans", "needs", "need",
+    "services", "service", "advice", "resources", "group", "groups", "management", "rights",
+    "privacy", "consent", "data", "list", "letter", "leaflet", "leaflets", "materials",
+    "feedback", "experience", "satisfaction", "outcomes", "outcome", "flow", "welfare",
+    "comfort", "family", "families", "visits", "visit", "transfer", "referral", "referrals",
+    "appointment", "appointments", "communication", "questions", "queries", "requests",
+    "request", "profile", "status", "journey", "identity", "identifiers", "portal", "chart",
+    "charts", "card", "cards", "condition", "conditions", "programme", "program", "follow",
+    "who", "whose", "should", "must", "can", "may", "will", "would", "could", "remains",
+    "remained", "continues", "improved", "became", "becomes", "appears", "looks", "seems",
+    "lives", "lived", "stays", "stayed", "wants", "wanted", "asked", "asks", "refused",
+    "agreed", "died", "returned", "arrived", "collapsed", "fell", "suffers", "suffered",
+    "showed", "shows", "tolerated", "responded", "recovered", "suitable", "other", "same",
+    "new", "first", "second", "elderly", "young", "older", "safe", "friendly", "centred",
+}  # fmt: skip
 # A whole word made only of letters: "P" in the id "P9908" is not one (digits are attached)
 LETTERS = re.compile(r"(?<![A-Za-z0-9_])[A-Za-z]+(?![A-Za-z0-9_])")
 # A placeholder token such as [PATIENT_NAME_1]
@@ -115,14 +136,19 @@ def cue_at(text: str, words: list[re.Match], index: int, cue: list[str]) -> bool
     )
 
 
-# The one or two name words right after a cue that ends at words[index - 1]
-def name_after_cue(text: str, words: list[re.Match], index: int, tokens: list) -> list[re.Match]:
+# The one or two name words right after a cue that ends at words[index - 1].
+# After "patient" or "pt", common English words in PATIENT_STOP are never taken either.
+def name_after_cue(
+    text: str, words: list[re.Match], index: int, tokens: list, stop: frozenset = frozenset()
+) -> list[re.Match]:
     taken = []
     for word in words[index : index + 2]:
         before = words[index - 1] if not taken else taken[-1]
         gap = text[before.end() : word.start()]
         # Only spaces may separate; after the cue a dot or colon is fine too ("Mr. linuka")
         if gap.strip(" " if taken else " .:") != "" or not can_be_name(text, word, tokens):
+            break
+        if word.group().lower() in stop:
             break
         taken.append(word)
     return taken
@@ -137,7 +163,8 @@ def detect_context_names(text: str) -> list[Entity]:
         for cue in CONTEXT_CUES:
             if not cue_at(text, words, index, cue):
                 continue
-            name = name_after_cue(text, words, index + len(cue), tokens)
+            stop = frozenset(PATIENT_STOP) if cue in PATIENT_CUES else frozenset()
+            name = name_after_cue(text, words, index + len(cue), tokens, stop)
             if name:
                 start, end = name[0].start(), name[-1].end()
                 found.append(Entity("PATIENT_NAME", start, end, text[start:end],

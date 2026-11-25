@@ -147,7 +147,13 @@ def group_into_names(text: str, tokens: list[Token], scores: list[float], thresh
             groups[-1].append((token, score))
         else:
             groups.append([(token, score)])
-    return [make_name_entity(text, group) for group in groups]
+    return [make_name_entity(text, group) for group in groups if has_full_word(group)]
+
+
+# True when a group has at least one word longer than one letter. A lone letter such as the
+# "A" that starts a sentence is never a name; an initial is kept only inside "R. Perera".
+def has_full_word(group: list) -> bool:
+    return any(len(token.text) > 1 for token, _ in group)
 
 
 # Build one PATIENT_NAME entity from a group of (token, score) pairs

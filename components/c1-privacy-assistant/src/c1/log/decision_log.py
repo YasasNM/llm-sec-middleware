@@ -2,12 +2,15 @@
 
 It stores ids, the decision, numbers and entity TYPES with counts. It never stores prompt text,
 masked text or any entity value, so the file is safe to keep for C1's own evaluation.
+
+Demo sends (/demo/send) are logged here too, with decision DEMO_SEND_AS_TYPED or
+DEMO_SEND_MASK_ALL: only how many direct identifiers were sent unmasked and their types.
 The table lives in the same SQLite file as the event outbox (c1.db, gitignored).
 """
 
 import json
 import sqlite3
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 
 CREATE_TABLE = """
 CREATE TABLE IF NOT EXISTS decision_log (
@@ -23,9 +26,16 @@ CREATE TABLE IF NOT EXISTS decision_log (
     reid_applied INTEGER,
     name_detector TEXT NOT NULL,
     latency_ms INTEGER NOT NULL,
-    timestamp TEXT NOT NULL
+    timestamp TEXT NOT NULL,
+    unmasked_count INTEGER NOT NULL DEFAULT 0,
+    unmasked_types TEXT NOT NULL DEFAULT '[]'
 )
 """
+# Columns added after the first version, so an older c1.db file is upgraded when opened
+NEW_COLUMNS = {
+    "unmasked_count": "INTEGER NOT NULL DEFAULT 0",
+    "unmasked_types": "TEXT NOT NULL DEFAULT '[]'",
+}
 
 
 @dataclass
@@ -36,7 +46,7 @@ class Decision:
     org_id: str
     user_id: str
     session_id: str
-    decision: str  # ALLOW, ACCESS_BLOCKED or BLOCKLIST_UNAVAILABLE
+    decision: str  # ALLOW, ACCESS_BLOCKED, BLOCKLIST_UNAVAILABLE, or DEMO_SEND_* (demo only)
     masking_percentage: float | None
     entity_counts: dict[str, int]
     reid_level: str | None
@@ -45,19 +55,32 @@ class Decision:
     name_detector: str
     latency_ms: int
     timestamp: str
+    # Only for demo sends: how many direct identifiers went out unmasked, and their types
+    unmasked_count: int = 0
+    unmasked_types: list[str] = field(default_factory=list)
 
 
-# Open the SQLite file and create the table the first time
+# Add any column from NEW_COLUMNS that an older log file does not have yet
+def add_missing_columns(connection: sqlite3.Connection) -> None:
+    existing = {row[1] for row in connection.execute("PRAGMA table_info(decision_log)")}
+    for name, kind in NEW_COLUMNS.items():
+        if name not in existing:
+            connection.execute(f"ALTER TABLE decision_log ADD COLUMN {name} {kind}")
+
+
+# Open the SQLite file, create the table the first time, and upgrade an older table
 def open_log(path: str) -> sqlite3.Connection:
     connection = sqlite3.connect(path)
     connection.execute(CREATE_TABLE)
+    add_missing_columns(connection)
     return connection
 
 
-# Add one decision to the log; entity_counts is stored as JSON text
+# Add one decision to the log; entity_counts and unmasked_types are stored as JSON text
 def write_decision(path: str, decision: Decision) -> None:
     row = asdict(decision)
     row["entity_counts"] = json.dumps(row["entity_counts"], sort_keys=True)
+    row["unmasked_types"] = json.dumps(sorted(row["unmasked_types"]))
     columns = ", ".join(row)
     marks = ", ".join("?" for _ in row)
     connection = open_log(path)
